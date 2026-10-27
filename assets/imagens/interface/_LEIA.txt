@@ -1,0 +1,19 @@
+INTERFACE (PNG)
+
+logo.png                  logo do menu principal (sugerido 600x200, fundo transparente)
+botao_normal.png          botão (9-slice: os 16 px de cada canto não são esticados; sugerido 96x96)
+botao_hover.png           (opcional) botão com o mouse em cima
+botao_pressionado.png     (opcional) botão pressionado
+botao_desativado.png      (opcional) botão desativado
+painel.png                painel genérico (9-slice de 24 px; sugerido 96x96)
+painel_menu.png           (opcional) painel do menu principal
+painel_janela.png         (opcional) janelas: pausa, opções, vitória/derrota, mini-aula
+painel_desafio.png        (opcional) faixa da conta na partida
+fundo_tabuleiro.png       (opcional) moldura atrás da grade 8x8 (9-slice de 24 px)
+
+Os opcionais que faltarem usam painel.png (menos o fundo_tabuleiro).
+
+EXTRAS (opcionais)
+slider_fundo.png / slider_barra.png / slider_botao.png   barra de volume das opções
+check_ligado.png / check_desligado.png                   botão de tela cheia nas opções
+estrela_cheia.png / estrela_vazia.png                     estrelas da tela de vitória

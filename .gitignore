@@ -1,0 +1,9 @@
+# Cache gerado pelo Godot 4 (é recriado ao abrir o projeto)
+.godot/
+/android/
+
+# Builds exportados
+/build/
+/export/
+*.exe
+*.pck

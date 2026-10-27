@@ -1,0 +1,10 @@
+PEÇAS DO TABULEIRO (PNG com fundo transparente, sugerido 128x128)
+
+peca_01.png ... peca_12.png      uma imagem para cada número (o número é escrito por cima pelo jogo)
+casa_vazia.png                   (opcional) casa vazia durante a queda das peças
+estado_selecionada.png           (opcional) moldura da peça selecionada
+estado_destaque_resposta.png     (opcional) moldura das peças com a resposta
+estado_troca_sugerida.png        (opcional) moldura da troca sugerida pela dica
+
+As molduras ficam POR CIMA da peça: deixe o centro transparente.
+Sem as molduras, o jogo usa as bordas atuais (branca, amarela e verde).
