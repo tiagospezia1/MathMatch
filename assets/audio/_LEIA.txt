@@ -1,0 +1,17 @@
+ÁUDIO (.ogg, .wav ou .mp3 — use exatamente estes nomes)
+
+MÚSICAS (repetem sozinhas; prefira .ogg)
+musica_menu      menu principal e mapa
+musica_partida   durante a fase
+
+EFEITOS (prefira .wav curtos)
+clique           qualquer botão da interface
+selecionar       selecionar uma peça
+trocar           troca que formou combinação
+troca_invalida   troca que não formou nada (também no erro da mini-aula)
+combinar         primeira combinação da jogada
+combo            combinações em cascata (fica mais agudo a cada combo)
+acerto           resolveu a conta (também no acerto da mini-aula)
+dica             apareceu uma dica nova
+vitoria          fase concluída
+derrota          jogadas esgotadas
