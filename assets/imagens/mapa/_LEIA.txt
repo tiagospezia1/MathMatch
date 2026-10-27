@@ -1,0 +1,9 @@
+MAPA DA JORNADA (PNG com fundo transparente)
+
+fase_concluida.png     fase concluída  (sugerido 128x128; aparece em 86x86)
+fase_atual.png         fase atual
+fase_disponivel.png    fase liberada
+fase_bloqueada.png     fase bloqueada
+mundo_1.png ... mundo_6.png   (opcional) fundo de cada mundo (sugerido 744x350)
+
+O número da fase é escrito por cima pelo jogo.

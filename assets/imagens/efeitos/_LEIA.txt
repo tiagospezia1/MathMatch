@@ -1,0 +1,3 @@
+EFEITOS (PNG com fundo transparente)
+
+brilho.png    partícula usada nos brilhos ao acertar a conta e na vitória

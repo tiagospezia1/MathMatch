@@ -1,0 +1,6 @@
+FONTE (.ttf ou .otf)
+
+fonte.ttf   fonte usada em todo o jogo
+
+Precisa ter os acentos do português. Confira se ela tem também os símbolos
+★ ☆ ● ○ ✓ × ÷ − ▼ — se não tiver, eles aparecem como quadrados.

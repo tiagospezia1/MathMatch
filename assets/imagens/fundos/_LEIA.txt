@@ -1,0 +1,7 @@
+FUNDOS DE TELA (PNG ou JPG, sugerido 900x900 ou maior, quadrado)
+
+fundo_menu.png       menu principal e menu dev
+fundo_mapa.png       mapa da jornada
+fundo_partida.png    partida
+
+A imagem é ampliada para cobrir a tela inteira, mantendo a proporção.
