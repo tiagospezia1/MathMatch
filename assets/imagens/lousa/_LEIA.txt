@@ -1,0 +1,15 @@
+DESENHOS DA LOUSA DO PROFESSOR (PNG 128x128 com fundo transparente)
+
+maca.png       maçã (adição: as maçãs da moradora do Pomar)
+laranja.png    laranja
+morango.png    morango
+caixa.png      caixa (subtração: as caixas do marinheiro)
+pote_mel.png   pote de mel (multiplicação: as colmeias)
+pao.png        pão (divisão: os pães da cozinheira)
+bala.png       bala
+bombom.png     bombom
+
+A barra de chocolate das frações e porcentagens é desenhada pelo jogo.
+Se um arquivo faltar, a lousa desenha bolinhas no lugar.
+Desenhos feitos para o MathMatch (traço preto grosso e cores chapadas, no
+estilo dos retratos dos personagens).

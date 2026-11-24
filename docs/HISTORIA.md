@@ -517,7 +517,7 @@ Esta seção é uma sugestão de como levar a história para o código atual, em
 
 ### Etapa 3: o professor nas mini-aulas e dicas ✅
 
-O professor ensina de verdade, numa **lousa** desenhada por código (`scripts/lousa.gd`): bolinhas para juntar e tirar, grupos em círculos, pães repartidos em pratos, barras de fração e de porcentagem.
+O professor ensina de verdade, numa **lousa** desenhada por código (`scripts/lousa.gd`), com desenhos de frutas, doces e objetos (`assets/imagens/lousa/`): maçãs para juntar, caixas e balas para tirar, potes de mel em grupos, pães repartidos em pratos e barras de chocolate para frações e porcentagens.
 
 - **Aula completa** (`scripts/professor.gd`, `lesson()`), na primeira fase de cada operação. A primeira vez vai até o fim (não dá para pular); ao rever, dá. Cada aula tem:
   1. a ideia, ligada à história (maçãs, caixas, colmeias, pães, relógio, mercado);
@@ -531,11 +531,12 @@ O professor ensina de verdade, numa **lousa** desenhada por código (`scripts/lo
 - **Erros comuns no tabuleiro** (`misconception()`): se o número combinado é um erro típico (por exemplo, 10 em 7 − 3), aparece "Professor: Você juntou! Na subtração a gente TIRA...". Combinações por acaso não recebem bronca.
 - `math_tutor.gd` ficou só com a dica curta que aparece embaixo da conta.
 
-### Etapa 4: mapa e livro
+### Etapa 4: mapa e livro ✅ (em parte)
 
-- Em `scripts/progression_menu.gd`, trocar o rótulo "MUNDO 1 • + ADIÇÃO" por "MUNDO 1 • VILA DO POMAR".
-- Mostrar o contador "Páginas recuperadas: X/18", que é o tamanho de `completed_stages`.
-- Opcional: uma tela do livro com as 18 páginas e os carimbos de ouro.
+- ✅ No mapa (`scripts/progression_menu.gd`), cada mundo mostra o lugar e as páginas dele: "MUNDO 1 • VILA DO POMAR • + ADIÇÃO • PÁGINAS 2/3".
+- ✅ O topo do mapa mostra "PÁGINAS RECUPERADAS: X/18" com uma barra dourada; o menu principal também mostra o contador (`GameState.get_pages_recovered()`).
+- ✅ A dica de cada fase no mapa diz qual página do livro ela devolve.
+- Falta (opcional): uma tela do livro com as 18 páginas e os carimbos de ouro.
 
 ### Etapa 5: emboscadas ✅
 

@@ -100,19 +100,19 @@ static func lesson(operation, first_time = true):
 static func _lesson_addition():
 	return [
 		_p("explicando", "Somar é JUNTAR. Lembra da moradora do Pomar? Ela tinha 3 maçãs e ganhou mais 2.",
-			_board("add", {"a": 3, "b": 2}, ["3 + 2"])),
+			_board("add", {"a": 3, "b": 2, "items": ["maca", "maca"]}, ["3 + 2"])),
 		_p("explicando", "Para saber quantas ela tem, juntamos tudo e contamos uma por uma: 1, 2, 3, 4, 5.",
-			_board("add", {"a": 3, "b": 2, "joined": true, "count": true}, ["!3 + 2 = 5"])),
+			_board("add", {"a": 3, "b": 2, "joined": true, "count": true, "items": ["maca", "maca"]}, ["!3 + 2 = 5"])),
 		_p("pensativo", "Um truque: não precisa contar desde o 1. Comece no número MAIOR e conte só o resto. Começo no 3... e conto mais 2: 4, 5.",
 			_text_board(["Comece no maior: 3", "conte mais 2:  4, 5", "!3 + 2 = 5"])),
 		_p("explicando", "E a ordem não muda o resultado: 2 + 3 dá o mesmo que 3 + 2. Por isso sempre podemos começar pelo maior.",
-			_board("add", {"a": 2, "b": 3}, ["2 + 3  =  3 + 2  =  5"])),
+			_board("add", {"a": 2, "b": 3, "items": ["morango", "morango"]}, ["2 + 3  =  3 + 2  =  5"])),
 		_p("explicando", "Quando aparecem três números, some por partes: primeiro os dois primeiros, depois junte o terceiro.",
 			_text_board(["2 + 3 + 4", "2 + 3 = 5", "!5 + 4 = 9"])),
-		_quiz("addition", "Sua vez! Quanto é 4 + 3?", "4 + 3 = ?", [6, 7, 8], 7,
-			_board("add", {"a": 4, "b": 3}, ["4 + 3 = ?"]),
+		_quiz("addition", "Sua vez! A moradora colheu 4 laranjas de manhã e mais 3 à tarde. Quanto é 4 + 3?", "4 + 3 = ?", [6, 7, 8], 7,
+			_board("add", {"a": 4, "b": 3, "items": ["laranja", "laranja"]}, ["4 + 3 = ?"]),
 			"Isso! Começando no 4: 5, 6, 7. São 7.",
-			_board("add", {"a": 4, "b": 3, "joined": true, "count": true}, ["!4 + 3 = 7"])),
+			_board("add", {"a": 4, "b": 3, "joined": true, "count": true, "items": ["laranja", "laranja"]}, ["!4 + 3 = 7"])),
 		_quiz("addition", "Agora com três números. Quanto é 2 + 2 + 3?", "2 + 2 + 3 = ?", [4, 7, 8], 7,
 			_text_board(["2 + 2 + 3 = ?"]),
 			"Muito bem! 2 + 2 = 4, e 4 + 3 = 7.",
@@ -125,23 +125,23 @@ static func _lesson_addition():
 static func _lesson_subtraction():
 	return [
 		_p("explicando", "Subtrair é TIRAR. O marinheiro tinha 8 caixas no barco e descarregou 5.",
-			_board("take", {"total": 8, "take": 5}, ["8 − 5"])),
+			_board("take", {"total": 8, "take": 5, "item": "caixa"}, ["8 − 5"])),
 		_p("explicando", "Riscamos as 5 caixas que saíram e contamos as que SOBRARAM: 3.",
-			_board("take", {"total": 8, "take": 5, "cross": true, "result": true}, ["!8 − 5 = 3"])),
+			_board("take", {"total": 8, "take": 5, "cross": true, "result": true, "item": "caixa"}, ["!8 − 5 = 3"])),
 		_p("pensativo", "Um truque: pense ao contrário. 8 − 5 pergunta: 5 mais quanto chega em 8? Contando do 5: 6, 7, 8. Contei 3 vezes!",
 			_text_board(["5 + ? = 8", "6, 7, 8  →  contei 3", "!8 − 5 = 3"])),
 		_p("preocupado", "Cuidado: na subtração a ordem importa. Começamos sempre pelo total, o número que vem primeiro, e tiramos dele.",
 			_text_board(["Começa com o total: 8", "e tira 5", "!sobram 3"])),
-		_p("explicando", "Com duas subtrações, tire uma de cada vez: primeiro a primeira, depois a segunda.",
-			_board("take", {"total": 12, "take": 3, "take2": 4, "cross": true, "result": true}, ["12 − 4 = 8", "!8 − 3 = 5"])),
-		_quiz("subtraction", "Sua vez! Quanto é 7 − 3?", "7 − 3 = ?", [3, 4, 10], 4,
-			_board("take", {"total": 7, "take": 3}, ["7 − 3 = ?"]),
+		_p("explicando", "Com duas subtrações, tire uma de cada vez. Se você tem 12 bombons, come 4 e depois mais 3: primeiro 12 − 4, depois tire o 3.",
+			_board("take", {"total": 12, "take": 3, "take2": 4, "cross": true, "result": true, "item": "bombom"}, ["12 − 4 = 8", "!8 − 3 = 5"])),
+		_quiz("subtraction", "Sua vez! Você tinha 7 balas e deu 3 para um amigo. Quanto é 7 − 3?", "7 − 3 = ?", [3, 4, 10], 4,
+			_board("take", {"total": 7, "take": 3, "item": "bala"}, ["7 − 3 = ?"]),
 			"Isso! Tirando 3 de 7, sobram 4. E confere: 3 + 4 = 7.",
-			_board("take", {"total": 7, "take": 3, "cross": true, "result": true}, ["!7 − 3 = 4"])),
-		_quiz("subtraction", "E agora: 10 − 4 − 2?", "10 − 4 − 2 = ?", [4, 6, 8], 4,
-			_board("take", {"total": 10, "take": 2, "take2": 4}, ["10 − 4 − 2 = ?"]),
+			_board("take", {"total": 7, "take": 3, "cross": true, "result": true, "item": "bala"}, ["!7 − 3 = 4"])),
+		_quiz("subtraction", "E agora: uma caixa com 10 morangos. Comemos 4 no almoço e 2 no lanche. Quanto é 10 − 4 − 2?", "10 − 4 − 2 = ?", [4, 6, 8], 4,
+			_board("take", {"total": 10, "take": 2, "take2": 4, "item": "morango"}, ["10 − 4 − 2 = ?"]),
 			"Muito bem! 10 − 4 = 6, e 6 − 2 = 4.",
-			_board("take", {"total": 10, "take": 2, "take2": 4, "cross": true, "result": true}, ["10 − 4 = 6", "!6 − 2 = 4"])),
+			_board("take", {"total": 10, "take": 2, "take2": 4, "cross": true, "result": true, "item": "morango"}, ["10 − 4 = 6", "!6 − 2 = 4"])),
 		_p("orgulhoso", "Guarde isso: subtrair é tirar; comece pelo total; e, se travar, pense ao contrário.",
 			_text_board(["Subtrair é tirar", "Comece pelo total", "!Travou? Quanto falta?"]))
 	]
@@ -150,23 +150,23 @@ static func _lesson_subtraction():
 static func _lesson_multiplication():
 	return [
 		_p("explicando", "Na floresta, o apicultor tem 3 colmeias, e cada uma tem 2 potes de mel.",
-			_board("groups", {"groups": 3, "size": 2}, ["3 colmeias com 2 potes"])),
+			_board("groups", {"groups": 3, "size": 2, "item": "pote_mel"}, ["3 colmeias com 2 potes"])),
 		_p("explicando", "Multiplicar é somar GRUPOS IGUAIS. 3 × 2 quer dizer: 3 grupos de 2. Então 2 + 2 + 2 = 6.",
-			_board("groups", {"groups": 3, "size": 2}, ["2 + 2 + 2 = 6", "!3 × 2 = 6"])),
-		_p("pensativo", "Um truque: a ordem não importa. 3 grupos de 2 dá o mesmo que 2 grupos de 3. Use a que for mais fácil!",
-			_board("groups", {"groups": 2, "size": 3}, ["2 × 3  =  3 × 2  =  6"])),
-		_p("explicando", "Se esquecer a tabuada, conte de tantos em tantos. Para 4 × 3, conte de 3 em 3, quatro vezes: 3, 6, 9, 12.",
-			_board("groups", {"groups": 4, "size": 3}, ["3, 6, 9, 12", "!4 × 3 = 12"])),
+			_board("groups", {"groups": 3, "size": 2, "item": "pote_mel"}, ["2 + 2 + 2 = 6", "!3 × 2 = 6"])),
+		_p("pensativo", "Um truque: a ordem não importa. 3 colmeias com 2 potes dá o mesmo que 2 colmeias com 3 potes. Use o jeito mais fácil!",
+			_board("groups", {"groups": 2, "size": 3, "item": "pote_mel"}, ["2 × 3  =  3 × 2  =  6"])),
+		_p("explicando", "Se esquecer a tabuada, conte de tantos em tantos. 4 cestas com 3 laranjas: conte de 3 em 3, quatro vezes: 3, 6, 9, 12.",
+			_board("groups", {"groups": 4, "size": 3, "item": "laranja"}, ["3, 6, 9, 12", "!4 × 3 = 12"])),
 		_p("preocupado", "Um erro muito comum é somar os dois números: 4 × 3 NÃO é 4 + 3. São 4 grupos de 3!",
 			_text_board(["4 + 3 = 7   ← soma", "!4 × 3 = 12  ← grupos"])),
-		_quiz("multiplication", "Sua vez! Quanto é 3 × 3?", "3 × 3 = ?", [6, 9, 12], 9,
-			_board("groups", {"groups": 3, "size": 3}, ["3 × 3 = ?"]),
+		_quiz("multiplication", "Sua vez! São 3 cestas, cada uma com 3 morangos. Quanto é 3 × 3?", "3 × 3 = ?", [6, 9, 12], 9,
+			_board("groups", {"groups": 3, "size": 3, "item": "morango"}, ["3 × 3 = ?"]),
 			"Isso! 3 grupos de 3: 3 + 3 + 3 = 9.",
-			_board("groups", {"groups": 3, "size": 3}, ["3 + 3 + 3", "!3 × 3 = 9"])),
-		_quiz("multiplication", "E 2 × 4?", "2 × 4 = ?", [6, 8, 10], 8,
-			_board("groups", {"groups": 2, "size": 4}, ["2 × 4 = ?"]),
+			_board("groups", {"groups": 3, "size": 3, "item": "morango"}, ["3 + 3 + 3", "!3 × 3 = 9"])),
+		_quiz("multiplication", "E 2 caixinhas com 4 bombons cada? Quanto é 2 × 4?", "2 × 4 = ?", [6, 8, 10], 8,
+			_board("groups", {"groups": 2, "size": 4, "item": "bombom"}, ["2 × 4 = ?"]),
 			"Muito bem! 2 grupos de 4: 4 + 4 = 8.",
-			_board("groups", {"groups": 2, "size": 4}, ["4 + 4", "!2 × 4 = 8"])),
+			_board("groups", {"groups": 2, "size": 4, "item": "bombom"}, ["4 + 4", "!2 × 4 = 8"])),
 		_p("orgulhoso", "Guarde isso: multiplicar é somar grupos iguais; a ordem não importa; e dá para contar de tantos em tantos.",
 			_text_board(["Multiplicar = grupos iguais", "A ordem não importa", "!Conte de tantos em tantos"]))
 	]
@@ -175,23 +175,23 @@ static func _lesson_multiplication():
 static func _lesson_division():
 	return [
 		_p("explicando", "Na aldeia, a cozinheira tem 12 pães para 3 mesas. Dividir é REPARTIR em partes iguais.",
-			_board("share", {"total": 12, "groups": 3, "values": false}, ["12 ÷ 3"])),
+			_board("share", {"total": 12, "groups": 3, "values": false, "item": "pao"}, ["12 ÷ 3"])),
 		_p("explicando", "Damos um pão para cada mesa, de novo e de novo, até acabar. No fim, cada mesa ficou com 4.",
-			_board("share", {"total": 12, "groups": 3}, ["!12 ÷ 3 = 4"])),
+			_board("share", {"total": 12, "groups": 3, "item": "pao"}, ["!12 ÷ 3 = 4"])),
 		_p("pensativo", "Um truque: dividir é a multiplicação ao contrário. 12 ÷ 3 pergunta: 3 vezes quanto dá 12?",
 			_text_board(["3 × ? = 12", "3 × 4 = 12", "!12 ÷ 3 = 4"])),
 		_p("explicando", "Por isso quem sabe a tabuada divide rápido. Para 20 ÷ 5, pense: 5 × 4 = 20. Então 20 ÷ 5 = 4.",
 			_text_board(["5 × ? = 20", "5 × 4 = 20", "!20 ÷ 5 = 4"])),
 		_p("preocupado", "Cuidado para não confundir: dividir não é tirar. 12 ÷ 3 não é 12 − 3. É repartir em 3 partes iguais.",
 			_text_board(["12 − 3 = 9   ← tirar", "!12 ÷ 3 = 4   ← repartir"])),
-		_quiz("division", "Sua vez! Quanto é 8 ÷ 2?", "8 ÷ 2 = ?", [4, 6, 16], 4,
-			_board("share", {"total": 8, "groups": 2, "values": false}, ["8 ÷ 2 = ?"]),
+		_quiz("division", "Sua vez! 8 maçãs repartidas entre 2 amigos. Quanto é 8 ÷ 2?", "8 ÷ 2 = ?", [4, 6, 16], 4,
+			_board("share", {"total": 8, "groups": 2, "values": false, "item": "maca"}, ["8 ÷ 2 = ?"]),
 			"Isso! Repartindo 8 em 2 partes, cada uma fica com 4. E confere: 2 × 4 = 8.",
-			_board("share", {"total": 8, "groups": 2}, ["!8 ÷ 2 = 4"])),
-		_quiz("division", "E 15 ÷ 3?", "15 ÷ 3 = ?", [3, 5, 12], 5,
-			_board("share", {"total": 15, "groups": 3, "values": false}, ["15 ÷ 3 = ?"]),
+			_board("share", {"total": 8, "groups": 2, "item": "maca"}, ["!8 ÷ 2 = 4"])),
+		_quiz("division", "E 15 balas para 3 crianças? Quanto é 15 ÷ 3?", "15 ÷ 3 = ?", [3, 5, 12], 5,
+			_board("share", {"total": 15, "groups": 3, "values": false, "item": "bala"}, ["15 ÷ 3 = ?"]),
 			"Muito bem! 3 × 5 = 15, então 15 ÷ 3 = 5.",
-			_board("share", {"total": 15, "groups": 3}, ["3 × 5 = 15", "!15 ÷ 3 = 5"])),
+			_board("share", {"total": 15, "groups": 3, "item": "bala"}, ["3 × 5 = 15", "!15 ÷ 3 = 5"])),
 		_p("orgulhoso", "Guarde isso: dividir é repartir igualmente; e, para achar a resposta, pense na multiplicação ao contrário.",
 			_text_board(["Dividir = repartir igual", "!Pense: ? × divisor = total"]))
 	]
@@ -199,25 +199,25 @@ static func _lesson_division():
 
 static func _lesson_fraction():
 	return [
-		_p("explicando", "Uma fração é uma parte do todo. Olhe 3/4: o número de BAIXO diz em quantas partes iguais dividimos.",
-			_board("fraction", {"parts": 4, "take": 0}, ["3/4  →  4 partes iguais"])),
-		_p("explicando", "O número de CIMA diz quantas partes pegamos. 3/4 é pegar 3 das 4 partes.",
-			_board("fraction", {"parts": 4, "take": 3}, ["!3 de 4 partes"])),
-		_p("explicando", "Agora, 3/4 de 12. Primeiro dividimos 12 em 4 partes iguais: 12 ÷ 4 = 3 em cada parte.",
+		_p("explicando", "Uma fração é uma parte do todo. Pense numa barra de chocolate: em 3/4, o número de BAIXO diz em quantos pedaços iguais dividimos a barra.",
+			_board("fraction", {"parts": 4, "take": 0}, ["3/4  →  4 pedaços iguais"])),
+		_p("explicando", "O número de CIMA diz quantos pedaços pegamos. 3/4 é pegar 3 dos 4 pedaços. Hum, que delícia!",
+			_board("fraction", {"parts": 4, "take": 3}, ["!3 de 4 pedaços"])),
+		_p("explicando", "Agora, 3/4 de 12. Se a barra tem 12 quadradinhos, dividimos em 4 pedaços iguais: 12 ÷ 4 = 3 quadradinhos em cada pedaço.",
 			_board("fraction", {"parts": 4, "take": 0, "total": 12, "values": true}, ["12 ÷ 4 = 3"])),
-		_p("explicando", "Depois pegamos 3 partes: 3 + 3 + 3 = 9. Então 3/4 de 12 é 9.",
-			_board("fraction", {"parts": 4, "take": 3, "total": 12, "values": true}, ["3 partes de 3", "!3/4 de 12 = 9"])),
+		_p("explicando", "Depois pegamos 3 pedaços: 3 + 3 + 3 = 9. Então 3/4 de 12 é 9.",
+			_board("fraction", {"parts": 4, "take": 3, "total": 12, "values": true}, ["3 pedaços de 3", "!3/4 de 12 = 9"])),
 		_p("pensativo", "O truque: divida pelo número de BAIXO e multiplique pelo de CIMA. E 1/2 é a metade: dividir por 2.",
 			_text_board(["Divida pelo de BAIXO", "Multiplique pelo de CIMA", "!1/2 = metade"])),
-		_p("preocupado", "Erro comum: parar no meio do caminho. 12 ÷ 4 = 3 é UMA parte só. Em 3/4 precisamos de 3 partes!",
-			_text_board(["12 ÷ 4 = 3   ← uma parte", "!3 × 3 = 9   ← três partes"])),
-		_quiz("fraction", "Sua vez! Quanto é 1/2 de 8?", "1/2 de 8 = ?", [2, 4, 6], 4,
+		_p("preocupado", "Erro comum: parar no meio do caminho. 12 ÷ 4 = 3 é UM pedaço só. Em 3/4 precisamos de 3 pedaços!",
+			_text_board(["12 ÷ 4 = 3   ← um pedaço", "!3 × 3 = 9   ← três pedaços"])),
+		_quiz("fraction", "Sua vez! Uma barra com 8 quadradinhos, e você come a metade. Quanto é 1/2 de 8?", "1/2 de 8 = ?", [2, 4, 6], 4,
 			_board("fraction", {"parts": 2, "take": 1, "total": 8}, ["1/2 de 8 = ?"]),
 			"Isso! Metade de 8: 8 ÷ 2 = 4.",
 			_board("fraction", {"parts": 2, "take": 1, "total": 8, "values": true}, ["!1/2 de 8 = 4"])),
-		_quiz("fraction", "E 2/3 de 9?", "2/3 de 9 = ?", [3, 6, 18], 6,
+		_quiz("fraction", "E 2/3 de uma barra com 9 quadradinhos?", "2/3 de 9 = ?", [3, 6, 18], 6,
 			_board("fraction", {"parts": 3, "take": 2, "total": 9}, ["2/3 de 9 = ?"]),
-			"Muito bem! 9 ÷ 3 = 3 em cada parte, e 2 partes são 6.",
+			"Muito bem! 9 ÷ 3 = 3 em cada pedaço, e 2 pedaços são 6.",
 			_board("fraction", {"parts": 3, "take": 2, "total": 9, "values": true}, ["9 ÷ 3 = 3", "!2 × 3 = 6"])),
 		_p("orgulhoso", "Guarde isso: o de baixo diz em quantas partes dividir; o de cima, quantas pegar.",
 			_text_board(["Baixo: em quantas partes", "Cima: quantas partes pegar", "!Divida, depois multiplique"]))
@@ -226,13 +226,13 @@ static func _lesson_fraction():
 
 static func _lesson_percentage():
 	return [
-		_p("explicando", "Porcentagem quer dizer \"de cada cem\". 100% é o total, o inteiro.",
+		_p("explicando", "Porcentagem quer dizer \"de cada cem\". A barra de chocolate inteira é 100%: o total.",
 			_board("percent", {"percent": 100, "total": 20, "parts": 1}, ["100% = tudo"])),
-		_p("explicando", "50% é a metade. Se uma barraca tem 20 balas, 50% delas são 10.",
+		_p("explicando", "50% é a metade da barra. Se a barra tem 20 quadradinhos, 50% são 10.",
 			_board("percent", {"percent": 50, "total": 20, "parts": 2, "values": true}, ["!50% de 20 = 10"])),
-		_p("explicando", "25% é a metade da metade: um quarto. 25% de 20 é 5.",
+		_p("explicando", "25% é a metade da metade: um quarto da barra. 25% de 20 é 5.",
 			_board("percent", {"percent": 25, "total": 20, "parts": 4, "values": true}, ["!25% de 20 = 5"])),
-		_p("pensativo", "E 10% é dividir por 10. Com o 10%, achamos 20%, 30%... é só multiplicar: 30% de 20 é 3 × 2 = 6.",
+		_p("pensativo", "E 10% é dividir a barra em 10 pedaços e pegar um. Com o 10%, achamos 20%, 30%... é só multiplicar: 30% de 20 é 3 × 2 = 6.",
 			_board("percent", {"percent": 30, "total": 20, "parts": 10, "values": true}, ["10% de 20 = 2", "!30% = 3 × 2 = 6"])),
 		_p("preocupado", "Cuidado com o Barão: 50% de desconto é pagar a METADE. Desconto nunca aumenta o preço!",
 			_text_board(["Preço: 20", "50% de desconto: tira 10", "!Paga 10"])),
@@ -273,11 +273,34 @@ static func explain(operation, text, answer, level, closing = true):
 	if lines.is_empty():
 		lines = [_p("explicando", MathTutor.get_hint(operation, text, answer, level, false), _text_board([text]))]
 
+	# Cada conta ganha seus próprios desenhos (a mesma conta, os mesmos desenhos).
+	var pick = abs(hash(text))
+	for line in lines:
+		if line.has("board"):
+			_decorate(line["board"], pick)
+
 	if level >= 2:
 		lines.append(_p("orgulhoso", "Então a resposta é %d. Procure as peças %d no tabuleiro!" % [answer, answer], _text_board(["!%s" % text.replace("?", str(answer))])))
 	elif closing:
 		lines.append(_p("feliz", "Pense com calma e depois procure a resposta no tabuleiro. Você consegue!"))
 	return lines
+
+
+const ITEM_CHOICES = {
+	"take": ["bala", "bombom", "morango", "caixa"],
+	"groups": ["pote_mel", "morango", "laranja", "bombom"],
+	"share": ["pao", "maca", "bala", "bombom"]
+}
+const FRUITS = ["maca", "laranja", "morango"]
+
+
+static func _decorate(board, pick):
+	var kind = str(board.get("kind", ""))
+	if kind == "add" and not board.has("items"):
+		board["items"] = [FRUITS[pick % 3], FRUITS[(pick + 1) % 3], FRUITS[(pick + 2) % 3]]
+	elif ITEM_CHOICES.has(kind) and not board.has("item"):
+		var options = ITEM_CHOICES[kind]
+		board["item"] = options[pick % options.size()]
 
 
 static func _explain_addition(n, answer, level):

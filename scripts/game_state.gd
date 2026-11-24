@@ -289,6 +289,17 @@ func stars_text(stars):
 	return "★".repeat(n) + "☆".repeat(3 - n)
 
 
+# Cada fase concluída devolve uma página do Grande Livro dos Números.
+func get_pages_recovered(from_id = 1, to_id = -1):
+	if to_id < 0:
+		to_id = get_stage_count()
+	var count = 0
+	for stage_id in completed_stages:
+		if int(stage_id) >= from_id and int(stage_id) <= to_id:
+			count += 1
+	return count
+
+
 func get_continue_stage():
 	return clamp(unlocked_stage, 1, get_stage_count())
 

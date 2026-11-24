@@ -1,5 +1,7 @@
 extends Control
 
+const Story = preload("res://scripts/story.gd")
+
 const BG = Color("#0B1120")
 const PANEL = Color("#172033")
 const ACCENT = Color("#F5C542")
@@ -19,6 +21,8 @@ var level_label
 var xp_label
 var xp_bar
 var current_stage_label
+var pages_label
+var pages_bar
 var stage_positions = {}
 
 
@@ -82,9 +86,22 @@ func _build_interface():
 	profile.add_theme_constant_override("separation", 5)
 	profile_margin.add_child(profile)
 
+	# Contador do Grande Livro dos Números: uma página por fase concluída.
+	pages_label = Label.new()
+	pages_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pages_label.add_theme_font_size_override("font_size", 22)
+	pages_label.add_theme_color_override("font_color", ACCENT)
+	profile.add_child(pages_label)
+
+	pages_bar = ProgressBar.new()
+	pages_bar.custom_minimum_size = Vector2(1, 12)
+	pages_bar.show_percentage = false
+	pages_bar.add_theme_stylebox_override("fill", _bar_style(ACCENT))
+	profile.add_child(pages_bar)
+
 	level_label = Label.new()
 	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	level_label.add_theme_font_size_override("font_size", 20)
+	level_label.add_theme_font_size_override("font_size", 17)
 	level_label.add_theme_color_override("font_color", TEXT)
 	profile.add_child(level_label)
 
@@ -106,7 +123,7 @@ func _build_interface():
 	profile.add_child(xp_bar)
 
 	var hint = Label.new()
-	hint.text = "Siga o caminho, complete as fases e desbloqueie os próximos desafios."
+	hint.text = "Siga o caminho e recupere as páginas que o Barão Embaralho espalhou pelos seis lugares."
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_font_size_override("font_size", 13)
 	hint.add_theme_color_override("font_color", MUTED)
@@ -129,15 +146,21 @@ func _refresh_progress():
 	var current_id = GameState.get_continue_stage()
 	var current_data = GameState.get_stage(current_id)
 
+	var pages = GameState.get_pages_recovered()
+	var total_pages = GameState.get_stage_count()
+	pages_label.text = "PÁGINAS RECUPERADAS: %d/%d" % [pages, total_pages]
+	pages_bar.max_value = total_pages
+	pages_bar.value = pages
+
 	level_label.text = "NÍVEL %d  •  %d XP TOTAL" % [progress["level"], GameState.total_xp]
 	xp_label.text = "%d / %d XP para o próximo nível" % [progress["current_xp"], progress["needed_xp"]]
 	xp_bar.max_value = progress["needed_xp"]
 	xp_bar.value = progress["current_xp"]
 
 	if GameState.is_stage_completed(GameState.get_stage_count()):
-		current_stage_label.text = "JORNADA CONCLUÍDA • Todas as 18 fases completas"
+		current_stage_label.text = "JORNADA CONCLUÍDA • O Grande Livro dos Números está completo!"
 	elif not current_data.is_empty():
-		current_stage_label.text = "VOCÊ ESTÁ NA FASE %02d • %s" % [current_id, current_data["title"]]
+		current_stage_label.text = "VOCÊ ESTÁ NA FASE %02d • %s • %s" % [current_id, current_data["title"], Story.world_name(current_id)]
 
 
 func _build_map():
@@ -197,15 +220,30 @@ func _create_world_section(group_index):
 	var world_label = Label.new()
 	world_label.position = Vector2(42, first_pos.y - 72)
 	world_label.size = Vector2(696, 36)
-	world_label.text = "MUNDO %d  •  %s  %s" % [
+	var world_pages = GameState.get_pages_recovered(first_stage_id, first_stage_id + 2)
+	world_label.text = "MUNDO %d  •  %s  •  %s %s  •  PÁGINAS %d/3" % [
 		group_index + 1,
+		Story.WORLD_NAMES[group_index].to_upper(),
 		_operation_symbol(first_stage["operation"]),
-		GameState.get_mode_title(first_stage["operation"])
+		GameState.get_mode_title(first_stage["operation"]),
+		world_pages
 	]
 	world_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	world_label.add_theme_font_size_override("font_size", 19)
+	world_label.add_theme_font_size_override("font_size", 17)
 	world_label.add_theme_color_override("font_color", Color("#DCE7F7"))
 	world_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	world_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	# Faixa escura atrás do título, para o caminho passar "por baixo" do texto.
+	var band = StyleBoxFlat.new()
+	band.bg_color = Color("#0E1828")
+	band.border_color = Color("#2E4466")
+	band.border_width_bottom = 2
+	band.corner_radius_top_left = 14
+	band.corner_radius_top_right = 14
+	band.corner_radius_bottom_left = 14
+	band.corner_radius_bottom_right = 14
+	world_label.add_theme_stylebox_override("normal", band)
+	world_label.z_index = 3
 	map_canvas.add_child(world_label)
 
 
@@ -302,9 +340,11 @@ func _create_stage_node(stage):
 	elif not unlocked:
 		status_text = "Bloqueada"
 
-	var tooltip = "FASE %02d • %s\n%s • %s\n%d desafios • %d jogadas\n%s" % [
+	var tooltip = "FASE %02d • %s\nPágina %d do livro • %s\n%s • %s\n%d desafios • %d jogadas\n%s" % [
 		stage_id,
 		stage["title"],
+		stage_id,
+		Story.world_name(stage_id),
 		GameState.get_mode_title(stage["operation"]),
 		GameState.get_difficulty_title(stage["difficulty"]),
 		stage["required"],
@@ -533,3 +573,13 @@ func _on_continue_pressed():
 
 func _on_back_pressed():
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+
+
+func _bar_style(color):
+	var style = StyleBoxFlat.new()
+	style.bg_color = color
+	style.corner_radius_top_left = 6
+	style.corner_radius_top_right = 6
+	style.corner_radius_bottom_left = 6
+	style.corner_radius_bottom_right = 6
+	return style

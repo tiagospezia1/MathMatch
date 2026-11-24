@@ -55,7 +55,7 @@ func _build_interface():
 
 	var progress = GameState.get_level_progress()
 	var profile = Label.new()
-	profile.text = "NÍVEL %d  •  %d XP  •  FASE %02d LIBERADA" % [progress["level"], GameState.total_xp, GameState.unlocked_stage]
+	profile.text = "NÍVEL %d  •  %d XP  •  %d/%d PÁGINAS RECUPERADAS" % [progress["level"], GameState.total_xp, GameState.get_pages_recovered(), GameState.get_stage_count()]
 	profile.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	profile.add_theme_font_size_override("font_size", 14)
 	profile.add_theme_color_override("font_color", ACCENT)
