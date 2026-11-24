@@ -9,7 +9,7 @@ extends Node
 const SETTINGS_PATH = "user://mathmatch_settings.cfg"
 const SFX_PLAYERS = 8
 
-var music_volume = 70
+var music_volume = 50
 var sfx_volume = 80
 var fullscreen = false
 

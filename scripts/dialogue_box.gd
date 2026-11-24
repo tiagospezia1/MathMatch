@@ -16,12 +16,13 @@ extends Control
 signal finished
 
 const Lousa = preload("res://scripts/lousa.gd")
+const UiStyle = preload("res://scripts/ui_style.gd")
 
-const PANEL_COLOR = Color("#172033")
-const ACCENT = Color("#F5C542")
-const TEXT = Color("#F8FAFC")
-const MUTED = Color("#AAB8CC")
-const NARRATION = Color("#DCE7F7")
+const PANEL_COLOR = Color("#F3EBD8")
+const ACCENT = Color("#8A5A1E")
+const TEXT = Color("#3B2A1A")
+const MUTED = Color("#7A6248")
+const NARRATION = Color("#5C4630")
 const BOARD_COLOR = Color("#1F3A2E")
 const BOARD_FRAME = Color("#8B5A2B")
 const CHARS_PER_SECOND = 55.0
@@ -117,8 +118,8 @@ func _build():
 	panel.offset_top = -330
 	panel.offset_bottom = -24
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", _panel_style())
-	Assets.apply_panel(panel, "painel_janela")
+	# Uma página do Grande Livro: papel com borda de couro.
+	panel.add_theme_stylebox_override("panel", UiStyle.paper(0))
 	add_child(panel)
 
 	var margin = MarginContainer.new()
@@ -185,7 +186,7 @@ func _build():
 	name_ok.custom_minimum_size = Vector2(90, 44)
 	name_ok.disabled = true
 	name_ok.pressed.connect(_confirm_name)
-	Assets.apply_button(name_ok)
+	UiStyle.button(name_ok, "primary", 18)
 	name_row.add_child(name_ok)
 
 	choices_row = HBoxContainer.new()
@@ -203,7 +204,7 @@ func _build():
 	skip_button.custom_minimum_size = Vector2(120, 42)
 	skip_button.add_theme_font_size_override("font_size", 15)
 	skip_button.pressed.connect(_skip_all)
-	Assets.apply_button(skip_button)
+	UiStyle.button(skip_button, "secondary", 15)
 	actions.add_child(skip_button)
 
 	continue_button = Button.new()
@@ -211,7 +212,7 @@ func _build():
 	continue_button.custom_minimum_size = Vector2(190, 42)
 	continue_button.add_theme_font_size_override("font_size", 16)
 	continue_button.pressed.connect(_advance)
-	Assets.apply_button(continue_button)
+	UiStyle.button(continue_button, "primary", 16)
 	actions.add_child(continue_button)
 
 
@@ -362,7 +363,7 @@ func _add_choice(label_text, callback):
 	button.add_theme_font_size_override("font_size", 22 if label_text.length() <= 3 else 15)
 	button.set_meta("no_click_sound", true)
 	button.pressed.connect(callback)
-	Assets.apply_button(button)
+	UiStyle.button(button, "secondary", 22 if label_text.length() <= 3 else 15)
 	choices_row.add_child(button)
 
 
@@ -484,17 +485,6 @@ func _unhandled_input(event):
 # Estilos
 # ---------------------------------------------------------------------
 
-func _panel_style():
-	var style = StyleBoxFlat.new()
-	style.bg_color = PANEL_COLOR
-	style.border_color = ACCENT
-	for side in ["border_width_left", "border_width_top", "border_width_right", "border_width_bottom"]:
-		style.set(side, 2)
-	for corner in ["corner_radius_top_left", "corner_radius_top_right", "corner_radius_bottom_left", "corner_radius_bottom_right"]:
-		style.set(corner, 16)
-	return style
-
-
 func _board_style():
 	var style = StyleBoxFlat.new()
 	style.bg_color = BOARD_COLOR
@@ -510,7 +500,10 @@ func _board_style():
 
 func _portrait_style():
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color("#F5F2EA")
+	style.bg_color = Color("#FFF8E6")
+	style.border_color = UiStyle.LEATHER_LIGHT
+	for side in ["border_width_left", "border_width_top", "border_width_right", "border_width_bottom"]:
+		style.set(side, 3)
 	for corner in ["corner_radius_top_left", "corner_radius_top_right", "corner_radius_bottom_left", "corner_radius_bottom_right"]:
 		style.set(corner, 14)
 	return style

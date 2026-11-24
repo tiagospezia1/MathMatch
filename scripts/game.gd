@@ -145,7 +145,8 @@ func _ready():
 	# Reiniciar agora fica dentro do menu de pausa (com confirmação).
 	restart_button.visible = false
 	menu_button.text = "II PAUSA"
-	Assets.apply_button(menu_button)
+	menu_button.custom_minimum_size = Vector2(120, 42)
+	UiStyle.button(menu_button, "secondary", 16)
 	_new_game()
 	Audio.play_music("partida")
 
@@ -232,10 +233,9 @@ func _create_dev_skip_button():
 	dev_skip_button.text = "✓ CONCLUIR E AVANÇAR"
 	dev_skip_button.custom_minimum_size = Vector2(205, 42)
 	dev_skip_button.add_theme_font_size_override("font_size", 13)
-	dev_skip_button.add_theme_color_override("font_color", Color("#F8FAFC"))
 	dev_skip_button.tooltip_text = "Marca a fase como concluída, credita XP/pontuação de teste e abre a próxima fase."
 	dev_skip_button.pressed.connect(_on_dev_skip_stage_pressed)
-	Assets.apply_button(dev_skip_button)
+	UiStyle.button(dev_skip_button, "secondary", 13)
 	header.add_child(dev_skip_button)
 
 
@@ -1134,7 +1134,7 @@ func _build_result_overlay():
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(470, 330)
-	Assets.apply_panel(panel, "painel_janela")
+	panel.add_theme_stylebox_override("panel", UiStyle.paper(6))
 	center.add_child(panel)
 
 	var margin = MarginContainer.new()
@@ -1152,7 +1152,7 @@ func _build_result_overlay():
 	result_title = Label.new()
 	result_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	result_title.add_theme_font_size_override("font_size", 30)
-	result_title.add_theme_color_override("font_color", Color("#F5C542"))
+	result_title.add_theme_color_override("font_color", UiStyle.LEATHER)
 	box.add_child(result_title)
 
 	result_stars_holder = CenterContainer.new()
@@ -1163,28 +1163,28 @@ func _build_result_overlay():
 	result_details.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	result_details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	result_details.add_theme_font_size_override("font_size", 16)
-	result_details.add_theme_color_override("font_color", Color("#E2E8F0"))
+	result_details.add_theme_color_override("font_color", UiStyle.INK)
 	box.add_child(result_details)
 
 	next_button = Button.new()
 	next_button.text = "PRÓXIMA FASE →"
 	next_button.custom_minimum_size = Vector2(300, 48)
 	next_button.pressed.connect(_on_next_stage_pressed)
-	Assets.apply_button(next_button)
+	UiStyle.button(next_button, "primary", 17)
 	box.add_child(next_button)
 
 	retry_button = Button.new()
 	retry_button.text = "TENTAR NOVAMENTE"
 	retry_button.custom_minimum_size = Vector2(300, 48)
 	retry_button.pressed.connect(_on_retry_pressed)
-	Assets.apply_button(retry_button)
+	UiStyle.button(retry_button, "primary", 17)
 	box.add_child(retry_button)
 
 	result_back_button = Button.new()
 	result_back_button.text = "VOLTAR ÀS FASES"
 	result_back_button.custom_minimum_size = Vector2(300, 48)
 	result_back_button.pressed.connect(_on_result_back_pressed)
-	Assets.apply_button(result_back_button)
+	UiStyle.button(result_back_button, "secondary", 17)
 	box.add_child(result_back_button)
 
 
@@ -1524,7 +1524,7 @@ func _create_help_button():
 	help_button.text = "? AJUDA"
 	help_button.custom_minimum_size = Vector2(120, 42)
 	help_button.pressed.connect(_on_help_pressed)
-	Assets.apply_button(help_button)
+	UiStyle.button(help_button, "primary", 16)
 	header.add_child(help_button)
 
 

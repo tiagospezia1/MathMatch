@@ -205,7 +205,7 @@ Quem completa as 18 fases chega ao nível 7, como Mestre dos Números.
 | Tela | O que tem |
 |---|---|
 | **Inicial** | Logo; o professor numa lousa com uma fala que muda conforme o progresso, nível, título e páginas; o menu como capa do livro (COMEÇAR A AVENTURA ou CONTINUAR A JORNADA, O LIVRO, TUTORIAL, OPÇÕES, CRÉDITOS); peças flutuando; o Barão espiando no canto (clicar nele faz ele provocar) |
-| **Mapa** | Os 6 lugares ligados por um caminho, com as páginas de cada um, o contador de páginas recuperadas e o botão LIVRO |
+| **Mapa** | Os 6 lugares ligados por um caminho, cada um com seu fundo ilustrado e suas páginas, o contador de páginas recuperadas e o botão LIVRO |
 | **Partida** | Conta, objetivo, pontos, jogadas, tabuleiro, botões ? AJUDA e II PAUSA |
 | **Grande Livro dos Números** | As 18 páginas com carimbos; cada página com a lição, um exemplo na lousa e botões para rever a cena e a aula; rever prólogo, chegadas e final |
 | **Pausa** | Continuar, reiniciar, como jogar, opções e sair |
@@ -227,7 +227,7 @@ As opções ficam salvas.
 
 ## 10. Som e visual
 
-- **Músicas originais**, compostas para o jogo: "A Biblioteca do Professor" (menu, valsa de caixinha de música) e "Peças e Contas" (partida, marimba e contrabaixo).
+- **Músicas originais**, compostas para o jogo: "A Biblioteca do Professor" (menu, valsa lenta de piano abafado) e "Peças e Contas" (partida, piano abafado e pad, sem percussão). As duas são calmas e baixas, para não atrapalhar a concentração.
 - **10 efeitos sonoros:** clique, seleção, troca, troca inválida, combinação, combo, acerto, dica, vitória e derrota.
 - **Visual dos menus** inspirado no livro: capa de couro, papel, tinta marrom e dourado.
 - **Logo** com o título dourado saindo do livro aberto e **ícone** com o "M" dourado.

@@ -82,10 +82,10 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 ## 7. Telas e visual
 
 - Tela inicial com o professor numa lousa (fala conforme o progresso), o menu como capa do livro, peças flutuando e o Barão espiando no canto.
-- Mapa com os nomes dos lugares, páginas por mundo e contador de páginas recuperadas.
+- Mapa com os nomes dos lugares, páginas por mundo e contador de páginas recuperadas. Cada um dos 6 lugares tem um fundo ilustrado próprio (pomar, porto, floresta, aldeia em festa, torre do relógio e mercado).
 - Grande Livro dos Números: 18 páginas com carimbos, lição e exemplo de cada uma.
 - Créditos com rolagem.
-- Visual dos menus inspirado no livro (couro, papel e dourado), logo e ícone novos.
+- Visual dos menus inspirado no livro (couro, papel e dourado), logo e ícone novos. A partida usa o mesmo visual: botões PAUSA e AJUDA, caixa de diálogo como uma página do livro e janela de vitória.
 
 ## 8. Acessibilidade e opções
 
@@ -96,7 +96,7 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 
 ## 9. Som
 
-- Duas músicas originais compostas para o jogo, com loop sem emenda.
+- Duas músicas originais compostas para o jogo, com loop sem emenda. São calmas e baixas (piano abafado e pad, sem percussão) para não atrapalhar a concentração; o volume inicial da música é 50%.
 - 10 efeitos sonoros.
 
 ## 10. Testes
@@ -125,5 +125,5 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 - [ ] Gerar o executável final.
 
 ### Opcional
-- [ ] Botões da partida (PAUSA, AJUDA e caixa de diálogo) no mesmo visual dos menus.
-- [ ] Fundos próprios para os 6 lugares no mapa.
+- [x] Botões da partida (PAUSA, AJUDA e caixa de diálogo) no mesmo visual dos menus.
+- [x] Fundos próprios para os 6 lugares no mapa.

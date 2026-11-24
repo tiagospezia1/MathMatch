@@ -81,7 +81,7 @@ func _build():
 		"Peças, botões, painéis, fundos e brilhos:",
 		"Kenney (kenney.nl) • UI Pack, Boardgame Pack e Particle Pack • CC0",
 		"Retratos dos personagens feitos com Open Peeps, de Pablo Stanley • CC0",
-		"Logo, ícone e desenhos da lousa feitos para o MathMatch"
+		"Logo, ícone, fundos do mapa e desenhos da lousa feitos para o MathMatch"
 	])
 	_section("MÚSICA", [
 		"\"A Biblioteca do Professor\" (menu)",
