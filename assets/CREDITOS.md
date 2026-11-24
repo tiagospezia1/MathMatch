@@ -6,7 +6,7 @@
 | Boardgame Pack | Kenney (www.kenney.nl) | CC0 1.0 (domínio público) | desenhos dos fundos do menu e sons de troca e combinação |
 | Particle Pack | Kenney (www.kenney.nl) | CC0 1.0 (domínio público) | brilhos de acerto e vitória, estrelas dos fundos |
 | Interface Sounds | Kenney (www.kenney.nl) | CC0 1.0 (domínio público) | cliques, seleção, erro, acerto, dica, vitória e derrota |
-| Cormorant Garamond | Christian Thalmann (Catharsis Fonts) | SIL Open Font License 1.1 | fonte do jogo (peso Bold) |
+| Cormorant Garamond | Christian Thalmann (Catharsis Fonts) | SIL Open Font License 1.1 | fonte do jogo (peso Bold), com os algarismos alinhados como padrão e renomeada para "MathMatch Garamond" (versão modificada, também sob a OFL) |
 | Open Peeps | Pablo Stanley (www.openpeeps.com) | CC0 1.0 (domínio público) | retratos do Professor Aurélio e do Barão Embaralho |
 | Músicas, logo, ícone, peças, mapa, fundos dos lugares e desenhos da lousa | feitos para o MathMatch | da equipe do projeto | "A Biblioteca do Professor" (menu), "Peças e Contas" (partida), logo, ícone, peças de madeira, bandeja, mapa em pergaminho, marcos das fases, fundos dos 6 lugares e desenhos da lousa (gerados pelos scripts em `tools/`) |
 

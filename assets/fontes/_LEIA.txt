@@ -1,6 +1,8 @@
 FONTE (.ttf ou .otf)
 
-fonte.ttf   fonte usada em todo o jogo
+fonte.ttf   fonte usada em todo o jogo: Cormorant Garamond Bold com os algarismos
+            alinhados como padrão (todos os números do mesmo tamanho), renomeada
+            para "MathMatch Garamond". Gerada por tools/fonte/numeros_alinhados.py.
 
 Precisa ter os acentos do português. Confira se ela tem também os símbolos
 ★ ☆ ● ○ ✓ × ÷ − ▼ — se não tiver, eles aparecem como quadrados.

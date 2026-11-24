@@ -29,11 +29,10 @@ func _ready():
 	# Símbolos que a fonte não tiver (★ ☆ ✓ ...) usam a fonte padrão do Godot.
 	base_font.fallbacks = [ThemeDB.fallback_font]
 
-	# Algarismos alinhados (lnum): números do mesmo tamanho, melhores nas peças.
+	# A fonte já vem com algarismos alinhados (todos do mesmo tamanho) como padrão:
+	# veja tools/fonte/numeros_alinhados.py.
 	var variation = FontVariation.new()
 	variation.base_font = base_font
-	var ts = TextServerManager.get_primary_interface()
-	variation.opentype_features = {ts.name_to_tag("lnum"): 1}
 	variation.fallbacks = [ThemeDB.fallback_font]
 	_font = variation
 
