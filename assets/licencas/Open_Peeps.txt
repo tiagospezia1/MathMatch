@@ -1,0 +1,10 @@
+Open Peeps
+Designer: Pablo Stanley
+Source: https://www.openpeeps.com/
+License: CC0 1.0 Universal (Public Domain Dedication)
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The portraits in assets/imagens/personagens/ were generated from the Open Peeps
+parts using the DiceBear "open-peeps" package (https://www.dicebear.com/styles/open-peeps/,
+design files CC0 1.0, code MIT) and then edited: the professor's beard was recolored
+and a top hat was drawn for the villain.

@@ -542,7 +542,7 @@ As emboscadas são mecânicas novas, por isso ficam por último. Sugestão de or
 
 ### Arte necessária
 
-- Retratos: Professor Aurélio (normal, sorrindo, preocupado) e Barão Embaralho (rindo, bravo, envergonhado).
+- ~~Retratos do Professor Aurélio e do Barão Embaralho~~ **Prontos:** 5 expressões de cada em `assets/imagens/personagens/` (veja o `_LEIA.txt` da pasta).
 - Fundos dos 6 lugares. O jogo já procura `assets/imagens/mapa/mundo_1` a `mundo_6`, então eles podem ser exatamente esses arquivos.
 - Ícone de página e de carimbo de ouro.
 - Peça acorrentada e peça com neblina.

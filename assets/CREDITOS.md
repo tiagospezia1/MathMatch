@@ -7,6 +7,7 @@
 | Particle Pack | Kenney (www.kenney.nl) | CC0 1.0 (domínio público) | brilhos de acerto e vitória, estrelas dos fundos |
 | Interface Sounds | Kenney (www.kenney.nl) | CC0 1.0 (domínio público) | cliques, seleção, erro, acerto, dica, vitória e derrota |
 | Cormorant Garamond | Christian Thalmann (Catharsis Fonts) | SIL Open Font License 1.1 | fonte do jogo (peso Bold) |
+| Open Peeps | Pablo Stanley (www.openpeeps.com) | CC0 1.0 (domínio público) | retratos do Professor Aurélio e do Barão Embaralho |
 
 As licenças originais estão na pasta `licencas/`.
 

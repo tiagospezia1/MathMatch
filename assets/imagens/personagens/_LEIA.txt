@@ -1,0 +1,21 @@
+RETRATOS DOS PERSONAGENS (PNG 512x512 com fundo transparente)
+
+Professor Aurélio
+professor_feliz.png        normal, sorrindo
+professor_explicando.png   falando, nas mini-aulas e dicas
+professor_preocupado.png   quando o aluno erra ou o Barão aparece
+professor_orgulhoso.png    vitória e páginas recuperadas
+professor_pensativo.png    calmo, pensando junto com o aluno
+
+Barão Embaralho
+barao_rindo.png            provocando, nas emboscadas
+barao_desdenhoso.png       se achando superior
+barao_bravo.png            quando perde uma página
+barao_envergonhado.png     no epílogo
+barao_assustado.png        quando o aluno vence a emboscada
+
+Os arquivos editáveis (SVG) estão em svg/. Essa pasta tem um .gdignore,
+então o Godot não importa os SVGs, só os PNGs.
+
+Feitos com Open Peeps (Pablo Stanley, CC0). A barba branca do professor
+e a cartola do Barão foram desenhadas por cima. Veja ../../CREDITOS.md.
