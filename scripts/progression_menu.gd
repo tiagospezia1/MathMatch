@@ -24,6 +24,7 @@ var current_stage_label
 var pages_label
 var pages_bar
 var stage_positions = {}
+var outer_margin
 
 
 func _ready():
@@ -37,8 +38,9 @@ func _build_interface():
 
 	var margin = MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left", 34)
-	margin.add_theme_constant_override("margin_right", 34)
+	outer_margin = margin
+	_fit_width()
+	resized.connect(_fit_width)
 	margin.add_theme_constant_override("margin_top", 20)
 	margin.add_theme_constant_override("margin_bottom", 20)
 	add_child(margin)
@@ -139,12 +141,26 @@ func _build_interface():
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	main.add_child(scroll)
 
+	# O mapa fica no meio, mesmo com a tela larga.
+	var map_center = CenterContainer.new()
+	map_center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(map_center)
+
 	map_canvas = Control.new()
 	map_canvas.custom_minimum_size = Vector2(MAP_WIDTH, MAP_HEIGHT)
-	scroll.add_child(map_canvas)
+	map_center.add_child(map_canvas)
 
 	_refresh_progress()
 	_build_map()
+
+
+# Em tela larga, a coluna do mapa mantém a largura de uma tela quadrada e fica no meio.
+func _fit_width():
+	if outer_margin == null:
+		return
+	var side = 34 + max(0, int((size.x - 900) / 2))
+	outer_margin.add_theme_constant_override("margin_left", side)
+	outer_margin.add_theme_constant_override("margin_right", side)
 
 
 func _refresh_progress():

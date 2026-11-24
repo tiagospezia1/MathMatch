@@ -57,6 +57,7 @@ var choices_row
 var continue_button
 var skip_button
 var board_panel
+var dialog_panel
 var lousa
 
 
@@ -121,6 +122,9 @@ func _build():
 	# Uma página do Grande Livro: papel com borda de couro.
 	panel.add_theme_stylebox_override("panel", UiStyle.paper(0))
 	add_child(panel)
+	dialog_panel = panel
+	_fit_width()
+	resized.connect(_fit_width)
 
 	var margin = MarginContainer.new()
 	for side in ["margin_left", "margin_right"]:
@@ -484,6 +488,17 @@ func _unhandled_input(event):
 # ---------------------------------------------------------------------
 # Estilos
 # ---------------------------------------------------------------------
+
+# Em tela larga, a lousa e a caixa de fala não passam de 1000 de largura e ficam no meio.
+func _fit_width():
+	if dialog_panel == null:
+		return
+	var extra = max(0, int((size.x - 1000) / 2))
+	board_panel.offset_left = 40 + extra
+	board_panel.offset_right = -40 - extra
+	dialog_panel.offset_left = 24 + extra
+	dialog_panel.offset_right = -24 - extra
+
 
 func _board_style():
 	var style = StyleBoxFlat.new()

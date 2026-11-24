@@ -70,10 +70,15 @@ A explicação completa do jogo está em [`docs/SOBRE_O_JOGO.md`](docs/SOBRE_O_J
 
 ### 5. (Opcional) Gere um executável
 
-1. No editor, vá em **Projeto → Exportar...** (*Project → Export...*).
-2. Clique em **Adicionar...** e escolha a plataforma (por exemplo **Windows Desktop**).
-3. Se o Godot pedir, clique em **Gerenciar modelos de exportação** e baixe os *export templates* da sua versão.
-4. Clique em **Exportar Projeto** e **desmarque "Exportar com Depuração"** (*Export With Debug*). Assim o modo desenvolvedor não aparece na versão final.
+O projeto já vem com as configurações de exportação para **Windows** e **Linux** (`export_presets.cfg`). Elas geram um arquivo único, com o jogo dentro, e deixam o modo desenvolvedor de fora.
+
+1. No editor, vá em **Projeto → Exportar...** (*Project → Export...*) e escolha **Windows** ou **Linux**.
+2. Se o Godot pedir, clique em **Gerenciar modelos de exportação** e baixe os *export templates* da versão 4.3.
+3. Clique em **Exportar Projeto** e **desmarque "Exportar com Depuração"** (*Export With Debug*).
+
+Pela linha de comando: `godot --headless --export-release "Windows" build/windows/MathMatch.exe`. A pasta `build/` não vai para o Git.
+
+O jogo abre numa janela de 1280×720 e se ajusta a telas largas (16:9, 16:10) e quadradas; a tela cheia fica em **OPÇÕES**.
 
 ---
 
@@ -151,7 +156,7 @@ O jogo procura cada arquivo de `assets/` pelo nome; se um arquivo não existir, 
 
 ## Modo desenvolvedor
 
-Serve para testar fases e progresso durante o desenvolvimento: abre qualquer operação, mostra a resposta esperada e tem um botão para concluir a fase na hora. Ele só aparece em builds de depuração (rodando pelo editor). No executável exportado sem depuração, ele fica escondido.
+Serve para testar fases e progresso durante o desenvolvimento: abre qualquer operação, mostra a resposta esperada e tem um botão para concluir a fase na hora. Ele só aparece em builds de depuração (rodando pelo editor). O executável final não tem o modo desenvolvedor: o botão fica escondido e a tela dele nem entra no pacote.
 
 ---
 

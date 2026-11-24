@@ -9,7 +9,7 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 
 ## Resumo
 
-**Situação geral: cerca de 95%.** Todas as funcionalidades planejadas estão feitas e testadas. Falta jogar com pessoas de verdade, ajustar a dificuldade, revisar o conteúdo pedagógico e gerar o executável final.
+**Situação geral: cerca de 95%.** Todas as funcionalidades planejadas estão feitas e testadas. O executável para Windows e Linux já foi gerado. Falta jogar com pessoas de verdade, ajustar a dificuldade e revisar o conteúdo pedagógico.
 
 | Área | Situação |
 |---|---|
@@ -30,7 +30,7 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 | Documentação (README, este arquivo e o jogo completo) | ✅ Pronto |
 | Teste com jogadores e ajuste da dificuldade | ❌ Falta |
 | Revisão pedagógica e validação com alunos | ❌ Falta |
-| Executável final | ❌ Falta (fica para o fim) |
+| Executável final (Windows e Linux, tela larga, sem modo dev) | ✅ Pronto |
 
 ---
 
@@ -121,9 +121,10 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 - [ ] Ouvir as músicas e decidir se ficam ou se serão trocadas.
 
 ### Entrega
-- [ ] Decidir se o modo desenvolvedor sai do código (no executável ele já fica escondido).
+- [x] Modo desenvolvedor fora do executável (o botão some e a tela dele não entra no pacote).
 - [ ] Decidir se os créditos mencionam o uso de IA no desenvolvimento.
-- [ ] Gerar o executável final.
+- [x] Gerar o executável final (Windows e Linux), com suporte a tela larga.
+- [ ] Ícone próprio no arquivo .exe do Windows (hoje o .exe mostra o ícone padrão do Godot; a janela do jogo já usa o ícone do MathMatch). Precisa da ferramenta rcedit, que roda no Windows.
 
 ### Opcional
 - [x] Botões da partida (PAUSA, AJUDA e caixa de diálogo) no mesmo visual dos menus.

@@ -207,7 +207,8 @@ func _build_floaters():
 		piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		piece.size = Vector2.ONE * randf_range(36, 60)
 		piece.pivot_offset = piece.size / 2.0
-		piece.position = Vector2(randf_range(0, 860), randf_range(0, 900))
+		var screen = get_viewport_rect().size
+		piece.position = Vector2(randf_range(0, screen.x - 40), randf_range(0, screen.y))
 		piece.rotation = randf_range(-0.4, 0.4)
 		piece.modulate = Color(1, 1, 1, randf_range(0.12, 0.22))
 		piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
