@@ -509,6 +509,7 @@ Esta seção é uma sugestão de como levar a história para o código atual, em
   - Narração aparece sem retrato; personagens secundários (Moradora, Marinheiro...) aparecem só com o nome.
 - ✅ Usada em `scripts/game.gd`, sempre só na primeira vez (`_play_story`):
   - prólogo, antes do tutorial;
+  - os 5 passos do tutorial: o professor explica cada passo antes (com a conta na lousa nos passos 3 e 5) e comenta cada jogada depois; o passo seguinte só começa quando o jogador clica em CONTINUAR;
   - fim do tutorial, antes da tela "TUTORIAL CONCLUÍDO";
   - abertura do mundo, antes da mini-aula;
   - provocação do Barão no começo das fases 3, 6, 9, 12, 15 e 18;

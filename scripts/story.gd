@@ -150,6 +150,48 @@ static func prologue():
 	]
 
 
+# O professor guia cada um dos 5 passos do tutorial.
+static func tutorial_step(step):
+	match int(step):
+		1:
+			return [_p("explicando", "Toque numa peça com borda verde e depois na vizinha dela. Elas trocam de lugar. Três iguais em linha se desfazem!")]
+		2:
+			return [_p("pensativo", "Agora troque estas duas. Elas não vão formar três iguais... Vamos ver o que acontece.")]
+		3:
+			var line = _p("explicando", "Agora tem uma conta: 2 + 1. Quanto dá? Junte três peças com a resposta.")
+			line["board"] = {"kind": "add", "a": 2, "b": 1, "items": ["maca", "laranja"], "lines": ["2 + 1 = ?"]}
+			return [line]
+		4:
+			return [_p("pensativo", "E se juntarmos o número errado? Combine as peças com borda verde e veja o que acontece.")]
+		5:
+			var line = _p("explicando", "Errar faz parte de aprender. Agora sim: quanto é 2 + 2? Combine as peças com a resposta certa.")
+			line["board"] = {"kind": "add", "a": 2, "b": 2, "items": ["morango", "morango"], "lines": ["2 + 2 = ?"]}
+			return [line]
+	return []
+
+
+# O comentário do professor depois de cada jogada do tutorial.
+static func tutorial_reaction(step, ok):
+	if not ok:
+		return [_p("preocupado", "Hum, não foi bem assim. Sem problema: vamos tentar de novo!")]
+	match int(step):
+		1:
+			return [_p("orgulhoso", "Isso! As três peças somem, as de cima caem e chegam peças novas.")]
+		2:
+			return [_p("feliz", "Viu? Não formaram três iguais, então voltaram para o lugar. Sem problema: não gastou nenhuma jogada.")]
+		3:
+			var line = _p("orgulhoso", "Muito bem, [NOME]! 2 + 1 = 3. A resposta certa resolve o desafio e ainda dá pontos extras.")
+			line["board"] = {"kind": "add", "a": 2, "b": 1, "joined": true, "count": true, "items": ["maca", "laranja"], "lines": ["!2 + 1 = 3"]}
+			return [line]
+		4:
+			return [_p("explicando", "Você juntou o 1, mas 2 + 2 = 4. Valeu pontos, mas não resolveu o desafio: só a resposta certa resolve. E se errar várias vezes, eu venho ajudar.")]
+		5:
+			var line = _p("orgulhoso", "Isso! 2 + 2 = 4. Agora você já sabe jogar!")
+			line["board"] = {"kind": "add", "a": 2, "b": 2, "joined": true, "count": true, "items": ["morango", "morango"], "lines": ["!2 + 2 = 4"]}
+			return [line]
+	return []
+
+
 static func tutorial_end():
 	return [
 		_p("orgulhoso", "Muito bem, [NOME]! Você aprendeu o segredo: resolver a conta e juntar a resposta."),

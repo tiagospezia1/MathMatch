@@ -1924,6 +1924,7 @@ func _tutorial_next_step():
 	hint_move = tut_expected.duplicate()
 	_refresh_board()
 	_update_hud()
+	_tutorial_say(Story.tutorial_step(tut_step))
 
 
 func _tutorial_set_text(title, text):
@@ -1949,7 +1950,7 @@ func _tutorial_after_move(solved, invalid):
 			message = "Resposta correta! 2 + 1 = 3. Acertar a conta dá pontos extras e cumpre o objetivo."
 			ok = solved
 		4:
-			message = "Você combinou 1, mas 2 + 2 = 4. Vale pontos, mas não resolve a conta. Se errar várias vezes, o jogo dá dicas."
+			message = "Você combinou 1, mas 2 + 2 = 4. Vale pontos, mas não resolve a conta. Se errar várias vezes, o professor vem ajudar."
 			ok = not invalid and not solved
 		5:
 			message = "Isso! 2 + 2 = 4. Agora você já sabe jogar."
@@ -1967,11 +1968,24 @@ func _tutorial_after_move(solved, invalid):
 
 	tut_waiting = true
 	busy = true
-	await get_tree().create_timer(3.2 if tut_step == 4 else 2.4).timeout
+	# O professor comenta a jogada; o próximo passo começa depois de CONTINUAR.
+	await _tutorial_say(Story.tutorial_reaction(tut_step + (0 if ok else 1), ok))
 	if not is_inside_tree() or context != "tutorial":
 		return
 	busy = false
 	_tutorial_next_step()
+
+
+# Fala do professor no tutorial. Espera o fim do _ready e de qualquer
+# diálogo aberto (como o prólogo) antes de falar.
+func _tutorial_say(lines):
+	await get_tree().process_frame
+	while _dialogue_open():
+		await dialogue.finished
+	if lines.is_empty() or not is_inside_tree() or context != "tutorial":
+		return
+	dialogue.play(lines)
+	await dialogue.finished
 
 
 # Monta a jogada V V W / . . V perto da linha r e devolve as duas peças da troca.
