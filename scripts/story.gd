@@ -118,46 +118,59 @@ static func world_intro(index):
 
 # ---------------------------------------------------------------------
 # Emboscadas do Barão (início das fases 3, 6, 9, 12, 15 e 18)
-# As mecânicas das emboscadas (correntes, enxame, neblina...) ainda não
-# existem; por enquanto o Barão só provoca. Quando cada mecânica entrar,
-# trocar pelas falas do docs/HISTORIA.md que explicam o obstáculo.
+# O tipo de cada emboscada fica no campo "ambush" de GameState.STAGES.
 # ---------------------------------------------------------------------
 
 static func ambush_intro(stage_id):
 	match int(stage_id):
 		3:
 			return [
-				_b("desdenhoso", "Então o velho achou um ajudante? Vamos ver se aguenta esta fase!"),
+				_b("desdenhoso", "Então o velho achou um ajudante? Vamos ver se aguenta uma bagunça!"),
 				_b("rindo", "Embaralha, embaralha, quem não pensa se atrapalha!"),
-				_p("pensativo", "Calma. Toda conta tem um caminho.")
+				_p("pensativo", "Cuidado, [NOME]. No meio da fase ele vai soprar uma ventania e misturar as peças.")
 			]
 		6:
 			return [
-				_b("rindo", "Bem-vindos ao porto! Daqui as minhas páginas não saem!"),
-				_p("explicando", "Uma conta de cada vez, [NOME]. Ele não assusta quem pensa.")
+				_b("rindo", "Bem-vindos ao porto! Pena que algumas peças... ficaram presas!"),
+				_p("explicando", "Peças com corrente não podem ser trocadas. Faça combinações ao lado delas para soltá-las.")
 			]
 		9:
 			return [
-				_b("rindo", "Zum, zum, zum! Na minha floresta, quem manda sou eu!"),
-				_p("pensativo", "Esta fase é mais difícil. Pense antes de cada troca.")
+				_b("rindo", "Zum, zum, zum! Minhas abelhas vão comer as suas jogadas!"),
+				_p("preocupado", "O enxame levou 3 jogadas. Temos menos jogadas, então cada uma vale mais. Pense antes de trocar.")
 			]
 		12:
 			return [
-				_b("desdenhoso", "Vocês de novo? Esta página está guardada a sete chaves!"),
-				_p("explicando", "Repartir é fácil quando a gente vai com calma.")
+				_b("desdenhoso", "Vocês gostam tanto de ver as coisas... Que tal um pouco de neblina?"),
+				_p("explicando", "Algumas peças ficaram escondidas. Quando não dá para ver tudo, comece pelo que dá: combinações ao lado da neblina a desfazem.")
 			]
 		15:
 			return [
-				_b("rindo", "Tique-taque, tique-taque! O tempo de vocês está acabando!"),
-				_p("pensativo", "Não ligue para ele. Respire e resolva.")
+				_b("rindo", "Tique-taque, tique-taque, a conta muda num ataque!"),
+				_p("pensativo", "No meio da fase ele vai trocar a conta. Se mudar, respire e resolva a nova.")
 			]
 		18:
 			return [
 				_b("assustado", "Chegaram até aqui? Impossível! Ninguém passa pelo Barão Embaralho!"),
-				_b("bravo", "A última página é MINHA! Vocês nunca vão pegá-la!"),
+				_b("bravo", "A última página é MINHA! Embaralha, acorrenta, enevoa... TUDO DE UMA VEZ!"),
 				_p("explicando", "Tudo o que você aprendeu até aqui está com você. Uma conta de cada vez.")
 			]
 	return []
+
+
+# Eventos no meio da fase (mostrados na primeira vez; depois só um aviso).
+static func wind_event():
+	return [
+		_b("rindo", "Embaralha, embaralha! Uuuuuuu!"),
+		_p("pensativo", "Calma. As peças mudaram de lugar, mas a conta é a mesma.")
+	]
+
+
+static func clock_event():
+	return [
+		_b("rindo", "Tique-taque! Essa conta já era. Tome outra!"),
+		_p("explicando", "A conta mudou? Tudo bem. Respire e resolva a nova.")
+	]
 
 
 # ---------------------------------------------------------------------

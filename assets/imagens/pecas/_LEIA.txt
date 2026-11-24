@@ -6,5 +6,9 @@ estado_selecionada.png           (opcional) moldura da peça selecionada
 estado_destaque_resposta.png     (opcional) moldura das peças com a resposta
 estado_troca_sugerida.png        (opcional) moldura da troca sugerida pela dica
 
+corrente.png                     (opcional) peça presa na emboscada das correntes
+neblina.png                      (opcional) peça escondida na emboscada da neblina (cobre a peça)
+
 As molduras ficam POR CIMA da peça: deixe o centro transparente.
+A corrente também fica por cima: deixe o meio livre para o número aparecer.
 Sem as molduras, o jogo usa as bordas atuais (branca, amarela e verde).

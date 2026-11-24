@@ -15,6 +15,12 @@ const HINT_STEP_MOVE = 6
 const MOVE_HINT_COLOR = Color("#22C55E")
 const INSTRUCTION_COLOR = Color(0.7961, 0.8353, 0.8824, 1)
 
+# Emboscadas do Barão (campo "ambush" em GameState.STAGES).
+const AMBUSH_EVENT_MOVE = 5
+const SWARM_MOVES = 3
+const LOCK_COUNT = {"correntes": 6, "final": 3}
+const FOG_COUNT = {"neblina": 6, "final": 4}
+
 const MathTutor = preload("res://scripts/math_tutor.gd")
 const OptionsPanel = preload("res://scripts/options_panel.gd")
 const Story = preload("res://scripts/story.gd")
@@ -102,6 +108,14 @@ var dialogue
 
 # Camada por cima de cada peça (seleção, destaque, troca sugerida)
 var tile_overlays = []
+var tile_marks = []
+
+# Emboscada da fase: "", "ventania", "correntes", "enxame", "neblina", "ponteiro" ou "final".
+# As correntes e a neblina ficam guardadas por posição e acompanham a peça quando ela cai.
+var ambush = ""
+var locked = {}
+var fogged = {}
+var ambush_event_done = false
 
 # Tutorial (Fase 0)
 const TUTORIAL_STEPS = 5
@@ -203,6 +217,11 @@ func _setup_mode_interface():
 		challenge_panel.visible = false
 		challenges_label.visible = false
 
+	if (context == "campaign" or context == "developer") and not stage_data.is_empty():
+		ambush = str(stage_data.get("ambush", ""))
+	if ambush == "enxame":
+		move_limit = max(1, move_limit - SWARM_MOVES)
+
 
 func _tile_types_for_difficulty(value):
 	match int(value):
@@ -248,6 +267,14 @@ func _create_buttons():
 			grid.add_child(button)
 			buttons.append(button)
 
+			# Corrente ou neblina da emboscada; fica embaixo da borda de estado.
+			var mark = Panel.new()
+			mark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			mark.visible = false
+			button.add_child(mark)
+			tile_marks.append(mark)
+
 			var overlay = Panel.new()
 			overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 			overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -267,6 +294,9 @@ func _new_game():
 	solved_challenges = 0
 	selected = Vector2i(-1, -1)
 	result_overlay.visible = false
+	locked.clear()
+	fogged.clear()
+	ambush_event_done = false
 	_reset_hints()
 
 	if context == "tutorial":
@@ -277,6 +307,7 @@ func _new_game():
 		_generate_challenge()
 
 	_generate_board()
+	_setup_ambush_board()
 	_refresh_board()
 	_update_hud()
 
@@ -286,6 +317,10 @@ func _new_game():
 		status_label.text = "Resolva o desafio ou use CONCLUIR E AVANÇAR para testar a progressão rapidamente."
 	else:
 		status_label.text = "Faça uma combinação de 3 ou mais peças iguais."
+
+	var note = _ambush_note()
+	if note != "":
+		status_label.text = note
 
 
 func _generate_board():
@@ -553,6 +588,11 @@ func _on_tile_pressed(r, c):
 			status_label.text = "Toque em uma das peças com borda verde."
 			Audio.play("troca_invalida")
 		return
+
+	if locked.has(current):
+		status_label.text = "Essa peça está presa por uma corrente. Faça uma combinação ao lado dela para soltá-la."
+		Audio.play("troca_invalida")
+		return
 	Audio.play("selecionar")
 
 	if selected.x == -1:
@@ -582,14 +622,14 @@ func _are_adjacent(a, b):
 
 func _try_swap(a, b):
 	busy = true
-	_swap(a, b)
+	_swap_tiles(a, b)
 	_refresh_board()
 	await get_tree().create_timer(0.10).timeout
 
 	var matches = _find_matches()
 
 	if matches.size() == 0:
-		_swap(a, b)
+		_swap_tiles(a, b)
 		selected = Vector2i(-1, -1)
 		_refresh_board()
 		status_label.text = "Essa troca não forma uma combinação."
@@ -691,6 +731,7 @@ func _resolve_matches():
 
 		_update_hud()
 
+		_break_ambush_marks(matches)
 		for pos in matches:
 			board[pos.y][pos.x] = -1
 
@@ -746,6 +787,9 @@ func _resolve_matches():
 	else:
 		status_label.text = "Boa! Faça a próxima combinação."
 
+	if context == "campaign" or context == "developer":
+		await _maybe_trigger_ambush_event()
+
 
 func _play_challenge_pulse():
 	if challenge_tween != null and challenge_tween.is_valid():
@@ -773,6 +817,7 @@ func _collapse_board():
 				board[write_row][c] = board[r][c]
 				if write_row != r:
 					board[r][c] = -1
+					_move_marks(Vector2i(c, r), Vector2i(c, write_row))
 				write_row -= 1
 
 		while write_row >= 0:
@@ -872,8 +917,11 @@ func _has_possible_move():
 	for r in range(ROWS):
 		for c in range(COLS):
 			var a = Vector2i(c, r)
+			# Peças acorrentadas não podem ser trocadas.
+			if locked.has(a):
+				continue
 
-			if c + 1 < COLS:
+			if c + 1 < COLS and not locked.has(Vector2i(c + 1, r)):
 				var b_horizontal = Vector2i(c + 1, r)
 				_swap(a, b_horizontal)
 				var horizontal_match = _find_matches().size() > 0
@@ -881,7 +929,7 @@ func _has_possible_move():
 				if horizontal_match:
 					return true
 
-			if r + 1 < ROWS:
+			if r + 1 < ROWS and not locked.has(Vector2i(c, r + 1)):
 				var b_vertical = Vector2i(c, r + 1)
 				_swap(a, b_vertical)
 				var vertical_match = _find_matches().size() > 0
@@ -908,10 +956,15 @@ func _refresh_board():
 				button.text = ""
 				_set_tile_style(button, -1, false)
 				_set_tile_overlay(index, "")
+				_set_tile_mark(index, "")
 			else:
-				button.text = str(value + 1)
+				var pos = Vector2i(c, r)
+				var hidden = fogged.has(pos)
+				button.text = "" if hidden else str(value + 1)
+				_set_tile_mark(index, "neblina" if hidden else ("corrente" if locked.has(pos) else ""))
 				var is_selected = selected == Vector2i(c, r)
-				var is_hint = show_hint and value == target_answer - 1
+				# O destaque da resposta não revela peças escondidas na neblina.
+				var is_hint = show_hint and value == target_answer - 1 and not hidden
 				var is_move = hint_move.has(Vector2i(c, r))
 				_set_tile_style(button, value, is_selected, is_hint, is_move)
 
@@ -1421,6 +1474,8 @@ func _find_target_move():
 					continue
 				if board[a.y][a.x] == board[b.y][b.x]:
 					continue
+				if locked.has(a) or locked.has(b):
+					continue
 
 				_swap(a, b)
 				var found = _find_matches()
@@ -1879,7 +1934,10 @@ func _force_move(value):
 	for i in range(protected.size()):
 		var pos = protected[i]
 		board[pos.y][pos.x] = value
+		# A jogada garantida não pode depender de uma peça acorrentada.
+		locked.erase(pos)
 	board[swap_cell.y][swap_cell.x] = _different_value(value)
+	locked.erase(swap_cell)
 
 	return _clear_board_matches(protected)
 
@@ -2164,3 +2222,175 @@ func _after_world_intro():
 	var stage_id = int(stage_data["id"])
 	if Story.is_ambush(stage_id):
 		_play_story("emboscada_%d" % stage_id, Story.ambush_intro(stage_id))
+
+
+# =====================================================================
+# EMBOSCADAS DO BARÃO (fases 3, 6, 9, 12, 15 e 18)
+# =====================================================================
+# ventania  = no meio da fase, embaralha todas as peças
+# correntes = peças presas: não podem ser trocadas; soltam com uma combinação ao lado
+# enxame    = o limite de jogadas cai (veja _setup_mode_interface)
+# neblina   = peças escondidas; aparecem com uma combinação ao lado
+# ponteiro  = no meio da fase, a conta é trocada por outra
+# final     = correntes, neblina e uma ventania
+
+func _ambush_note():
+	match ambush:
+		"ventania":
+			return "Emboscada! No meio da fase, o Barão vai embaralhar as peças."
+		"correntes":
+			return "Emboscada! Peças com corrente não podem ser trocadas. Combine ao lado delas para soltá-las."
+		"enxame":
+			return "Emboscada! O enxame comeu %d jogadas: agora são %d." % [SWARM_MOVES, move_limit]
+		"neblina":
+			return "Emboscada! Peças na neblina estão escondidas. Combine ao lado delas para revelá-las."
+		"ponteiro":
+			return "Emboscada! No meio da fase, o Barão vai trocar a conta."
+		"final":
+			return "Emboscada final! Correntes, neblina e uma ventania no meio da fase."
+	return ""
+
+
+func _setup_ambush_board():
+	var lock_count = int(LOCK_COUNT.get(ambush, 0))
+	var fog_count = int(FOG_COUNT.get(ambush, 0))
+	if lock_count == 0 and fog_count == 0:
+		return
+
+	var cells = []
+	for r in range(ROWS):
+		for c in range(COLS):
+			cells.append(Vector2i(c, r))
+	cells.shuffle()
+
+	for pos in cells:
+		if lock_count > 0:
+			locked[pos] = true
+			lock_count -= 1
+		elif fog_count > 0:
+			fogged[pos] = true
+			fog_count -= 1
+		else:
+			break
+
+	# As correntes não podem tirar a jogada da resposta.
+	_make_board_playable(true)
+
+
+# Troca de verdade (do jogador): a corrente e a neblina vão junto com a peça.
+func _swap_tiles(a, b):
+	_swap(a, b)
+	for marks in [locked, fogged]:
+		var on_a = marks.has(a)
+		var on_b = marks.has(b)
+		marks.erase(a)
+		marks.erase(b)
+		if on_a:
+			marks[b] = true
+		if on_b:
+			marks[a] = true
+
+
+func _move_marks(from, to):
+	for marks in [locked, fogged]:
+		if marks.erase(from):
+			marks[to] = true
+
+
+# Uma combinação solta as correntes e desfaz a neblina nela e ao redor.
+func _break_ambush_marks(matches):
+	if locked.is_empty() and fogged.is_empty():
+		return
+	for pos in matches:
+		for d in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var p = pos + d
+			var freed = locked.erase(p)
+			var revealed = fogged.erase(p)
+			if (freed or revealed) and d != Vector2i(0, 0) and p.x >= 0 and p.x < COLS and p.y >= 0 and p.y < ROWS:
+				Assets.burst(self, buttons[p.y * COLS + p.x].get_global_rect().get_center(), 8, Color(0.85, 0.9, 1.0))
+
+
+func _set_tile_mark(index, kind):
+	if index >= tile_marks.size():
+		return
+	var mark = tile_marks[index]
+	if kind == "":
+		mark.visible = false
+		return
+
+	var tex = Assets.texture("pecas/" + kind)
+	if tex != null:
+		mark.add_theme_stylebox_override("panel", Assets.texture_style(tex))
+	else:
+		var style = StyleBoxFlat.new()
+		for corner in ["corner_radius_top_left", "corner_radius_top_right", "corner_radius_bottom_left", "corner_radius_bottom_right"]:
+			style.set(corner, 12)
+		if kind == "neblina":
+			style.bg_color = Color("#CBD5E1")
+		else:
+			style.bg_color = Color(0, 0, 0, 0.25)
+			style.border_color = Color("#94A3B8")
+			for side in ["border_width_left", "border_width_top", "border_width_right", "border_width_bottom"]:
+				style.set(side, 5)
+		mark.add_theme_stylebox_override("panel", style)
+	mark.visible = true
+
+
+func _maybe_trigger_ambush_event():
+	if stage_finished or ambush_event_done or moves < AMBUSH_EVENT_MOVE:
+		return
+	if ambush == "ventania" or ambush == "final":
+		ambush_event_done = true
+		await _ambush_wind()
+	elif ambush == "ponteiro":
+		ambush_event_done = true
+		await _ambush_clock()
+
+
+func _ambush_wind():
+	var values = []
+	for r in range(ROWS):
+		for c in range(COLS):
+			values.append(board[r][c])
+	values.shuffle()
+	for r in range(ROWS):
+		for c in range(COLS):
+			board[r][c] = values[r * COLS + c]
+
+	_make_board_playable(true)
+	_after_ambush_event()
+	Audio.play("combo", 0.8)
+	status_label.text = "Ventania! O Barão embaralhou as peças. A conta continua a mesma."
+	if context == "campaign":
+		await _play_story("evento_%d" % int(stage_data["id"]), Story.wind_event())
+
+
+func _ambush_clock():
+	var old_text = current_challenge_text
+	for attempt in range(10):
+		_generate_challenge()
+		if current_challenge_text != old_text:
+			break
+	_reset_hints()
+	_make_board_playable(true)
+	_after_ambush_event()
+	Audio.play("dica")
+	status_label.text = "O Barão trocou a conta! Resolva a nova: %s" % current_challenge_text
+	if context == "campaign":
+		await _play_story("evento_%d" % int(stage_data["id"]), Story.clock_event())
+
+
+func _after_ambush_event():
+	selected = Vector2i(-1, -1)
+	if hint_level >= 3:
+		hint_move = _find_target_move()
+	_refresh_board()
+	_update_hud()
+	_shake_board()
+
+
+func _shake_board():
+	var board_panel = $Margin/Main/BoardPanel
+	var tween = create_tween()
+	for offset in [Vector2(10, 0), Vector2(-10, 0), Vector2(6, 0), Vector2(-6, 0), Vector2.ZERO]:
+		tween.tween_property(board_panel, "position:x", board_panel.position.x + offset.x, 0.05)

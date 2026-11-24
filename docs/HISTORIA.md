@@ -513,7 +513,6 @@ Esta seção é uma sugestão de como levar a história para o código atual, em
   - abertura do mundo, antes da mini-aula;
   - provocação do Barão no começo das fases 3, 6, 9, 12, 15 e 18;
   - página recuperada na primeira vitória de cada fase, antes da tela de resultado (na fase 18, o epílogo).
-- Enquanto as emboscadas não existem, o Barão só provoca; as falas que citam correntes, enxame etc. entram junto com cada mecânica.
 - Falta: opção de rever as cenas depois (por exemplo, numa tela do livro).
 
 ### Etapa 3: o professor nas mini-aulas e dicas
@@ -527,24 +526,29 @@ Esta seção é uma sugestão de como levar a história para o código atual, em
 - Mostrar o contador "Páginas recuperadas: X/18", que é o tamanho de `completed_stages`.
 - Opcional: uma tela do livro com as 18 páginas e os carimbos de ouro.
 
-### Etapa 5: emboscadas
+### Etapa 5: emboscadas ✅
 
-As emboscadas são mecânicas novas, por isso ficam por último. Sugestão de ordem, da mais simples para a mais trabalhosa:
+Implementadas em `scripts/game.gd` (seção "EMBOSCADAS DO BARÃO"). O tipo de cada uma fica no campo `"ambush"` de `GameState.STAGES`.
 
-| Emboscada | Mundo | Ideia de implementação | Dificuldade |
-|---|---|---|---|
-| Enxame (−3 jogadas) | 3 | diminuir `move_limit` no início da fase | fácil |
-| Ventania (embaralhar) | 1 | sortear de novo as peças com a lógica de `_generate_board()` depois de X jogadas | fácil |
-| Ponteiro maluco (troca a conta) | 5 | chamar `_generate_challenge()` no meio da fase e garantir a jogada com `_make_board_playable(true)` | fácil |
-| Neblina (peças cobertas) | 4 | uma camada por cima da peça em `tile_overlays`, removida quando há combinação vizinha | média |
-| Correntes (peças presas) | 2 | marcar casas como presas e bloquear a troca em `_try_swap()`; soltar com combinação vizinha | média |
+| Fase | Emboscada | Como funciona no jogo |
+|---|---|---|
+| 03 | Ventania | Depois da 5ª jogada, todas as peças são embaralhadas (o tabuleiro treme) e o jogo garante de novo uma jogada para a resposta |
+| 06 | Correntes | 6 peças começam presas e não podem ser selecionadas; uma combinação nela ou ao lado solta a corrente |
+| 09 | Enxame | O limite de jogadas cai 3 (de 20 para 17) |
+| 12 | Neblina | 6 peças começam escondidas (sem número nem cor); uma combinação nela ou ao lado revela a peça |
+| 15 | Ponteiro maluco | Depois da 5ª jogada, a conta é trocada por outra |
+| 18 | Final | 3 correntes, 4 neblinas e uma ventania depois da 5ª jogada |
 
-- Ativar a emboscada por um campo novo em `STAGES`, por exemplo `"ambush": "ventania"`, só nas fases 3, 6, 9, 12, 15 e 18.
-- Rebalancear essas fases depois dos testes, já que as emboscadas aumentam a dificuldade.
+- As correntes e a neblina acompanham a peça quando ela cai.
+- A busca de jogadas e a dica ignoram peças presas, então o tabuleiro continua sempre jogável.
+- O destaque da resposta não revela peças na neblina.
+- Na primeira vez, o Barão e o professor comentam a ventania e o ponteiro numa fala curta; depois, só aparece um aviso.
+- Imagens: `assets/imagens/pecas/corrente.png` e `neblina.png` (sem elas, o jogo desenha uma borda e um bloco cinza).
+- Os números (6 correntes, 6 neblinas, −3 jogadas, evento na 5ª jogada) ficam em constantes no começo do `game.gd`. Vale rebalancear depois de testar com jogadores.
 
 ### Arte necessária
 
 - ~~Retratos do Professor Aurélio e do Barão Embaralho~~ **Prontos:** 5 expressões de cada em `assets/imagens/personagens/` (veja o `_LEIA.txt` da pasta).
 - Fundos dos 6 lugares. O jogo já procura `assets/imagens/mapa/mundo_1` a `mundo_6`, então eles podem ser exatamente esses arquivos.
 - Ícone de página e de carimbo de ouro.
-- Peça acorrentada e peça com neblina.
+- ~~Peça acorrentada e peça com neblina~~ **Prontas:** `assets/imagens/pecas/corrente.png` e `neblina.png`.
