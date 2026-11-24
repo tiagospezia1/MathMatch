@@ -496,23 +496,25 @@ Ao subir de nível:
 
 Esta seção é uma sugestão de como levar a história para o código atual, em etapas, sem quebrar o que já funciona.
 
-### Etapa 1: dados da história
+### Etapa 1: dados da história ✅ (em parte)
 
-- Em `scripts/game_state.gd`, adicionar a cada fase de `STAGES` os campos `"page"` (nome da página) e `"world_name"` (nome do lugar).
-- Criar um arquivo `scripts/story.gd` só com os textos: abertura de cada mundo, falas de vitória por fase e falas das emboscadas. Assim os textos ficam separados da lógica, como já acontece com `math_tutor.gd`.
-- Salvar no progresso:
-  - `player_name`, o nome digitado no prólogo;
-  - `seen_story`, um dicionário de cenas já vistas, igual ao `seen_lessons`.
+- ✅ `scripts/story.gd` guarda os textos: prólogo, fim do tutorial, abertura de cada mundo, provocação nas emboscadas, página recuperada em cada fase e epílogo. Os nomes dos lugares ficam em `Story.WORLD_NAMES`.
+- ✅ O progresso salva `player_name` (o nome digitado no prólogo) e `seen_story` (as cenas já vistas, igual ao `seen_lessons`).
+- Falta: nome de cada página em `STAGES`, se for usado no mapa ou na tela do livro.
 
-### Etapa 2: caixa de diálogo
+### Etapa 2: caixa de diálogo ✅
 
-- Criar uma caixa de diálogo reutilizável, no estilo do `options_panel.gd`: retrato do personagem, nome, texto e botão **CONTINUAR**.
-- Usar a caixa em:
-  - abertura do prólogo (antes de `_tutorial_start`);
-  - abertura do mundo (antes de `_open_lesson(true)`, na primeira fase de cada mundo);
-  - fechamento da fase (antes de mostrar a tela de vitória);
-  - epílogo (fase 18).
-- Cada cena só aparece uma vez (marcar em `seen_story`), com opção de rever depois.
+- ✅ `scripts/dialogue_box.gd`: retrato, nome do personagem, texto com efeito de digitação, botões **CONTINUAR** e **PULAR**, e um campo para o jogador digitar o nome.
+  - Clique, ENTER ou ESPAÇO completam o texto ou passam para a próxima fala; ESC pula a cena.
+  - Narração aparece sem retrato; personagens secundários (Moradora, Marinheiro...) aparecem só com o nome.
+- ✅ Usada em `scripts/game.gd`, sempre só na primeira vez (`_play_story`):
+  - prólogo, antes do tutorial;
+  - fim do tutorial, antes da tela "TUTORIAL CONCLUÍDO";
+  - abertura do mundo, antes da mini-aula;
+  - provocação do Barão no começo das fases 3, 6, 9, 12, 15 e 18;
+  - página recuperada na primeira vitória de cada fase, antes da tela de resultado (na fase 18, o epílogo).
+- Enquanto as emboscadas não existem, o Barão só provoca; as falas que citam correntes, enxame etc. entram junto com cada mecânica.
+- Falta: opção de rever as cenas depois (por exemplo, numa tela do livro).
 
 ### Etapa 3: o professor nas mini-aulas e dicas
 

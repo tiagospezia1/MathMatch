@@ -17,6 +17,8 @@ const INSTRUCTION_COLOR = Color(0.7961, 0.8353, 0.8824, 1)
 
 const MathTutor = preload("res://scripts/math_tutor.gd")
 const OptionsPanel = preload("res://scripts/options_panel.gd")
+const Story = preload("res://scripts/story.gd")
+const DialogueBox = preload("res://scripts/dialogue_box.gd")
 const EMPTY_TILE_COLOR = Color("#1E293B")
 
 const TILE_COLORS = [
@@ -95,6 +97,9 @@ var pause_confirm_action = ""
 var pause_continue_button
 var options_panel
 
+# História (caixa de diálogo com o professor e o Barão)
+var dialogue
+
 # Camada por cima de cada peça (seleção, destaque, troca sugerida)
 var tile_overlays = []
 
@@ -130,6 +135,7 @@ func _ready():
 	_build_result_overlay()
 	_build_lesson_overlay()
 	_build_pause_overlay()
+	_build_dialogue()
 	_setup_mode_interface()
 	_create_help_button()
 	challenge_instruction.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -140,9 +146,9 @@ func _ready():
 	_new_game()
 	Audio.play_music("partida")
 
-	# Primeira vez neste conteúdo: abre a mini-aula prática antes de jogar.
-	if context == "campaign" and not GameState.has_seen_lesson(mode):
-		_open_lesson(true)
+	# Cenas da história antes de jogar (prólogo, abertura do mundo, emboscada)
+	# e, na primeira vez em cada conteúdo, a mini-aula prática.
+	_start_story_intro()
 
 
 func _setup_mode_interface():
@@ -536,7 +542,7 @@ func _rand_between(min_value, max_value):
 
 
 func _on_tile_pressed(r, c):
-	if busy or stage_finished or lesson_open or paused:
+	if busy or stage_finished or lesson_open or paused or _dialogue_open():
 		return
 
 	var current = Vector2i(c, r)
@@ -1180,6 +1186,15 @@ func _show_campaign_victory():
 	retry_button.visible = false
 	next_button.visible = int(stage_data["id"]) < GameState.get_stage_count()
 	result_back_button.visible = true
+
+	# Na primeira vitória da fase, o professor comenta a página recuperada
+	# (na fase 18, o epílogo) antes da tela de resultado.
+	var stage_id = int(stage_data["id"])
+	var lines = Story.stage_victory(stage_id) if bool(result["first_completion"]) else []
+	_play_story("pagina_%d" % stage_id, lines, _reveal_victory)
+
+
+func _reveal_victory():
 	result_overlay.visible = true
 	var center = get_viewport_rect().size / 2.0
 	Assets.burst(self, center + Vector2(-120, -80), 22)
@@ -1285,6 +1300,9 @@ func _on_result_back_pressed():
 func _unhandled_input(event):
 	# "ui_cancel" já vem mapeado para ESC no Godot.
 	if not event.is_action_pressed("ui_cancel"):
+		return
+	# A caixa de diálogo trata o próprio ESC (pular a cena).
+	if _dialogue_open():
 		return
 
 	get_viewport().set_input_as_handled()
@@ -1432,7 +1450,7 @@ func _create_help_button():
 
 
 func _on_help_pressed():
-	if busy or stage_finished or lesson_open or paused:
+	if busy or stage_finished or lesson_open or paused or _dialogue_open():
 		return
 	_open_lesson(false)
 
@@ -1743,7 +1761,7 @@ func _exit_label():
 
 
 func _open_pause():
-	if busy or stage_finished or lesson_open or paused:
+	if busy or stage_finished or lesson_open or paused or _dialogue_open():
 		return
 	paused = true
 	selected = Vector2i(-1, -1)
@@ -2080,8 +2098,69 @@ func _tutorial_finish():
 	retry_button.visible = false
 	result_back_button.text = "VOLTAR AO MENU"
 	result_back_button.visible = true
-	result_overlay.visible = true
+	_play_story("tutorial_fim", Story.tutorial_end(), _reveal_tutorial_result)
 
+
+func _reveal_tutorial_result():
+	result_overlay.visible = true
 	var center = get_viewport_rect().size / 2.0
 	Assets.burst(self, center + Vector2(-120, -100), 22)
 	Assets.burst(self, center + Vector2(120, -100), 22)
+
+
+# =====================================================================
+# HISTÓRIA (caixa de diálogo)
+# =====================================================================
+
+func _build_dialogue():
+	dialogue = DialogueBox.new()
+	add_child(dialogue)
+
+
+func _dialogue_open():
+	return dialogue != null and dialogue.is_open()
+
+
+# Mostra uma cena só na primeira vez (fica salva em GameState.seen_story)
+# e depois chama "then", se houver.
+func _play_story(key, lines, then = Callable()):
+	if lines.is_empty() or GameState.has_seen_story(key):
+		GameState.mark_story_seen(key)
+		if then.is_valid():
+			then.call()
+		return
+
+	dialogue.play(lines)
+	await dialogue.finished
+	GameState.mark_story_seen(key)
+	if then.is_valid():
+		then.call()
+
+
+func _start_story_intro():
+	if context == "tutorial":
+		_play_story("prologo", Story.prologue())
+		return
+	if context != "campaign":
+		return
+
+	var stage_id = int(stage_data["id"])
+	var world = Story.world_index(stage_id)
+	var intro = Story.world_intro(world)
+	# Quem já tinha fases deste mundo concluídas (saves antigos) não vê a
+	# abertura no meio do caminho.
+	for id in range(world * 3 + 1, world * 3 + 4):
+		if GameState.is_stage_completed(id):
+			intro = []
+	_play_story("mundo_%d" % (world + 1), intro, _after_world_intro)
+
+
+func _after_world_intro():
+	# Primeira vez neste conteúdo: abre a mini-aula prática antes de jogar.
+	if not GameState.has_seen_lesson(mode):
+		_open_lesson(true)
+		return
+
+	var stage_id = int(stage_data["id"])
+	if Story.is_ambush(stage_id):
+		_play_story("emboscada_%d" % stage_id, Story.ambush_intro(stage_id))

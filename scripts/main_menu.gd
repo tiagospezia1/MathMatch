@@ -89,7 +89,7 @@ func _build_interface():
 
 	reset_dialog = ConfirmationDialog.new()
 	reset_dialog.title = "Resetar progresso"
-	reset_dialog.dialog_text = "Isso apaga XP, nível, fases concluídas, recordes, estrelas e o tutorial.\nEssa ação não pode ser desfeita. Continuar?"
+	reset_dialog.dialog_text = "Isso apaga XP, nível, fases concluídas, recordes, estrelas, o tutorial e a história (incluindo o seu nome).\nEssa ação não pode ser desfeita. Continuar?"
 	reset_dialog.ok_button_text = "Apagar tudo"
 	reset_dialog.cancel_button_text = "Cancelar"
 	reset_dialog.confirmed.connect(_on_reset_confirmed)

@@ -35,6 +35,8 @@ var best_scores = {}
 var best_stars = {}
 var seen_lessons = {}
 var tutorial_done = false
+var player_name = ""
+var seen_story = {}
 
 
 func _ready():
@@ -248,6 +250,23 @@ func mark_lesson_seen(operation):
 	save_progress()
 
 
+func set_player_name(value):
+	player_name = str(value).strip_edges()
+	save_progress()
+
+
+# Cenas da história já vistas (prólogo, abertura de mundo, páginas...).
+func has_seen_story(key):
+	return bool(seen_story.get(str(key), false))
+
+
+func mark_story_seen(key):
+	if has_seen_story(key):
+		return
+	seen_story[str(key)] = true
+	save_progress()
+
+
 func get_best_stars(stage_id):
 	return int(best_stars.get(str(stage_id), 0))
 
@@ -286,7 +305,9 @@ func save_progress():
 		"best_scores": best_scores,
 		"best_stars": best_stars,
 		"seen_lessons": seen_lessons,
-		"tutorial_done": tutorial_done
+		"tutorial_done": tutorial_done,
+		"player_name": player_name,
+		"seen_story": seen_story
 	}
 	file.store_string(JSON.stringify(data))
 	file.close()
@@ -338,6 +359,14 @@ func load_progress():
 	else:
 		best_stars = {}
 
+	player_name = str(data.get("player_name", ""))
+
+	var loaded_story = data.get("seen_story", {})
+	if typeof(loaded_story) == TYPE_DICTIONARY:
+		seen_story = loaded_story
+	else:
+		seen_story = {}
+
 
 func reset_progress():
 	total_xp = 0
@@ -347,4 +376,6 @@ func reset_progress():
 	best_stars.clear()
 	seen_lessons.clear()
 	tutorial_done = false
+	player_name = ""
+	seen_story.clear()
 	save_progress()
