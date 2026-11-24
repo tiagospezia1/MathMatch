@@ -513,7 +513,11 @@ Esta seção é uma sugestão de como levar a história para o código atual, em
   - fim do tutorial, antes da tela "TUTORIAL CONCLUÍDO";
   - abertura do mundo, antes da mini-aula;
   - provocação do Barão no começo das fases 3, 6, 9, 12, 15 e 18;
-  - página recuperada na primeira vitória de cada fase, antes da tela de resultado (na fase 18, o epílogo).
+  - página recuperada na primeira vitória de cada fase, antes da tela de resultado (na fase 18, o epílogo);
+  - em toda vitória, o comentário do professor conforme os carimbos de ouro (estrelas) e, se o nível subiu, o novo título (seção 7);
+  - em toda derrota, a provocação do Barão e o professor animando a tentar de novo.
+- ✅ Títulos por nível (Aprendiz até Mestre dos Números) em `GameState.get_level_title()`, mostrados no menu principal, no mapa e na tela de vitória.
+- ✅ Tela de créditos (`scenes/CreditsMenu.tscn`), pelo botão **CRÉDITOS** do menu principal e pelo botão **VER OS CRÉDITOS** depois da fase 18. Quem terminou o jogo vê, no final, a página misteriosa do "Capítulo 7: Geometria".
 - ✅ As cenas podem ser revistas na tela do livro.
 
 ### Etapa 3: o professor nas mini-aulas e dicas ✅

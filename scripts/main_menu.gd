@@ -55,7 +55,7 @@ func _build_interface():
 
 	var progress = GameState.get_level_progress()
 	var profile = Label.new()
-	profile.text = "NÍVEL %d  •  %d XP  •  %d/%d PÁGINAS RECUPERADAS" % [progress["level"], GameState.total_xp, GameState.get_pages_recovered(), GameState.get_stage_count()]
+	profile.text = "NÍVEL %d  •  %s\n%d XP  •  %d/%d PÁGINAS RECUPERADAS" % [progress["level"], GameState.get_level_title(progress["level"]).to_upper(), GameState.total_xp, GameState.get_pages_recovered(), GameState.get_stage_count()]
 	profile.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	profile.add_theme_font_size_override("font_size", 14)
 	profile.add_theme_color_override("font_color", ACCENT)
@@ -104,9 +104,22 @@ func _build_interface():
 		developer.add_theme_color_override("font_hover_color", ACCENT)
 		content.add_child(developer)
 
+	# CRÉDITOS e SAIR dividem a última linha, para o menu não crescer.
+	var last_row = HBoxContainer.new()
+	last_row.add_theme_constant_override("separation", 10)
+	content.add_child(last_row)
+
+	var credits = _make_menu_button("CRÉDITOS")
+	credits.custom_minimum_size = Vector2(155, 54)
+	credits.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	credits.pressed.connect(_on_credits_pressed)
+	last_row.add_child(credits)
+
 	var quit = _make_menu_button("SAIR")
+	quit.custom_minimum_size = Vector2(155, 54)
+	quit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	quit.pressed.connect(_on_quit_pressed)
-	content.add_child(quit)
+	last_row.add_child(quit)
 
 	info_label = Label.new()
 	info_label.text = ""
@@ -200,6 +213,10 @@ func _on_reset_confirmed():
 
 func _on_developer_pressed():
 	get_tree().change_scene_to_file("res://scenes/DeveloperMenu.tscn")
+
+
+func _on_credits_pressed():
+	get_tree().change_scene_to_file("res://scenes/CreditsMenu.tscn")
 
 
 func _on_quit_pressed():

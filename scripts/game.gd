@@ -1227,21 +1227,38 @@ func _show_campaign_victory():
 		details += "\nEsta fase já havia sido concluída; o XP principal já foi recebido."
 
 	if level_after > level_before:
-		details += "\n\nNÍVEL AUMENTOU!  %d → %d" % [level_before, level_after]
+		details += "\n\nNÍVEL AUMENTOU!  %d → %d  •  %s" % [level_before, level_after, GameState.get_level_title(level_after)]
 
 	if int(stage_data["id"]) == GameState.get_stage_count():
 		details += "\n\nVocê concluiu todas as fases do MathMatch!"
 
 	result_details.text = details
 	retry_button.visible = false
-	next_button.visible = int(stage_data["id"]) < GameState.get_stage_count()
+	var stage_id = int(stage_data["id"])
+	var last_stage = stage_id == GameState.get_stage_count()
+	# Na última fase, o botão leva aos créditos.
+	next_button.text = "VER OS CRÉDITOS →" if last_stage else "PRÓXIMA FASE →"
+	next_button.visible = true
 	result_back_button.visible = true
 
 	# Na primeira vitória da fase, o professor comenta a página recuperada
-	# (na fase 18, o epílogo) antes da tela de resultado.
-	var stage_id = int(stage_data["id"])
-	var lines = Story.stage_victory(stage_id) if bool(result["first_completion"]) else []
-	_play_story("pagina_%d" % stage_id, lines, _reveal_victory)
+	# (na fase 18, o epílogo). Depois, em toda vitória, ele comenta os
+	# carimbos de ouro (estrelas) e o novo título, se o nível subiu.
+	var first = bool(result["first_completion"])
+	var lines = Story.stage_victory(stage_id) if first else []
+	var new_title = GameState.get_level_title(level_after) if level_after > level_before else ""
+	var extra = Story.victory_lines(stars, new_title)
+	if last_stage and first:
+		# Depois do epílogo, só a fala do novo título (se houver).
+		extra = extra.slice(1)
+	_play_story("pagina_%d" % stage_id, lines, _after_victory_story.bind(extra))
+
+
+func _after_victory_story(extra):
+	if not extra.is_empty():
+		dialogue.play(extra)
+		await dialogue.finished
+	_reveal_victory()
 
 
 func _reveal_victory():
@@ -1262,6 +1279,9 @@ func _show_campaign_failure():
 	next_button.visible = false
 	retry_button.visible = true
 	result_back_button.visible = true
+	# O Barão comemora e o professor anima o aluno a tentar de novo.
+	dialogue.play(Story.defeat_lines())
+	await dialogue.finished
 	result_overlay.visible = true
 
 
@@ -1324,6 +1344,10 @@ func _on_next_stage_pressed():
 	if context == "tutorial":
 		GameState.start_campaign_stage(GameState.get_continue_stage())
 		get_tree().change_scene_to_file("res://scenes/Game.tscn")
+		return
+
+	if int(stage_data["id"]) == GameState.get_stage_count():
+		get_tree().change_scene_to_file("res://scenes/CreditsMenu.tscn")
 		return
 
 	var next_stage = int(stage_data["id"]) + 1

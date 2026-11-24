@@ -220,6 +220,23 @@ func get_player_level():
 	return level
 
 
+# Título do jogador em cada nível (do nível 6 em diante, Mestre dos Números).
+const LEVEL_TITLES = [
+	"Aprendiz",
+	"Ajudante do Professor",
+	"Caçador de Páginas",
+	"Guardião dos Números",
+	"Sábio das Contas",
+	"Mestre dos Números"
+]
+
+
+func get_level_title(level = -1):
+	if level < 0:
+		level = get_player_level()
+	return LEVEL_TITLES[clamp(int(level) - 1, 0, LEVEL_TITLES.size() - 1)]
+
+
 func get_level_progress():
 	var level = 1
 	var remaining = total_xp

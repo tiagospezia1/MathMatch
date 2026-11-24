@@ -370,6 +370,42 @@ static func stage_victory(stage_id):
 	return []
 
 
+# ---------------------------------------------------------------------
+# Vitória e derrota (em toda fase)
+# ---------------------------------------------------------------------
+
+# Estrelas = carimbos de ouro que o professor põe na página.
+static func victory_lines(stars, new_title = ""):
+	var lines = []
+	match int(stars):
+		3:
+			lines.append(_p("orgulhoso", "Impecável! Três carimbos de ouro nesta página."))
+		2:
+			lines.append(_p("feliz", "Muito bem! Com um pouco mais de calma, vem o terceiro carimbo."))
+		_:
+			lines.append(_p("feliz", "Página recuperada! Dá para tentar de novo e ganhar mais carimbos."))
+	if new_title != "":
+		lines.append(_p("orgulhoso", "Você está aprendendo rápido, [NOME]. Agora o seu título é %s!" % new_title))
+	return lines
+
+
+static func defeat_lines():
+	return [
+		_b("rindo", "Ha! Acabaram as jogadas! Essa página continua comigo!"),
+		_p("feliz", "Tudo bem, [NOME]. Errar faz parte de aprender. Vamos tentar de novo?")
+	]
+
+
+# Depois dos créditos (só para quem terminou o jogo): o gancho para uma continuação.
+static func mystery_page():
+	return [
+		_n("Quando todos já iam embora, uma página escorregou de dentro do livro..."),
+		_p("pensativo", "Hum... \"Capítulo 7: Geometria\"? Eu não me lembro de ter escrito esta página..."),
+		_p("feliz", "Parece que a nossa aventura ainda não acabou, [NOME]."),
+		_n("Continua...")
+	]
+
+
 static func epilogue():
 	return [
 		_b("assustado", "Não... não pode ser. Eu era o mais rápido da turma!"),

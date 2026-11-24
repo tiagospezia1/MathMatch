@@ -158,7 +158,7 @@ func _refresh_progress():
 	pages_bar.max_value = total_pages
 	pages_bar.value = pages
 
-	level_label.text = "NÍVEL %d  •  %d XP TOTAL" % [progress["level"], GameState.total_xp]
+	level_label.text = "NÍVEL %d  •  %s  •  %d XP TOTAL" % [progress["level"], GameState.get_level_title(progress["level"]).to_upper(), GameState.total_xp]
 	xp_label.text = "%d / %d XP para o próximo nível" % [progress["current_xp"], progress["needed_xp"]]
 	xp_bar.max_value = progress["needed_xp"]
 	xp_bar.value = progress["current_xp"]
