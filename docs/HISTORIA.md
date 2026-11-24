@@ -513,7 +513,7 @@ Esta seção é uma sugestão de como levar a história para o código atual, em
   - abertura do mundo, antes da mini-aula;
   - provocação do Barão no começo das fases 3, 6, 9, 12, 15 e 18;
   - página recuperada na primeira vitória de cada fase, antes da tela de resultado (na fase 18, o epílogo).
-- Falta: opção de rever as cenas depois (por exemplo, numa tela do livro).
+- ✅ As cenas podem ser revistas na tela do livro.
 
 ### Etapa 3: o professor nas mini-aulas e dicas ✅
 
@@ -531,12 +531,16 @@ O professor ensina de verdade, numa **lousa** desenhada por código (`scripts/lo
 - **Erros comuns no tabuleiro** (`misconception()`): se o número combinado é um erro típico (por exemplo, 10 em 7 − 3), aparece "Professor: Você juntou! Na subtração a gente TIRA...". Combinações por acaso não recebem bronca.
 - `math_tutor.gd` ficou só com a dica curta que aparece embaixo da conta.
 
-### Etapa 4: mapa e livro ✅ (em parte)
+### Etapa 4: mapa e livro ✅
 
 - ✅ No mapa (`scripts/progression_menu.gd`), cada mundo mostra o lugar e as páginas dele: "MUNDO 1 • VILA DO POMAR • + ADIÇÃO • PÁGINAS 2/3".
 - ✅ O topo do mapa mostra "PÁGINAS RECUPERADAS: X/18" com uma barra dourada; o menu principal também mostra o contador (`GameState.get_pages_recovered()`).
 - ✅ A dica de cada fase no mapa diz qual página do livro ela devolve.
-- Falta (opcional): uma tela do livro com as 18 páginas e os carimbos de ouro.
+- ✅ **Tela do livro** (`scenes/BookMenu.tscn`, `scripts/book_menu.gd`), aberta pelo botão **LIVRO** do mapa:
+  - os 6 capítulos com as 3 páginas de cada um; páginas recuperadas mostram o título e os carimbos de ouro (as estrelas da fase); as perdidas aparecem com "?";
+  - ao abrir uma página: a lição dela em uma frase, um exemplo na lousa e os botões **REVER A CENA**, **AULA** e navegação entre páginas;
+  - rever o prólogo, a chegada em cada lugar e o final (quando já foram vistos).
+- Os títulos e o conteúdo das páginas ficam em `Story.PAGE_NAMES` e `Story.page_content()`.
 
 ### Etapa 5: emboscadas ✅
 

@@ -65,6 +65,12 @@ func _build_interface():
 	title.add_theme_color_override("font_color", ACCENT)
 	header.add_child(title)
 
+	var book_button = _make_rect_button("LIVRO")
+	book_button.custom_minimum_size = Vector2(100, 44)
+	book_button.tooltip_text = "O Grande Livro dos Números: páginas recuperadas e cenas para rever."
+	book_button.pressed.connect(_on_book_pressed)
+	header.add_child(book_button)
+
 	var continue_button = _make_rect_button("CONTINUAR →")
 	continue_button.custom_minimum_size = Vector2(145, 44)
 	continue_button.pressed.connect(_on_continue_pressed)
@@ -573,6 +579,10 @@ func _on_continue_pressed():
 
 func _on_back_pressed():
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+
+
+func _on_book_pressed():
+	get_tree().change_scene_to_file("res://scenes/BookMenu.tscn")
 
 
 func _bar_style(color):

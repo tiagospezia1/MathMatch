@@ -17,6 +17,94 @@ const WORLD_NAMES = [
 ]
 
 
+# O Grande Livro dos Números: um capítulo por mundo, uma página por fase.
+const CHAPTER_NAMES = [
+	"Somar é Juntar",
+	"Subtrair é Tirar",
+	"Grupos Iguais",
+	"Repartir em Partes Iguais",
+	"Partes do Todo",
+	"De Cada Cem"
+]
+
+const PAGE_NAMES = [
+	"Juntar e contar", "Contar a partir do maior", "Somar por partes",
+	"Tirar e ver o que sobra", "Pensar ao contrário", "Duas subtrações",
+	"Grupos de 2 e de 3", "A tabuada até o 4", "Contar de tantos em tantos",
+	"Repartir igualmente", "O contrário da multiplicação", "A tabuada ao contrário",
+	"Metade e terço", "Partes maiores que um", "Dividir e multiplicar",
+	"50% é a metade", "25% é um quarto", "Montar a partir do 10%"
+]
+
+
+static func chapter_name(stage_id):
+	return CHAPTER_NAMES[clamp(world_index(stage_id), 0, CHAPTER_NAMES.size() - 1)]
+
+
+static func page_name(stage_id):
+	return PAGE_NAMES[clamp(int(stage_id) - 1, 0, PAGE_NAMES.size() - 1)]
+
+
+# O que está escrito em cada página: a lição em uma frase e um exemplo para a lousa.
+static func page_content(stage_id):
+	match int(stage_id):
+		1:
+			return {"text": "Somar é juntar duas quantidades e contar tudo.",
+				"board": {"kind": "add", "a": 3, "b": 2, "joined": true, "count": true, "items": ["maca", "maca"], "lines": ["!3 + 2 = 5"]}}
+		2:
+			return {"text": "Não precisa contar desde o 1: comece no número maior e conte só o resto.",
+				"board": {"kind": "text", "lines": ["Comece no 6", "conte mais 3:  7, 8, 9", "!6 + 3 = 9"]}}
+		3:
+			return {"text": "Com três números, some os dois primeiros e depois junte o terceiro.",
+				"board": {"kind": "text", "lines": ["2 + 3 + 4", "2 + 3 = 5", "!5 + 4 = 9"]}}
+		4:
+			return {"text": "Subtrair é tirar: começamos com o total, tiramos uma parte e contamos o que sobra.",
+				"board": {"kind": "take", "total": 8, "take": 5, "cross": true, "result": true, "item": "caixa", "lines": ["!8 − 5 = 3"]}}
+		5:
+			return {"text": "Travou na subtração? Pense ao contrário: quanto falta para chegar no total?",
+				"board": {"kind": "text", "lines": ["5 + ? = 8", "6, 7, 8  →  3", "!8 − 5 = 3"]}}
+		6:
+			return {"text": "Com duas subtrações, tire uma de cada vez.",
+				"board": {"kind": "take", "total": 12, "take": 3, "take2": 4, "cross": true, "result": true, "item": "bombom", "lines": ["12 − 4 = 8", "!8 − 3 = 5"]}}
+		7:
+			return {"text": "Multiplicar é somar grupos iguais: 3 × 2 são 3 grupos de 2.",
+				"board": {"kind": "groups", "groups": 3, "size": 2, "item": "pote_mel", "lines": ["2 + 2 + 2", "!3 × 2 = 6"]}}
+		8:
+			return {"text": "A tabuada guarda os grupos que a gente já sabe. E a ordem não importa: 2 × 4 = 4 × 2.",
+				"board": {"kind": "text", "lines": ["4 × 2 = 8", "4 × 3 = 12", "!4 × 4 = 16"]}}
+		9:
+			return {"text": "Esqueceu a tabuada? Conte de tantos em tantos.",
+				"board": {"kind": "groups", "groups": 4, "size": 3, "item": "laranja", "lines": ["3, 6, 9, 12", "!4 × 3 = 12"]}}
+		10:
+			return {"text": "Dividir é repartir em partes iguais, sem sobrar nada.",
+				"board": {"kind": "share", "total": 12, "groups": 3, "item": "pao", "lines": ["!12 ÷ 3 = 4"]}}
+		11:
+			return {"text": "Dividir é o contrário de multiplicar: se 3 × 4 = 12, então 12 ÷ 3 = 4.",
+				"board": {"kind": "text", "lines": ["3 × 4 = 12", "!12 ÷ 3 = 4"]}}
+		12:
+			return {"text": "Para dividir números grandes, use a tabuada ao contrário.",
+				"board": {"kind": "text", "lines": ["5 × ? = 20", "5 × 4 = 20", "!20 ÷ 5 = 4"]}}
+		13:
+			return {"text": "Metade é dividir em 2 partes iguais; um terço, em 3.",
+				"board": {"kind": "fraction", "parts": 2, "take": 1, "total": 8, "values": true, "lines": ["!1/2 de 8 = 4"]}}
+		14:
+			return {"text": "Em 3/4, dividimos em 4 pedaços e pegamos 3.",
+				"board": {"kind": "fraction", "parts": 4, "take": 3, "total": 12, "values": true, "lines": ["12 ÷ 4 = 3", "!3/4 de 12 = 9"]}}
+		15:
+			return {"text": "O segredo das frações: divida pelo número de baixo e multiplique pelo de cima.",
+				"board": {"kind": "text", "lines": ["Divida pelo de BAIXO", "Multiplique pelo de CIMA", "!2/3 de 9:  9 ÷ 3 × 2 = 6"]}}
+		16:
+			return {"text": "Porcentagem é \"de cada cem\". 100% é o todo e 50% é a metade.",
+				"board": {"kind": "percent", "percent": 50, "total": 20, "parts": 2, "values": true, "lines": ["!50% de 20 = 10"]}}
+		17:
+			return {"text": "25% é a metade da metade: um quarto.",
+				"board": {"kind": "percent", "percent": 25, "total": 20, "parts": 4, "values": true, "lines": ["!25% de 20 = 5"]}}
+		18:
+			return {"text": "10% é dividir por 10. A partir dele, montamos 20%, 30%, 40%...",
+				"board": {"kind": "percent", "percent": 30, "total": 20, "parts": 10, "values": true, "lines": ["10% de 20 = 2", "!30% = 3 × 2 = 6"]}}
+	return {"text": "", "board": {"kind": "text", "lines": []}}
+
+
 static func world_index(stage_id):
 	return int((int(stage_id) - 1) / 3)
 
