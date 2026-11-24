@@ -1,6 +1,6 @@
 extends RefCounted
 
-# Textos da história "As Páginas Roubadas" (roteiro completo em docs/HISTORIA.md).
+# Textos da história do MathMatch (roteiro completo em docs/HISTORIA.md).
 # Cada fala é um dicionário lido pela caixa de diálogo (dialogue_box.gd):
 #   who  = "professor", "barao", "narracao" ou o nome de outro personagem
 #   mood = expressão do retrato (assets/imagens/personagens/<who>_<mood>.png)

@@ -1,4 +1,4 @@
-# MathMatch: As Páginas Roubadas — o jogo completo
+# MathMatch — o jogo completo
 
 **Gênero:** puzzle educacional de matemática (match-3) com história
 **Engine:** Godot 4.3, linguagem GDScript

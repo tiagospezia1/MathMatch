@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/imagens/interface/logo.png" alt="MathMatch: As Páginas Roubadas" width="560">
+  <img src="assets/imagens/interface/logo.png" alt="MathMatch" width="560">
 </p>
 
-# MathMatch: As Páginas Roubadas
+# MathMatch
 
 Jogo educacional de matemática no estilo **match-3**, feito em **Godot 4.3** com **GDScript**.
 

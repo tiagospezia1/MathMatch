@@ -45,10 +45,9 @@ func _build_interface():
 	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	main.add_child(logo)
 	if logo is Label:
-		# Sem a imagem do logo, o título e o subtítulo são escritos com a fonte do jogo.
+		# Sem a imagem do logo, o título é escrito com a fonte do jogo.
 		logo.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
 		logo.add_theme_constant_override("shadow_offset_y", 4)
-		main.add_child(UiStyle.label("As Páginas Roubadas", 28, UiStyle.PAPER))
 
 	var columns = HBoxContainer.new()
 	columns.alignment = BoxContainer.ALIGNMENT_CENTER

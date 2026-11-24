@@ -14,10 +14,11 @@ const css = `@font-face { font-family: Logo; src: url(data:font/ttf;base64,${fon
 // Brilho de 4 pontas.
 const sparkle = (x, y, s, o = 1) => `<path transform="translate(${x} ${y}) scale(${s})" opacity="${o}" d="M0 -20 C 3 -5, 5 -3, 20 0 C 5 3, 3 5, 0 20 C -3 5, -5 3, -20 0 C -5 -3, -3 -5, 0 -20 Z" fill="#FFF3B0"/>`;
 
-// Peça do jogo com número, levemente girada.
+// Peça de madeira do jogo com o número pintado (mesmas cores de TILE_INK em game.gd), levemente girada.
+const INK = { 3: '#1E8449', 5: '#D35400', 7: '#138D90' };
 const tile = (n, x, y, rot, size = 96) => `<g transform="translate(${x} ${y}) rotate(${rot})">
   <image href="${peca(n)}" x="${-size / 2}" y="${-size / 2}" width="${size}" height="${size}"/>
-  <text class="t" x="0" y="${size * 0.2}" text-anchor="middle" font-size="${size * 0.55}" fill="#fff" stroke="#1b1b1b" stroke-width="5" paint-order="stroke">${n}</text>
+  <text class="t" x="${size * 0.06}" y="${size * 0.16}" text-anchor="middle" font-size="${size * 0.6}" fill="${INK[n]}" stroke="${INK[n]}" stroke-width="${size * 0.02}">${n}</text>
 </g>`;
 
 const logo = `
@@ -60,14 +61,6 @@ const logo = `
       fill="url(#gold)" stroke="#3B2412" stroke-width="16" stroke-linejoin="round" paint-order="stroke">MathMatch</text>
   </g>
   <text class="t" x="600" y="330" text-anchor="middle" font-size="212" letter-spacing="2" fill="none" stroke="#FFF6C9" stroke-width="2" opacity="0.6">MathMatch</text>
-
-  <!-- fita com o subtítulo -->
-  <g filter="url(#shadow)">
-    <path d="M300 470 L 340 440 L 300 410 L 400 410 L 400 470 Z" fill="#7A2E1E" stroke="#3B140C" stroke-width="5" stroke-linejoin="round"/>
-    <path d="M900 470 L 860 440 L 900 410 L 800 410 L 800 470 Z" fill="#7A2E1E" stroke="#3B140C" stroke-width="5" stroke-linejoin="round"/>
-    <path d="M370 398 Q 600 430 830 398 L 830 470 Q 600 502 370 470 Z" fill="#A23B26" stroke="#3B140C" stroke-width="5" stroke-linejoin="round"/>
-    <text class="t" x="600" y="461" text-anchor="middle" font-size="40" letter-spacing="5" fill="#FFF0C2">AS PÁGINAS ROUBADAS</text>
-  </g>
 
   ${sparkle(60, 230, 1.2)}${sparkle(1140, 300, 1.1)}${sparkle(330, 60, 0.9, 0.9)}${sparkle(820, 60, 1.0)}${sparkle(1150, 180, 0.6, 0.8)}${sparkle(240, 170, 0.6, 0.8)}
 </svg>`;
