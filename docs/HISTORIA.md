@@ -515,10 +515,21 @@ Esta seção é uma sugestão de como levar a história para o código atual, em
   - página recuperada na primeira vitória de cada fase, antes da tela de resultado (na fase 18, o epílogo).
 - Falta: opção de rever as cenas depois (por exemplo, numa tela do livro).
 
-### Etapa 3: o professor nas mini-aulas e dicas
+### Etapa 3: o professor nas mini-aulas e dicas ✅
 
-- Em `_open_lesson()` e `_register_mistake()`, colocar o retrato do professor ao lado do texto e as falas de entrada da seção 7.
-- O conteúdo das dicas em `math_tutor.gd` não precisa mudar.
+O professor ensina de verdade, numa **lousa** desenhada por código (`scripts/lousa.gd`): bolinhas para juntar e tirar, grupos em círculos, pães repartidos em pratos, barras de fração e de porcentagem.
+
+- **Aula completa** (`scripts/professor.gd`, `lesson()`), na primeira fase de cada operação. A primeira vez vai até o fim (não dá para pular); ao rever, dá. Cada aula tem:
+  1. a ideia, ligada à história (maçãs, caixas, colmeias, pães, relógio, mercado);
+  2. um exemplo resolvido passo a passo na lousa;
+  3. um truque (começar pelo maior, pensar ao contrário, tabuada ao contrário, dividir e multiplicar, partir do 10%...);
+  4. um erro comum a evitar;
+  5. dois exercícios: no erro, o professor explica o que aconteceu ("você juntou em vez de tirar"); no segundo erro, resolve junto;
+  6. um resumo do que guardar.
+- **Dicas por erros** (`explain()`): com 2 erros no mesmo desafio, o professor vai à lousa e mostra como pensar NA CONTA ATUAL, sem dar a resposta; com 4 erros, resolve passo a passo e destaca as peças; com 6, aponta a troca.
+- **Botão ? AJUDA:** o professor mostra como pensar na conta atual e pergunta se quer "Resolva comigo", "Rever a aula" ou "Voltar ao jogo".
+- **Erros comuns no tabuleiro** (`misconception()`): se o número combinado é um erro típico (por exemplo, 10 em 7 − 3), aparece "Professor: Você juntou! Na subtração a gente TIRA...". Combinações por acaso não recebem bronca.
+- `math_tutor.gd` ficou só com a dica curta que aparece embaixo da conta.
 
 ### Etapa 4: mapa e livro
 

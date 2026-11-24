@@ -24,6 +24,7 @@ const FOG_COUNT = {"neblina": 6, "final": 4}
 const MathTutor = preload("res://scripts/math_tutor.gd")
 const OptionsPanel = preload("res://scripts/options_panel.gd")
 const Story = preload("res://scripts/story.gd")
+const Professor = preload("res://scripts/professor.gd")
 const DialogueBox = preload("res://scripts/dialogue_box.gd")
 const EMPTY_TILE_COLOR = Color("#1E293B")
 
@@ -79,19 +80,7 @@ var current_challenge_text = ""
 
 # Mini-aula
 var help_button
-var lesson_overlay
 var lesson_open = false
-var lesson_title
-var lesson_idea
-var lesson_example
-var lesson_lines
-var lesson_tip
-var lesson_question
-var lesson_options_box
-var lesson_feedback
-var lesson_play_button
-var lesson_practice = {}
-var lesson_wrong = 0
 
 # Pausa
 var paused = false
@@ -147,7 +136,6 @@ func _ready():
 	_apply_visual_assets()
 	_create_buttons()
 	_build_result_overlay()
-	_build_lesson_overlay()
 	_build_pause_overlay()
 	_build_dialogue()
 	_setup_mode_interface()
@@ -699,12 +687,19 @@ func _matches_target(matches):
 func _resolve_matches():
 	var combo = 1
 	var solved_this_move = false
+	var matched_values = []
 
 	while true:
 		var matches = _find_matches()
 
 		if matches.size() == 0:
 			break
+
+		# Números que o jogador combinou com a própria jogada (sem as cascatas).
+		if combo == 1:
+			for pos in matches:
+				if not matched_values.has(board[pos.y][pos.x]):
+					matched_values.append(board[pos.y][pos.x])
 
 		if not solved_this_move and _matches_target(matches):
 			solved_this_move = true
@@ -772,6 +767,7 @@ func _resolve_matches():
 		else:
 			status_label.text = "A combinação valeu pontos, mas não era a resposta do desafio."
 			_register_mistake()
+			_show_misconception(matched_values)
 	elif context == "developer":
 		if solved_this_move:
 			_reset_hints()
@@ -782,6 +778,7 @@ func _resolve_matches():
 		else:
 			status_label.text = "A combinação valeu pontos, mas não era a resposta do desafio."
 			_register_mistake()
+			_show_misconception(matched_values)
 	elif context == "tutorial":
 		_tutorial_after_move(solved_this_move, false)
 	else:
@@ -1362,8 +1359,6 @@ func _unhandled_input(event):
 
 	if options_panel != null and options_panel.visible:
 		options_panel.close()
-	elif lesson_open:
-		_close_lesson()
 	elif result_overlay.visible:
 		_on_result_back_pressed()
 	elif paused:
@@ -1439,12 +1434,16 @@ func _register_mistake():
 			status_label.text = "Ainda não dá para formar o %d. Faça outra combinação para mexer o tabuleiro." % target_answer
 	elif level_changed:
 		if hint_level == 1:
-			status_label.text = "Precisa de ajuda? Veja a dica embaixo da conta."
+			status_label.text = "O professor explicou como pensar. A dica ficou embaixo da conta."
 		else:
-			status_label.text = "Veja a dica: as peças com a resposta ficaram destacadas."
+			status_label.text = "O professor resolveu junto: as peças com a resposta ficaram destacadas."
 
 	_refresh_instruction()
 	_refresh_board()
+
+	# Nos níveis 1 e 2, o professor vai à lousa explicar esta conta.
+	if level_changed and hint_level <= 2:
+		_professor_explains(hint_level)
 
 
 func _refresh_instruction():
@@ -1507,104 +1506,78 @@ func _create_help_button():
 func _on_help_pressed():
 	if busy or stage_finished or lesson_open or paused or _dialogue_open():
 		return
-	_open_lesson(false)
+	_open_help()
 
 
-func _build_lesson_overlay():
-	lesson_overlay = Control.new()
-	lesson_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lesson_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
-	lesson_overlay.visible = false
-	add_child(lesson_overlay)
+# Aula completa do Professor Aurélio (primeira vez em cada operação, ou ao rever).
+func _open_lesson(first_time):
+	if _dialogue_open():
+		return
+	lesson_open = true
+	selected = Vector2i(-1, -1)
+	_refresh_board()
+	# Na primeira vez a aula vai até o fim; ao rever, dá para pular.
+	dialogue.play(Professor.lesson(mode, first_time), not first_time)
+	await dialogue.finished
+	lesson_open = false
+	if context == "campaign":
+		GameState.mark_lesson_seen(mode)
+	status_label.text = "Agora no tabuleiro: resolva a conta e combine 3 peças com a resposta."
 
-	var shade = ColorRect.new()
-	shade.color = Color(0.02, 0.03, 0.06, 0.88)
-	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lesson_overlay.add_child(shade)
 
-	var center = CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	lesson_overlay.add_child(center)
+# AJUDA: o professor mostra como pensar na conta atual (sem dar a resposta)
+# e oferece resolver junto ou rever a aula inteira.
+func _open_help():
+	if target_answer < 1 or current_challenge_text == "":
+		_open_lesson(false)
+		return
+	lesson_open = true
+	selected = Vector2i(-1, -1)
+	_refresh_board()
+	var lines = Professor.explain(mode, current_challenge_text, target_answer, 1, false)
+	lines.append({
+		"who": "professor",
+		"mood": "feliz",
+		"text": "Quer que eu resolva esta conta com você, ou prefere rever a aula de %s?" % Professor.TITLES.get(mode, "").to_lower(),
+		"menu": ["Resolva comigo", "Rever a aula", "Voltar ao jogo"]
+	})
+	dialogue.play(lines)
+	await dialogue.finished
+	var picked = dialogue.choice
 
-	var panel = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(640, 0)
-	panel.add_theme_stylebox_override("panel", _lesson_box(Color("#172033"), Color("#F5C542"), 2))
-	Assets.apply_panel(panel, "painel_janela")
-	center.add_child(panel)
+	if picked == 0:
+		dialogue.play(Professor.explain(mode, current_challenge_text, target_answer, 2))
+		await dialogue.finished
+		# Depois da resolução, as peças da resposta ficam destacadas.
+		hint_level = max(hint_level, 2)
+		hint_text = MathTutor.get_hint(mode, current_challenge_text, target_answer, 2)
+		_refresh_instruction()
+		_refresh_board()
+	lesson_open = false
+	if picked == 1:
+		_open_lesson(false)
 
-	var margin = MarginContainer.new()
-	for side in ["margin_left", "margin_right"]:
-		margin.add_theme_constant_override(side, 30)
-	for side in ["margin_top", "margin_bottom"]:
-		margin.add_theme_constant_override(side, 24)
-	panel.add_child(margin)
 
-	var box = VBoxContainer.new()
-	box.add_theme_constant_override("separation", 10)
-	margin.add_child(box)
+# Dica por erros: o professor explica a conta atual na lousa.
+func _professor_explains(level):
+	if _dialogue_open() or stage_finished:
+		return
+	lesson_open = true
+	dialogue.play(Professor.explain(mode, current_challenge_text, target_answer, level))
+	await dialogue.finished
+	lesson_open = false
 
-	lesson_title = _lesson_label(26, Color("#F5C542"))
-	box.add_child(lesson_title)
 
-	lesson_idea = _lesson_label(17, Color("#F8FAFC"))
-	box.add_child(lesson_idea)
-
-	var example_panel = PanelContainer.new()
-	example_panel.add_theme_stylebox_override("panel", _lesson_box(Color("#0F172A"), Color("#334155"), 1))
-	box.add_child(example_panel)
-
-	var example_margin = MarginContainer.new()
-	for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
-		example_margin.add_theme_constant_override(side, 14)
-	example_panel.add_child(example_margin)
-
-	var example_box = VBoxContainer.new()
-	example_box.add_theme_constant_override("separation", 6)
-	example_margin.add_child(example_box)
-
-	lesson_example = _lesson_label(20, Color("#FDE047"))
-	example_box.add_child(lesson_example)
-
-	lesson_lines = _lesson_label(19, Color("#F8FAFC"))
-	example_box.add_child(lesson_lines)
-
-	lesson_tip = _lesson_label(14, Color("#AAB8CC"))
-	example_box.add_child(lesson_tip)
-
-	var try_label = _lesson_label(18, Color("#86EFAC"))
-	try_label.text = "SUA VEZ!"
-	box.add_child(try_label)
-
-	lesson_question = _lesson_label(24, Color("#F8FAFC"))
-	box.add_child(lesson_question)
-
-	lesson_options_box = HBoxContainer.new()
-	lesson_options_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	lesson_options_box.add_theme_constant_override("separation", 14)
-	box.add_child(lesson_options_box)
-
-	lesson_feedback = _lesson_label(15, Color("#AAB8CC"))
-	box.add_child(lesson_feedback)
-
-	var actions = HBoxContainer.new()
-	actions.alignment = BoxContainer.ALIGNMENT_CENTER
-	actions.add_theme_constant_override("separation", 14)
-	box.add_child(actions)
-
-	var skip_button = Button.new()
-	skip_button.text = "PULAR"
-	skip_button.custom_minimum_size = Vector2(150, 44)
-	skip_button.pressed.connect(_close_lesson)
-	Assets.apply_button(skip_button)
-	actions.add_child(skip_button)
-
-	lesson_play_button = Button.new()
-	lesson_play_button.text = "JOGAR →"
-	lesson_play_button.custom_minimum_size = Vector2(220, 48)
-	lesson_play_button.pressed.connect(_close_lesson)
-	Assets.apply_button(lesson_play_button)
-	actions.add_child(lesson_play_button)
+# Se a peça combinada mostra um erro comum (somou em vez de tirar...),
+# o professor diz o que aconteceu.
+func _show_misconception(values):
+	if _dialogue_open() or target_answer < 1:
+		return
+	for value in values:
+		var note = Professor.misconception(mode, current_challenge_text, target_answer, int(value) + 1)
+		if note != "":
+			status_label.text = "Professor: " + note
+			return
 
 
 func _lesson_label(font_size, color):
@@ -1629,90 +1602,6 @@ func _lesson_box(bg, border, border_width):
 	style.corner_radius_bottom_left = 14
 	style.corner_radius_bottom_right = 14
 	return style
-
-
-func _open_lesson(first_time):
-	var lesson = MathTutor.get_lesson(mode)
-	if lesson.is_empty():
-		return
-
-	if first_time:
-		lesson_title.text = "NOVO CONTEÚDO: %s" % lesson["name"]
-	else:
-		lesson_title.text = "COMO FAZER: %s" % lesson["name"]
-
-	lesson_idea.text = lesson["idea"]
-	lesson_example.text = "Exemplo:  " + lesson["example"]
-	lesson_lines.text = "\n".join(PackedStringArray(lesson["lines"]))
-	lesson_tip.text = lesson["tip"]
-
-	var practice_list = lesson["practice"]
-	lesson_practice = practice_list[randi() % practice_list.size()]
-	lesson_wrong = 0
-	lesson_question.text = lesson_practice["text"]
-
-	for child in lesson_options_box.get_children():
-		child.queue_free()
-
-	var options = lesson_practice["options"].duplicate()
-	options.shuffle()
-	for value in options:
-		var option_button = Button.new()
-		option_button.text = str(value)
-		option_button.custom_minimum_size = Vector2(90, 54)
-		option_button.add_theme_font_size_override("font_size", 22)
-		option_button.pressed.connect(_on_lesson_option.bind(option_button, int(value)))
-		option_button.set_meta("no_click_sound", true)
-		Assets.apply_button(option_button)
-		lesson_options_box.add_child(option_button)
-
-	lesson_feedback.text = "Toque na resposta certa."
-	lesson_feedback.add_theme_color_override("font_color", Color("#AAB8CC"))
-	lesson_play_button.disabled = true
-
-	selected = Vector2i(-1, -1)
-	_refresh_board()
-	lesson_open = true
-	lesson_overlay.visible = true
-
-
-func _on_lesson_option(option_button, value):
-	var answer = int(lesson_practice["answer"])
-
-	if value == answer:
-		Audio.play("acerto")
-		option_button.modulate = Color("#86EFAC")
-		for child in lesson_options_box.get_children():
-			child.disabled = true
-		lesson_feedback.text = "Isso! A resposta é %d.\nNo tabuleiro é igual: resolva a conta e junte 3 peças com a resposta." % answer
-		lesson_feedback.add_theme_color_override("font_color", Color("#86EFAC"))
-		lesson_play_button.disabled = false
-		lesson_play_button.grab_focus()
-		return
-
-	lesson_wrong += 1
-	Audio.play("troca_invalida")
-	option_button.disabled = true
-	option_button.modulate = Color("#FCA5A5")
-
-	# 1º erro: estratégia. 2º erro: mostra o passo a passo.
-	var level = 1 if lesson_wrong == 1 else 2
-	var tip = MathTutor.get_hint(mode, lesson_practice["text"], answer, level, false)
-	lesson_feedback.text = ("Quase! " if level == 1 else "Veja como fazer: ") + tip
-	lesson_feedback.add_theme_color_override("font_color", Color("#FDE047"))
-
-
-func _close_lesson():
-	if not lesson_open:
-		return
-
-	lesson_open = false
-	lesson_overlay.visible = false
-
-	if context == "campaign":
-		GameState.mark_lesson_seen(mode)
-
-	status_label.text = "Agora no tabuleiro: resolva a conta e combine 3 peças com a resposta."
 
 
 # =====================================================================

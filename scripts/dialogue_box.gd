@@ -1,17 +1,29 @@
 extends Control
 
-# Caixa de diálogo da história: retrato, nome, texto com efeito de digitação.
-# Uso: dialogue.play(Story.prologue()) e esperar o sinal "finished".
+# Caixa de diálogo da história e das aulas: retrato, nome, texto com efeito
+# de digitação e, quando a fala pede, a lousa do professor e exercícios.
+# Uso: dialogue.play(linhas) e esperar o sinal "finished".
 # Clique, ENTER ou ESPAÇO: completa o texto ou passa para a próxima fala.
-# ESC ou PULAR: pula o diálogo inteiro.
+# ESC ou PULAR: pula o diálogo inteiro (quando permitido).
+#
+# Campos de cada fala:
+#   who, mood, text   quem fala, a expressão e o texto ([NOME] = nome do jogador)
+#   ask_name          pede o nome do jogador
+#   board             desenho da lousa (veja lousa.gd)
+#   quiz              exercício: choices, answer, feedback, right, solution, solution_board
+#   menu              lista de opções; a escolhida fica em "choice"
 
 signal finished
+
+const Lousa = preload("res://scripts/lousa.gd")
 
 const PANEL_COLOR = Color("#172033")
 const ACCENT = Color("#F5C542")
 const TEXT = Color("#F8FAFC")
 const MUTED = Color("#AAB8CC")
 const NARRATION = Color("#DCE7F7")
+const BOARD_COLOR = Color("#1F3A2E")
+const BOARD_FRAME = Color("#8B5A2B")
 const CHARS_PER_SECOND = 55.0
 const DEFAULT_NAME = "Aprendiz"
 
@@ -25,6 +37,13 @@ var index = -1
 var typing = false
 var shown_chars = 0.0
 var asking_name = false
+var can_skip = true
+
+# Exercício / menu da fala atual
+var quiz = {}
+var quiz_wrong = 0
+var waiting_choice = false
+var choice = -1
 
 var portrait
 var portrait_frame
@@ -33,8 +52,11 @@ var text_label
 var name_row
 var name_edit
 var name_ok
+var choices_row
 var continue_button
 var skip_button
+var board_panel
+var lousa
 
 
 func _ready():
@@ -49,9 +71,12 @@ func is_open():
 	return visible
 
 
-func play(new_lines):
+func play(new_lines, skippable = true):
 	lines = new_lines
 	index = -1
+	choice = -1
+	can_skip = skippable
+	skip_button.visible = can_skip
 	if lines.is_empty():
 		finished.emit()
 		return
@@ -61,10 +86,26 @@ func play(new_lines):
 
 func _build():
 	var shade = ColorRect.new()
-	shade.color = Color(0.02, 0.03, 0.06, 0.72)
+	shade.color = Color(0.02, 0.03, 0.06, 0.78)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shade)
+
+	# Lousa do professor (só aparece nas falas com "board").
+	board_panel = PanelContainer.new()
+	board_panel.anchor_right = 1.0
+	board_panel.offset_left = 40
+	board_panel.offset_right = -40
+	board_panel.offset_top = 28
+	board_panel.offset_bottom = 548
+	board_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	board_panel.add_theme_stylebox_override("panel", _board_style())
+	board_panel.visible = false
+	add_child(board_panel)
+
+	lousa = Lousa.new()
+	lousa.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	board_panel.add_child(lousa)
 
 	var panel = PanelContainer.new()
 	panel.anchor_left = 0.0
@@ -73,7 +114,7 @@ func _build():
 	panel.anchor_bottom = 1.0
 	panel.offset_left = 24
 	panel.offset_right = -24
-	panel.offset_top = -290
+	panel.offset_top = -330
 	panel.offset_bottom = -24
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel", _panel_style())
@@ -84,7 +125,7 @@ func _build():
 	for side in ["margin_left", "margin_right"]:
 		margin.add_theme_constant_override(side, 26)
 	for side in ["margin_top", "margin_bottom"]:
-		margin.add_theme_constant_override(side, 22)
+		margin.add_theme_constant_override(side, 20)
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(margin)
 
@@ -121,7 +162,7 @@ func _build():
 	text_label = Label.new()
 	text_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	text_label.add_theme_font_size_override("font_size", 22)
+	text_label.add_theme_font_size_override("font_size", 21)
 	text_label.add_theme_color_override("font_color", TEXT)
 	column.add_child(text_label)
 
@@ -146,6 +187,11 @@ func _build():
 	name_ok.pressed.connect(_confirm_name)
 	Assets.apply_button(name_ok)
 	name_row.add_child(name_ok)
+
+	choices_row = HBoxContainer.new()
+	choices_row.add_theme_constant_override("separation", 12)
+	choices_row.visible = false
+	column.add_child(choices_row)
 
 	var actions = HBoxContainer.new()
 	actions.alignment = BoxContainer.ALIGNMENT_END
@@ -185,28 +231,45 @@ func _show_line(line):
 	var who = str(line.get("who", "narracao"))
 	var narration = who == "narracao"
 
-	var texture = null
 	if SPEAKERS.has(who):
-		var mood = str(line.get("mood", SPEAKERS[who]["default_mood"]))
-		texture = Assets.texture("personagens/%s_%s" % [who, mood])
-		if texture == null:
-			texture = Assets.texture("personagens/%s_%s" % [who, SPEAKERS[who]["default_mood"]])
+		_set_portrait(who, str(line.get("mood", SPEAKERS[who]["default_mood"])))
 		name_label.text = SPEAKERS[who]["name"]
 	else:
+		portrait.texture = null
+		portrait_frame.visible = false
 		name_label.text = "" if narration else who.to_upper()
-
-	portrait.texture = texture
-	portrait_frame.visible = texture != null
 	name_label.visible = name_label.text != ""
 
-	text_label.text = str(line.get("text", "")).replace("[NOME]", _player_name())
 	text_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if narration else HORIZONTAL_ALIGNMENT_LEFT
 	text_label.add_theme_color_override("font_color", NARRATION if narration else TEXT)
 
+	if line.has("board"):
+		board_panel.visible = true
+		lousa.show_spec(line["board"], bool(line.get("board_animate", true)))
+	else:
+		board_panel.visible = false
+
 	asking_name = bool(line.get("ask_name", false))
 	name_row.visible = false
-	continue_button.visible = not asking_name
 
+	quiz = line.get("quiz", {})
+	quiz_wrong = 0
+	_clear_choices()
+	if not quiz.is_empty():
+		for value in quiz.get("choices", []):
+			_add_choice(str(value), _on_quiz_choice.bind(int(value)))
+	elif line.has("menu"):
+		var options = line["menu"]
+		for i in range(options.size()):
+			_add_choice(str(options[i]), _on_menu_choice.bind(i))
+	waiting_choice = choices_row.get_child_count() > 0
+	continue_button.visible = not asking_name and not waiting_choice
+
+	_type(str(line.get("text", "")))
+
+
+func _type(value):
+	text_label.text = value.replace("[NOME]", _player_name())
 	shown_chars = 0.0
 	text_label.visible_characters = 0
 	typing = true
@@ -231,6 +294,15 @@ func _end_typing():
 		name_edit.text = ""
 		name_ok.disabled = true
 		name_edit.grab_focus()
+	elif choices_row.get_child_count() > 0:
+		choices_row.visible = true
+		if waiting_choice:
+			for button in choices_row.get_children():
+				if not button.disabled:
+					button.grab_focus()
+					break
+		else:
+			continue_button.grab_focus()
 	else:
 		continue_button.grab_focus()
 
@@ -240,11 +312,13 @@ func _advance():
 		return
 	if typing:
 		_end_typing()
-	else:
+	elif not waiting_choice:
 		_next()
 
 
 func _skip_all():
+	if not can_skip:
+		return
 	if asking_name:
 		# O nome é necessário para as falas seguintes; usa o padrão se pular.
 		_save_name(DEFAULT_NAME)
@@ -255,8 +329,101 @@ func _finish():
 	typing = false
 	set_process(false)
 	asking_name = false
+	waiting_choice = false
+	_clear_choices()
+	board_panel.visible = false
 	visible = false
 	finished.emit()
+
+
+func _set_portrait(who, mood):
+	var texture = Assets.texture("personagens/%s_%s" % [who, mood])
+	if texture == null and SPEAKERS.has(who):
+		texture = Assets.texture("personagens/%s_%s" % [who, SPEAKERS[who]["default_mood"]])
+	portrait.texture = texture
+	portrait_frame.visible = texture != null
+
+
+# ---------------------------------------------------------------------
+# Exercícios e menus
+# ---------------------------------------------------------------------
+
+func _clear_choices():
+	for child in choices_row.get_children():
+		choices_row.remove_child(child)
+		child.queue_free()
+	choices_row.visible = false
+
+
+func _add_choice(label_text, callback):
+	var button = Button.new()
+	button.text = label_text
+	button.custom_minimum_size = Vector2(96 if label_text.length() <= 3 else 150, 46)
+	button.add_theme_font_size_override("font_size", 22 if label_text.length() <= 3 else 15)
+	button.set_meta("no_click_sound", true)
+	button.pressed.connect(callback)
+	Assets.apply_button(button)
+	choices_row.add_child(button)
+
+
+func _on_menu_choice(option_index):
+	Audio.play("clique")
+	choice = option_index
+	waiting_choice = false
+	_next()
+
+
+func _on_quiz_choice(value):
+	if not waiting_choice:
+		return
+	var answer = int(quiz.get("answer", -1))
+	var button = _choice_button(value)
+
+	if value == answer:
+		Audio.play("acerto")
+		if button != null:
+			button.modulate = Color("#86EFAC")
+		_close_quiz()
+		_set_portrait("professor", "orgulhoso")
+		if quiz.has("solution_board"):
+			lousa.show_spec(quiz["solution_board"])
+		_type(str(quiz.get("right", "Isso!")))
+		return
+
+	Audio.play("troca_invalida")
+	quiz_wrong += 1
+	if button != null:
+		button.disabled = true
+		button.modulate = Color("#FCA5A5")
+	var feedback = str(quiz.get("feedback", {}).get(str(value), "Ainda não. Tente de novo."))
+
+	if quiz_wrong >= 2:
+		# Segunda tentativa errada: o professor resolve junto e mostra a resposta.
+		_close_quiz()
+		var right_button = _choice_button(answer)
+		if right_button != null:
+			right_button.modulate = Color("#86EFAC")
+		_set_portrait("professor", "explicando")
+		if quiz.has("solution_board"):
+			lousa.show_spec(quiz["solution_board"])
+		_type("%s Vamos resolver juntos: %s" % [feedback, str(quiz.get("solution", ""))])
+	else:
+		_set_portrait("professor", "preocupado")
+		_type(feedback)
+
+
+func _choice_button(value):
+	for button in choices_row.get_children():
+		if button.text == str(value):
+			return button
+	return null
+
+
+func _close_quiz():
+	waiting_choice = false
+	for button in choices_row.get_children():
+		button.disabled = true
+	continue_button.visible = true
 
 
 # ---------------------------------------------------------------------
@@ -297,7 +464,7 @@ func _save_name(value):
 func _gui_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		accept_event()
-		if not asking_name:
+		if not asking_name and (typing or not waiting_choice):
 			Audio.play("clique")
 			_advance()
 
@@ -325,6 +492,19 @@ func _panel_style():
 		style.set(side, 2)
 	for corner in ["corner_radius_top_left", "corner_radius_top_right", "corner_radius_bottom_left", "corner_radius_bottom_right"]:
 		style.set(corner, 16)
+	return style
+
+
+func _board_style():
+	var style = StyleBoxFlat.new()
+	style.bg_color = BOARD_COLOR
+	style.border_color = BOARD_FRAME
+	for side in ["border_width_left", "border_width_top", "border_width_right", "border_width_bottom"]:
+		style.set(side, 10)
+	for corner in ["corner_radius_top_left", "corner_radius_top_right", "corner_radius_bottom_left", "corner_radius_bottom_right"]:
+		style.set(corner, 12)
+	style.shadow_color = Color(0, 0, 0, 0.45)
+	style.shadow_size = 10
 	return style
 
 

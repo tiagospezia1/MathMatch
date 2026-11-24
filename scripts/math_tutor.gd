@@ -1,121 +1,12 @@
 extends RefCounted
 
-# Conteúdo pedagógico do MathMatch.
-# - get_lesson(): mini-aula prática mostrada ao começar um conteúdo novo.
+# Dicas curtas do MathMatch (o texto "DICA: ..." embaixo da conta).
+# As aulas e as explicações na lousa ficam em professor.gd.
 # - get_hint(): dica para o desafio atual quando o jogador erra várias vezes.
 #     nível 1 = estratégia (não entrega a resposta)
 #     nível 2 = resolução passo a passo (entrega a resposta)
 
 const DOT = "●"
-const EMPTY_DOT = "○"
-
-
-static func get_lesson(operation):
-	match operation:
-		"addition":
-			return {
-				"name": "ADIÇÃO",
-				"idea": "Somar é JUNTAR. Junte tudo e conte quantos ficaram.",
-				"example": "3 + 2 = ?",
-				"lines": [
-					"%s  +  %s" % [_dots(3), _dots(2)],
-					"Juntando: %s" % _dots(5),
-					"Conte: 1, 2, 3, 4, 5  →  3 + 2 = 5"
-				],
-				"tip": "Truque: comece no número maior e conte o resto nos dedos (3 → 4, 5).",
-				"practice": [
-					{"text": "2 + 4 = ?", "answer": 6, "options": [5, 6, 7]},
-					{"text": "3 + 3 = ?", "answer": 6, "options": [5, 6, 8]},
-					{"text": "4 + 1 = ?", "answer": 5, "options": [4, 5, 6]}
-				]
-			}
-		"subtraction":
-			return {
-				"name": "SUBTRAÇÃO",
-				"idea": "Subtrair é TIRAR. Comece com tudo e tire uma parte.",
-				"example": "5 − 2 = ?",
-				"lines": [
-					"Você tem:  %s" % _dots(5),
-					"Tira 2:     %s%s" % [_dots(3), EMPTY_DOT.repeat(2)],
-					"Sobram:    %s  →  5 − 2 = 3" % _dots(3)
-				],
-				"tip": "Truque: pense ao contrário. Quanto falta do 2 para chegar no 5?",
-				"practice": [
-					{"text": "6 − 2 = ?", "answer": 4, "options": [3, 4, 5]},
-					{"text": "7 − 3 = ?", "answer": 4, "options": [4, 5, 3]},
-					{"text": "8 − 5 = ?", "answer": 3, "options": [2, 3, 4]}
-				]
-			}
-		"multiplication":
-			return {
-				"name": "MULTIPLICAÇÃO",
-				"idea": "Multiplicar é somar GRUPOS IGUAIS.",
-				"example": "3 × 2 = ?",
-				"lines": [
-					"3 grupos de 2:",
-					_groups(3, 2),
-					"2 + 2 + 2 = 6  →  3 × 2 = 6"
-				],
-				"tip": "Truque: se esquecer a tabuada, some o mesmo número várias vezes.",
-				"practice": [
-					{"text": "2 × 3 = ?", "answer": 6, "options": [5, 6, 8]},
-					{"text": "2 × 4 = ?", "answer": 8, "options": [6, 8, 10]},
-					{"text": "3 × 3 = ?", "answer": 9, "options": [6, 9, 12]}
-				]
-			}
-		"division":
-			return {
-				"name": "DIVISÃO",
-				"idea": "Dividir é REPARTIR igualmente, sem sobrar nada.",
-				"example": "6 ÷ 3 = ?",
-				"lines": [
-					"6 balas para 3 amigos:",
-					_split(6, 3),
-					"Cada um ganha 2  →  6 ÷ 3 = 2"
-				],
-				"tip": "Truque: use a multiplicação ao contrário. 3 × ? = 6",
-				"practice": [
-					{"text": "8 ÷ 2 = ?", "answer": 4, "options": [3, 4, 6]},
-					{"text": "9 ÷ 3 = ?", "answer": 3, "options": [2, 3, 6]},
-					{"text": "10 ÷ 2 = ?", "answer": 5, "options": [4, 5, 8]}
-				]
-			}
-		"fraction":
-			return {
-				"name": "FRAÇÕES",
-				"idea": "Em 1/2, o número de BAIXO diz em quantas partes dividir. O de CIMA diz quantas partes pegar.",
-				"example": "1/2 de 8 = ?",
-				"lines": [
-					"Divida 8 em 2 partes iguais:",
-					_split(8, 2),
-					"Pegue 1 parte: %s  →  4" % _dots(4)
-				],
-				"tip": "Como numa pizza: 1/4 é dividir em 4 pedaços e pegar 1.",
-				"practice": [
-					{"text": "1/2 de 6 = ?", "answer": 3, "options": [2, 3, 4]},
-					{"text": "1/3 de 9 = ?", "answer": 3, "options": [3, 4, 6]},
-					{"text": "2/3 de 6 = ?", "answer": 4, "options": [2, 3, 4]}
-				]
-			}
-		"percentage":
-			return {
-				"name": "PORCENTAGEM",
-				"idea": "% quer dizer \"de cada 100\". 100% é o total e 50% é a metade.",
-				"example": "50% de 10 = ?",
-				"lines": [
-					"100%% = %s" % _dots(10),
-					"50%% = metade: %s | %s" % [_dots(5), _dots(5)],
-					"50% de 10 = 5"
-				],
-				"tip": "Atalhos: 50% = metade • 25% = metade da metade • 10% = dividir por 10.",
-				"practice": [
-					{"text": "50% de 8 = ?", "answer": 4, "options": [2, 4, 6]},
-					{"text": "25% de 8 = ?", "answer": 2, "options": [2, 4, 6]},
-					{"text": "10% de 30 = ?", "answer": 3, "options": [3, 10, 30]}
-				]
-			}
-
-	return {}
 
 
 static func get_hint(operation, text, answer, level, mention_tiles = true):
@@ -312,10 +203,3 @@ static func _groups(groups, size):
 	for i in range(groups):
 		parts.append(_dots(size))
 	return "   ".join(PackedStringArray(parts))
-
-
-static func _split(total, groups):
-	var parts = []
-	for i in range(groups):
-		parts.append(_dots(total / groups))
-	return " | ".join(PackedStringArray(parts))
