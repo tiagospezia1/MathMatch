@@ -496,11 +496,11 @@ Ao subir de nível:
 
 Esta seção é uma sugestão de como levar a história para o código atual, em etapas, sem quebrar o que já funciona.
 
-### Etapa 1: dados da história ✅ (em parte)
+### Etapa 1: dados da história ✅
 
 - ✅ `scripts/story.gd` guarda os textos: prólogo, fim do tutorial, abertura de cada mundo, provocação nas emboscadas, página recuperada em cada fase e epílogo. Os nomes dos lugares ficam em `Story.WORLD_NAMES`.
 - ✅ O progresso salva `player_name` (o nome digitado no prólogo) e `seen_story` (as cenas já vistas, igual ao `seen_lessons`).
-- Falta: nome de cada página em `STAGES`, se for usado no mapa ou na tela do livro.
+- ✅ Nome e conteúdo de cada página em `Story.PAGE_NAMES` e `Story.page_content()`, usados na tela do livro.
 
 ### Etapa 2: caixa de diálogo ✅
 
