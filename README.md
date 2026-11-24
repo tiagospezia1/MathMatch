@@ -140,7 +140,7 @@ MathMatch/
 │   ├── HISTORIA.md              # roteiro da história e guia de implementação
 │   ├── imagens/                 # prints usados neste README
 │   └── registros/               # registros das entregas anteriores
-└── tools/                       # scripts que geram o logo, as músicas e os fundos do mapa (o Godot ignora)
+└── tools/                       # scripts que geram o logo, as músicas, as peças, o mapa e os fundos (o Godot ignora)
 ```
 
 ### Assets
@@ -169,9 +169,9 @@ Serve para testar fases e progresso durante o desenvolvimento: abre qualquer ope
 
 ## Créditos
 
-- Peças, botões, painéis, fundos, brilhos e efeitos sonoros: **Kenney** (kenney.nl), licença CC0.
+- Botões, painéis, brilhos e efeitos sonoros: **Kenney** (kenney.nl), licença CC0.
 - Retratos dos personagens: feitos com **Open Peeps**, de Pablo Stanley, licença CC0.
 - Fonte: **Cormorant Garamond**, de Christian Thalmann, SIL Open Font License 1.1.
-- Músicas, logo, ícone, fundos do mapa e desenhos da lousa: feitos para o MathMatch.
+- Músicas, logo, ícone, peças de madeira, mapa, fundos dos lugares e desenhos da lousa: feitos para o MathMatch.
 
 Detalhes em [`assets/CREDITOS.md`](assets/CREDITOS.md) e licenças em `assets/licencas/`.

@@ -29,6 +29,13 @@ const DialogueBox = preload("res://scripts/dialogue_box.gd")
 const UiStyle = preload("res://scripts/ui_style.gd")
 const EMPTY_TILE_COLOR = Color("#1E293B")
 
+# Cor da tinta de cada número nas peças de madeira (a mesma do símbolo pintado no canto).
+const TILE_INK = [
+	Color("#C0392B"), Color("#1F5FAD"), Color("#1E8449"), Color("#7D3C98"),
+	Color("#D35400"), Color("#B03A7A"), Color("#138D90"), Color("#9A7D0A"),
+	Color("#2C3E8C"), Color("#5B7F1A"), Color("#6E2C00"), Color("#2E2E2E")
+]
+
 const TILE_COLORS = [
 	Color("#EF4444"),
 	Color("#3B82F6"),
@@ -1002,13 +1009,21 @@ func _set_tile_style(button, value, _is_selected = false, _is_hint = false, _is_
 		style = Assets.texture_style(tex)
 		hover_style = Assets.texture_style(tex, 0, Color(1.08, 1.08, 1.08))
 		pressed_style = Assets.texture_style(tex, 0, Color(0.88, 0.88, 0.88))
-		# A peça da Kenney tem uma "sombra" embaixo: sobe o número para o centro da face.
+		# A peça de madeira tem a lateral embaixo: sobe o número para o centro da face.
 		for st in [style, hover_style, pressed_style]:
 			st.content_margin_bottom = 6
-		# Contorno escuro para o número continuar legível sobre a imagem.
-		button.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-		button.add_theme_constant_override("outline_size", 6)
-		button.add_theme_font_size_override("font_size", 26)
+		# Número pintado na madeira, na cor do símbolo. O contorno da mesma cor deixa o traço mais grosso.
+		var ink = TILE_INK[value] if value >= 0 else Color.WHITE
+		for state in ["font_color", "font_hover_color", "font_pressed_color"]:
+			button.add_theme_color_override(state, ink)
+		button.add_theme_color_override("font_outline_color", ink)
+		button.add_theme_constant_override("outline_size", 3)
+		button.add_theme_font_size_override("font_size", 32)
+		button.add_theme_stylebox_override("normal", style)
+		button.add_theme_stylebox_override("hover", hover_style)
+		button.add_theme_stylebox_override("pressed", pressed_style)
+		button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+		return
 	else:
 		style = _flat_tile_style(color)
 		hover_style = _flat_tile_style(color.lightened(0.08))
@@ -1076,7 +1091,14 @@ func _set_tile_overlay(index, state):
 
 # Fundos e painéis da partida (só trocam se o arquivo existir).
 func _apply_visual_assets():
-	var bg_tex = Assets.texture("fundos/fundo_partida")
+	# Fundo do lugar da fase (o tutorial acontece na Vila do Pomar).
+	var bg_tex = null
+	if context == "campaign" and not GameState.get_current_stage().is_empty():
+		bg_tex = Assets.texture("fundos/lugar_%d" % (Story.world_index(GameState.get_current_stage()["id"]) + 1))
+	elif context == "tutorial":
+		bg_tex = Assets.texture("fundos/lugar_1")
+	if bg_tex == null:
+		bg_tex = Assets.texture("fundos/fundo_partida")
 	if bg_tex != null:
 		var bg = TextureRect.new()
 		bg.texture = bg_tex
@@ -1088,7 +1110,8 @@ func _apply_visual_assets():
 		move_child(bg, 1)
 
 	Assets.apply_panel($Margin/Main/BoardPanel, "fundo_tabuleiro", false)
-	Assets.apply_panel(challenge_panel, "painel_desafio")
+	# A conta aparece numa lousinha do professor.
+	challenge_panel.add_theme_stylebox_override("panel", UiStyle.chalkboard(10))
 	$Margin/Main/Note.visible = false
 
 

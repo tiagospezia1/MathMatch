@@ -65,7 +65,8 @@ Cada cena aparece só na primeira vez; todas podem ser revistas no **Grande Livr
 ## 3. O tabuleiro e as peças
 
 - Tabuleiro de **8×8** casas.
-- Cada peça tem um **número** de 1 a 12, com **cor e ícone próprios** (dá para diferenciar pela forma, não só pela cor).
+- As peças são **bloquinhos de madeira** numa bandeja com filete dourado. Cada uma tem um **número** de 1 a 12 pintado numa cor própria e um **símbolo pintado no canto** (círculo, quadrado, triângulo, estrela...), então dá para diferenciar pela forma, não só pela cor.
+- A conta aparece numa **lousinha do professor** acima do tabuleiro, e o fundo da tela é o **lugar da fase** (pomar, porto, floresta, aldeia, torre ou mercado).
 - Fases fáceis usam os números de 1 a 6, as médias até 9 e as difíceis até 12.
 
 ### Como se joga
@@ -205,8 +206,8 @@ Quem completa as 18 fases chega ao nível 7, como Mestre dos Números.
 | Tela | O que tem |
 |---|---|
 | **Inicial** | Logo; o professor numa lousa com uma fala que muda conforme o progresso, nível, título e páginas; o menu como capa do livro (COMEÇAR A AVENTURA ou CONTINUAR A JORNADA, O LIVRO, TUTORIAL, OPÇÕES, CRÉDITOS); peças flutuando; o Barão espiando no canto (clicar nele faz ele provocar) |
-| **Mapa** | Os 6 lugares ligados por um caminho, cada um com seu fundo ilustrado e suas páginas, o contador de páginas recuperadas e o botão LIVRO |
-| **Partida** | Conta, objetivo, pontos, jogadas, tabuleiro, botões ? AJUDA e II PAUSA |
+| **Mapa** | Um pergaminho desenhado, como uma página do Grande Livro: uma estrada passa pelos 6 lugares, cada um com seus desenhos (o Barão aparece no Grande Mercado). As fases são selos de cera (concluídas), uma moeda dourada (atual), marcos de papel (liberadas) e de pedra (bloqueadas). Os lugares ainda não alcançados ficam cobertos por um pedaço de papel. Em cima, o contador de páginas recuperadas e o botão LIVRO |
+| **Partida** | Conta na lousinha, objetivo, pontos, jogadas, tabuleiro de madeira, botões ? AJUDA e II PAUSA, com o lugar da fase ao fundo |
 | **Grande Livro dos Números** | As 18 páginas com carimbos; cada página com a lição, um exemplo na lousa e botões para rever a cena e a aula; rever prólogo, chegadas e final |
 | **Pausa** | Continuar, reiniciar, como jogar, opções e sair |
 | **Opções** | Música, efeitos, tela cheia, tamanho do texto e alto contraste |
@@ -218,7 +219,7 @@ Quem completa as 18 fases chega ao nível 7, como Mestre dos Números.
 
 - **Tamanho do texto:** Normal, Grande (+15%) e Muito grande (+30%), em todas as telas.
 - **Alto contraste:** aumenta a diferença entre claro e escuro na tela inteira.
-- **Peças diferenciadas por ícone**, não só pela cor.
+- **Peças diferenciadas por símbolo**, não só pela cor.
 - **Diálogos** no ritmo do jogador: o texto só avança quando ele clica.
 
 As opções ficam salvas.

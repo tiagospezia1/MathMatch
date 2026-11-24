@@ -78,10 +78,10 @@ func _build():
 		"e %s, quem recuperou o Grande Livro dos Números" % _player_name()
 	])
 	_section("ARTE", [
-		"Peças, botões, painéis, fundos e brilhos:",
+		"Botões, painéis, fundos do menu e brilhos:",
 		"Kenney (kenney.nl) • UI Pack, Boardgame Pack e Particle Pack • CC0",
 		"Retratos dos personagens feitos com Open Peeps, de Pablo Stanley • CC0",
-		"Logo, ícone, fundos do mapa e desenhos da lousa feitos para o MathMatch"
+		"Logo, ícone, peças de madeira, mapa, fundos dos lugares e desenhos da lousa feitos para o MathMatch"
 	])
 	_section("MÚSICA", [
 		"\"A Biblioteca do Professor\" (menu)",

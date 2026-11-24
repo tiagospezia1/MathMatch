@@ -82,10 +82,11 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 ## 7. Telas e visual
 
 - Tela inicial com o professor numa lousa (fala conforme o progresso), o menu como capa do livro, peças flutuando e o Barão espiando no canto.
-- Mapa com os nomes dos lugares, páginas por mundo e contador de páginas recuperadas. Cada um dos 6 lugares tem um fundo ilustrado próprio (pomar, porto, floresta, aldeia em festa, torre do relógio e mercado).
+- Mapa desenhado como um pergaminho do Grande Livro: estrada pontilhada pelos 6 lugares, desenhos de cada lugar, fases como selos de cera, moeda e marcos, lugares não alcançados cobertos por papel, páginas por lugar e contador de páginas recuperadas.
 - Grande Livro dos Números: 18 páginas com carimbos, lição e exemplo de cada uma.
 - Créditos com rolagem.
 - Visual dos menus inspirado no livro (couro, papel e dourado), logo e ícone novos. A partida usa o mesmo visual: botões PAUSA e AJUDA, caixa de diálogo como uma página do livro e janela de vitória.
+- Tabuleiro de madeira: peças em bloquinhos de madeira com número e símbolo pintados, bandeja com filete dourado, conta numa lousinha e o lugar da fase ao fundo.
 
 ## 8. Acessibilidade e opções
 

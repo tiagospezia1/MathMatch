@@ -1,10 +1,12 @@
-MAPA DA JORNADA (PNG com fundo transparente)
+MAPA DA JORNADA (gerado por tools/mapa/gerar_mapa.js)
 
-fase_concluida.png     fase concluída  (sugerido 128x128; aparece em 86x86)
-fase_atual.png         fase atual
-fase_disponivel.png    fase liberada
-fase_bloqueada.png     fase bloqueada
-mundo_1.png ... mundo_6.png   fundo ilustrado de cada lugar (1488x700, aparece em 744x350)
-                              gerados por tools/mapa/gerar_fundos.js
+pergaminho.jpg         o mapa inteiro, desenhado como uma página do Grande Livro (780x2460 no jogo)
+regiao_oculta.png      papel que cobre um lugar que o jogador ainda não alcançou
+fase_concluida.png     selo de cera (fase concluída)   sugerido 172x172; aparece em 86x86
+fase_atual.png         moeda dourada (fase atual)
+fase_disponivel.png    marco de papel (fase liberada)
+fase_bloqueada.png     marco de pedra (fase bloqueada)
 
-O número da fase é escrito por cima pelo jogo.
+A estrada, os nomes dos lugares e o número de cada fase são desenhados pelo jogo.
+As posições das fases ficam em progression_menu.gd (_get_stage_position) e
+precisam ser as mesmas do gerar_mapa.js.

@@ -8,7 +8,6 @@ const PANEL = Color("#172033")
 const ACCENT = Color("#F5C542")
 const TEXT = Color("#F8FAFC")
 const MUTED = Color("#AAB8CC")
-const PATH_COLOR = Color("#334155")
 const COMPLETED_COLOR = Color("#22C55E")
 const LOCKED_COLOR = Color("#1B2638")
 const AVAILABLE_COLOR = Color("#334155")
@@ -79,8 +78,7 @@ func _build_interface():
 	header.add_child(continue_button)
 
 	var profile_panel = PanelContainer.new()
-	profile_panel.add_theme_stylebox_override("panel", _panel_style())
-	Assets.apply_panel(profile_panel)
+	profile_panel.add_theme_stylebox_override("panel", UiStyle.leather(4))
 	main.add_child(profile_panel)
 
 	var profile_margin = MarginContainer.new()
@@ -177,6 +175,16 @@ func _build_map():
 
 	stage_positions.clear()
 
+	var parchment = Assets.texture("mapa/pergaminho")
+	if parchment != null:
+		var paper = TextureRect.new()
+		paper.texture = parchment
+		paper.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		paper.stretch_mode = TextureRect.STRETCH_SCALE
+		paper.size = Vector2(MAP_WIDTH, MAP_HEIGHT)
+		paper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		map_canvas.add_child(paper)
+
 	for group_index in range(6):
 		_create_world_section(group_index)
 
@@ -200,83 +208,106 @@ func _create_world_section(group_index):
 		return
 
 	var first_pos = _get_stage_position(first_stage_id)
-	var section = PanelContainer.new()
-	section.position = Vector2(18, first_pos.y - 88)
-	section.size = Vector2(744, 350)
-	section.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var region_top = first_pos.y - 95
 
-	var section_style = StyleBoxFlat.new()
-	if group_index % 2 == 0:
-		section_style.bg_color = Color("#111C30")
-	else:
-		section_style.bg_color = Color("#132238")
-	section_style.corner_radius_top_left = 24
-	section_style.corner_radius_top_right = 24
-	section_style.corner_radius_bottom_left = 24
-	section_style.corner_radius_bottom_right = 24
-	section_style.border_width_left = 1
-	section_style.border_width_right = 1
-	section_style.border_width_top = 1
-	section_style.border_width_bottom = 1
-	section_style.border_color = Color("#243650")
-	section.add_theme_stylebox_override("panel", section_style)
-	var world_tex = Assets.texture("mapa/mundo_%d" % (group_index + 1))
-	if world_tex != null:
-		section.add_theme_stylebox_override("panel", Assets.texture_style(world_tex))
-	map_canvas.add_child(section)
+	# Lugar ainda não alcançado: um pedaço de papel cobre essa parte do mapa.
+	if first_stage_id > GameState.unlocked_stage:
+		var hidden_tex = Assets.texture("mapa/regiao_oculta")
+		if hidden_tex != null:
+			var cover = TextureRect.new()
+			cover.texture = hidden_tex
+			cover.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			cover.stretch_mode = TextureRect.STRETCH_SCALE
+			cover.position = Vector2(10, region_top + 2)
+			cover.size = Vector2(760, 384)
+			cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cover.z_index = 6
+			map_canvas.add_child(cover)
 
+	# Faixa com o nome do lugar, como uma etiqueta colada no mapa.
 	var world_label = Label.new()
-	world_label.position = Vector2(42, first_pos.y - 72)
-	world_label.size = Vector2(696, 36)
+	world_label.position = Vector2(80, region_top + 4)
+	world_label.size = Vector2(620, 38)
 	var world_pages = GameState.get_pages_recovered(first_stage_id, first_stage_id + 2)
-	world_label.text = "MUNDO %d  •  %s  •  %s %s  •  PÁGINAS %d/3" % [
-		group_index + 1,
+	world_label.text = "%s  •  %s %s  •  PÁGINAS %d/3" % [
 		Story.WORLD_NAMES[group_index].to_upper(),
 		_operation_symbol(first_stage["operation"]),
 		GameState.get_mode_title(first_stage["operation"]),
 		world_pages
 	]
 	world_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	world_label.add_theme_font_size_override("font_size", 17)
-	world_label.add_theme_color_override("font_color", Color("#DCE7F7"))
-	world_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	world_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	# Faixa escura atrás do título, para o caminho passar "por baixo" do texto.
-	var band = StyleBoxFlat.new()
-	band.bg_color = Color("#0E1828")
-	band.border_color = Color("#2E4466")
-	band.border_width_bottom = 2
-	band.corner_radius_top_left = 14
-	band.corner_radius_top_right = 14
-	band.corner_radius_bottom_left = 14
-	band.corner_radius_bottom_right = 14
+	world_label.add_theme_font_size_override("font_size", 17)
+	world_label.add_theme_color_override("font_color", UiStyle.INK)
+	world_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var band = UiStyle.box(UiStyle.PAPER, UiStyle.LEATHER_LIGHT, 2, 8, 6)
+	band.shadow_color = Color(0, 0, 0, 0.25)
+	band.shadow_size = 4
 	world_label.add_theme_stylebox_override("normal", band)
-	world_label.z_index = 3
+	world_label.z_index = 7
 	# A faixa do título tem tamanho fixo; o texto não acompanha a opção de tamanho.
 	world_label.set_meta("fixed_text_size", true)
 	map_canvas.add_child(world_label)
 
 
 func _create_route_lines():
-	var full_path = Line2D.new()
-	full_path.width = 9.0
-	full_path.default_color = PATH_COLOR
-	full_path.z_index = 1
-	map_canvas.add_child(full_path)
-
+	var points = []
 	for stage_id in range(1, GameState.get_stage_count() + 1):
-		full_path.add_point(stage_positions[stage_id])
+		points.append(stage_positions[stage_id])
+	var road = MapRoad.new()
+	road.size = Vector2(MAP_WIDTH, MAP_HEIGHT)
+	road.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	road.z_index = 1
+	road.setup(points, GameState.get_continue_stage() - 1)
+	map_canvas.add_child(road)
 
-	var reached_stage = GameState.get_continue_stage()
-	if reached_stage > 1:
-		var reached_path = Line2D.new()
-		reached_path.width = 9.0
-		reached_path.default_color = COMPLETED_COLOR
-		reached_path.z_index = 2
-		map_canvas.add_child(reached_path)
 
-		for stage_id in range(1, reached_stage + 1):
-			reached_path.add_point(stage_positions[stage_id])
+# Estrada do mapa: uma curva suave passando pelas fases. O trecho já percorrido
+# é uma linha de tinta vermelha; o resto, um tracejado marrom.
+class MapRoad extends Control:
+	const ROAD = Color("#7A5A3A")
+	const DONE = Color("#9E2F26")
+	var curve = []
+	var reached_index = 0
+
+	func setup(points, reached):
+		reached_index = reached
+		curve.clear()
+		for i in range(points.size() - 1):
+			var p0 = points[max(i - 1, 0)]
+			var p1 = points[i]
+			var p2 = points[i + 1]
+			var p3 = points[min(i + 2, points.size() - 1)]
+			var piece = []
+			for k in range(16):
+				var t = k / 16.0
+				# Catmull-Rom: passa exatamente por cada fase.
+				piece.append(0.5 * ((2.0 * p1) + (p2 - p0) * t + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t * t + (3.0 * p1 - p0 - 3.0 * p2 + p3) * t * t * t))
+			curve.append(piece)
+		curve.append([points[points.size() - 1]])
+		queue_redraw()
+
+	func _draw():
+		for i in range(curve.size() - 1):
+			var piece = curve[i] + [curve[i + 1][0]]
+			if i < reached_index:
+				draw_polyline(PackedVector2Array(piece), DONE, 6.0, true)
+			else:
+				_dashed(piece)
+
+	func _dashed(piece):
+		var carry = 0.0
+		for k in range(piece.size() - 1):
+			var a = piece[k]
+			var b = piece[k + 1]
+			var length = a.distance_to(b)
+			var dir = (b - a).normalized()
+			var d = carry
+			while d < length:
+				var end = min(d + 12.0, length)
+				draw_line(a + dir * d, a + dir * end, ROAD, 5.0, true)
+				d += 22.0
+			carry = d - length
 
 
 func _create_stage_node(stage):
@@ -300,9 +331,13 @@ func _create_stage_node(stage):
 		button.text = "%02d" % stage_id
 
 	button.add_theme_font_size_override("font_size", 19)
-	button.add_theme_color_override("font_color", TEXT)
-	button.add_theme_color_override("font_hover_color", TEXT)
-	button.add_theme_color_override("font_disabled_color", Color("#718096"))
+	# Selo de cera e moeda: número claro. Papel e pedra: número em tinta.
+	var light_text = completed or is_current
+	var number_color = TEXT if light_text else UiStyle.INK
+	button.add_theme_color_override("font_color", number_color)
+	button.add_theme_color_override("font_hover_color", number_color)
+	button.add_theme_color_override("font_pressed_color", number_color)
+	button.add_theme_color_override("font_disabled_color", UiStyle.INK_SOFT)
 
 	var fill_color = AVAILABLE_COLOR
 	var border_color = Color("#64748B")
@@ -337,8 +372,9 @@ func _create_stage_node(stage):
 		button.add_theme_stylebox_override("pressed", Assets.texture_style(node_tex, 0, Color(0.85, 0.85, 0.85)))
 		button.add_theme_stylebox_override("disabled", Assets.texture_style(node_tex))
 		button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-		button.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
-		button.add_theme_constant_override("outline_size", 5)
+		if light_text:
+			button.add_theme_color_override("font_outline_color", Color(0.2, 0.08, 0.02, 0.85))
+			button.add_theme_constant_override("outline_size", 5)
 
 	button.disabled = not unlocked
 
@@ -378,7 +414,10 @@ func _create_stage_node(stage):
 	info.size = Vector2(210, 70)
 	info.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	info.add_theme_font_size_override("font_size", 13)
-	info.add_theme_color_override("font_color", TEXT if unlocked else Color("#718096"))
+	info.add_theme_color_override("font_color", UiStyle.INK if unlocked else UiStyle.INK_SOFT)
+	# Contorno cor de papel: o texto continua legível por cima dos desenhos do mapa.
+	info.add_theme_color_override("font_outline_color", Color("#F3E6C4"))
+	info.add_theme_constant_override("outline_size", 5)
 	info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	info.z_index = 4
 
@@ -438,7 +477,7 @@ func _create_finish_marker():
 	finish.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	finish.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	finish.add_theme_font_size_override("font_size", 18)
-	finish.add_theme_color_override("font_color", ACCENT)
+	finish.add_theme_color_override("font_color", UiStyle.LEATHER)
 	finish.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	if GameState.is_stage_completed(GameState.get_stage_count()):
@@ -547,21 +586,6 @@ func _button_style(color):
 	style.content_margin_right = 12
 	style.content_margin_top = 8
 	style.content_margin_bottom = 8
-	return style
-
-
-func _panel_style():
-	var style = StyleBoxFlat.new()
-	style.bg_color = PANEL
-	style.corner_radius_top_left = 16
-	style.corner_radius_top_right = 16
-	style.corner_radius_bottom_left = 16
-	style.corner_radius_bottom_right = 16
-	style.border_width_left = 1
-	style.border_width_right = 1
-	style.border_width_top = 1
-	style.border_width_bottom = 1
-	style.border_color = Color("#334155")
 	return style
 
 
