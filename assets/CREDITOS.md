@@ -8,6 +8,7 @@
 | Interface Sounds | Kenney (www.kenney.nl) | CC0 1.0 (domínio público) | cliques, seleção, erro, acerto, dica, vitória e derrota |
 | Cormorant Garamond | Christian Thalmann (Catharsis Fonts) | SIL Open Font License 1.1 | fonte do jogo (peso Bold) |
 | Open Peeps | Pablo Stanley (www.openpeeps.com) | CC0 1.0 (domínio público) | retratos do Professor Aurélio e do Barão Embaralho |
+| Músicas, logo, ícone e desenhos da lousa | feitos para o MathMatch | da equipe do projeto | "A Biblioteca do Professor" (menu), "Peças e Contas" (partida), logo, ícone e desenhos da lousa |
 
 As licenças originais estão na pasta `licencas/`.
 

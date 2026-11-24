@@ -1,6 +1,7 @@
 INTERFACE (PNG)
 
-logo.png                  logo do menu principal (sugerido 600x200, fundo transparente)
+logo.png                  logo do menu principal e dos créditos (1200x560, fundo transparente)
+icone.png                 ícone do jogo (janela e executável), 512x512
 botao_normal.png          botão (9-slice: os 16 px de cada canto não são esticados; sugerido 96x96)
 botao_hover.png           (opcional) botão com o mouse em cima
 botao_pressionado.png     (opcional) botão pressionado

@@ -1,8 +1,12 @@
 ÁUDIO (.ogg, .wav ou .mp3 — use exatamente estes nomes)
 
 MÚSICAS (repetem sozinhas; prefira .ogg)
-musica_menu      menu principal e mapa
-musica_partida   durante a fase
+musica_menu      menu principal e mapa  ("A Biblioteca do Professor")
+musica_partida   durante a fase         ("Peças e Contas")
+
+As duas músicas são originais, compostas por código para o MathMatch
+(tools/musica/compor.py). Para trocar, basta colocar outro arquivo com o
+mesmo nome.
 
 EFEITOS (prefira .wav curtos)
 clique           qualquer botão da interface

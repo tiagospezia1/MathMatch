@@ -57,7 +57,7 @@ func _build():
 	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	viewport_clip.add_child(content)
 
-	var logo = Assets.make_logo("MathMatch", 64, ACCENT)
+	var logo = Assets.make_logo("MathMatch", 64, ACCENT, Vector2(640, 300))
 	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	content.add_child(logo)
 	content.add_child(_line("Combine peças. Resolva desafios. Avance pela matemática.", 18, MUTED))
@@ -81,7 +81,12 @@ func _build():
 		"Peças, botões, painéis, fundos e brilhos:",
 		"Kenney (kenney.nl) • UI Pack, Boardgame Pack e Particle Pack • CC0",
 		"Retratos dos personagens feitos com Open Peeps, de Pablo Stanley • CC0",
-		"Desenhos da lousa feitos para o MathMatch"
+		"Logo, ícone e desenhos da lousa feitos para o MathMatch"
+	])
+	_section("MÚSICA", [
+		"\"A Biblioteca do Professor\" (menu)",
+		"\"Peças e Contas\" (partida)",
+		"Trilhas originais compostas para o MathMatch"
 	])
 	_section("SOM", ["Efeitos sonoros: Kenney • Interface Sounds • CC0"])
 	_section("FONTE", ["Cormorant Garamond, de Christian Thalmann • SIL Open Font License 1.1"])

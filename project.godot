@@ -3,6 +3,7 @@
 config/name="MathMatch"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.3")
+config/icon="res://assets/imagens/interface/icone.png"
 
 [autoload]
 

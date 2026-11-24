@@ -95,7 +95,7 @@ MathMatch/
 
 O jogo procura cada arquivo de `assets/` pelo nome. Se um arquivo não existir, ele continua funcionando com o visual padrão. Os nomes esperados estão em [`assets/LEIA-ME.md`](assets/LEIA-ME.md).
 
-Ainda falta a música de fundo (`assets/audio/musica_menu` e `assets/audio/musica_partida`).
+As músicas de fundo (`assets/audio/musica_menu.ogg` e `musica_partida.ogg`), o logo e o ícone foram feitos para o jogo; os scripts que os geram ficam em `tools/`.
 
 ---
 

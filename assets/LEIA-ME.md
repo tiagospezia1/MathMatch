@@ -40,4 +40,4 @@ Os assets que estão nas pastas vêm dos pacotes Kenney (UI Pack, Boardgame Pack
 
 Para trocar algum, basta substituir o arquivo mantendo o mesmo nome.
 
-Ainda faltam as músicas, `musica_menu` e `musica_partida`. Sem elas, o jogo funciona normalmente, só sem música de fundo.
+As músicas `musica_menu` e `musica_partida` são originais, compostas por código para o MathMatch (`tools/musica/compor.py`). Para trocar por outras, basta usar os mesmos nomes.
