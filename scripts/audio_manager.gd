@@ -1,6 +1,7 @@
 extends Node
 
-# Música, efeitos sonoros e opções do MathMatch (autoload "Audio").
+# Música, efeitos sonoros e opções do MathMatch (autoload "Audio"),
+# incluindo as de acessibilidade: tamanho do texto e alto contraste.
 #
 # Os sons ficam em res://assets/audio/. Se um som não existir, nada toca e o
 # jogo continua normalmente. Os nomes esperados estão em assets/LEIA-ME.md.
@@ -11,6 +12,23 @@ const SFX_PLAYERS = 8
 var music_volume = 70
 var sfx_volume = 80
 var fullscreen = false
+
+# Acessibilidade
+const TEXT_SIZES = ["Normal", "Grande", "Muito grande"]
+const TEXT_SCALES = [1.0, 1.15, 1.3]
+const CONTRAST_SHADER = """
+shader_type canvas_item;
+uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
+uniform float contrast = 1.45;
+void fragment() {
+	vec3 c = textureLod(screen_texture, SCREEN_UV, 0.0).rgb;
+	c = (c - 0.5) * contrast + 0.5;
+	COLOR = vec4(clamp(c, 0.0, 1.0), 1.0);
+}
+"""
+var text_size = 0
+var high_contrast = false
+var _contrast_layer
 
 var _music_player
 var _current_music = ""
@@ -38,6 +56,7 @@ func _ready():
 	_apply_volumes()
 	if fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	_build_contrast_layer()
 
 	# Som de clique em todos os botões, menos os que pedirem para não tocar.
 	get_tree().node_added.connect(_on_node_added)
@@ -104,6 +123,9 @@ func play(name, pitch = 1.0):
 func _on_node_added(node):
 	if node is BaseButton and not node.has_meta("no_click_sound"):
 		node.pressed.connect(_on_button_pressed)
+	# O tamanho do texto é ajustado depois que a tela termina de montar o nó.
+	if _has_text(node):
+		_scale_text.call_deferred(node)
 
 
 func _on_button_pressed():
@@ -159,6 +181,8 @@ func save_settings():
 	config.set_value("audio", "music_volume", music_volume)
 	config.set_value("audio", "sfx_volume", sfx_volume)
 	config.set_value("video", "fullscreen", fullscreen)
+	config.set_value("acessibilidade", "tamanho_texto", text_size)
+	config.set_value("acessibilidade", "alto_contraste", high_contrast)
 	config.save(SETTINGS_PATH)
 
 
@@ -169,3 +193,67 @@ func load_settings():
 	music_volume = clamp(int(config.get_value("audio", "music_volume", music_volume)), 0, 100)
 	sfx_volume = clamp(int(config.get_value("audio", "sfx_volume", sfx_volume)), 0, 100)
 	fullscreen = bool(config.get_value("video", "fullscreen", fullscreen))
+	text_size = clamp(int(config.get_value("acessibilidade", "tamanho_texto", text_size)), 0, TEXT_SIZES.size() - 1)
+	high_contrast = bool(config.get_value("acessibilidade", "alto_contraste", high_contrast))
+
+
+# ---------------------------------------------------------------------
+# Acessibilidade
+# ---------------------------------------------------------------------
+
+func set_text_size(index):
+	text_size = clamp(int(index), 0, TEXT_SIZES.size() - 1)
+	save_settings()
+	_scale_tree(get_tree().root)
+
+
+func text_scale():
+	return TEXT_SCALES[text_size]
+
+
+func set_high_contrast(enabled):
+	high_contrast = bool(enabled)
+	if _contrast_layer != null:
+		_contrast_layer.visible = high_contrast
+	save_settings()
+
+
+# Uma camada por cima de tudo que aumenta o contraste da tela inteira.
+func _build_contrast_layer():
+	_contrast_layer = CanvasLayer.new()
+	_contrast_layer.layer = 128
+	_contrast_layer.visible = high_contrast
+	add_child(_contrast_layer)
+
+	var rect = ColorRect.new()
+	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var shader = Shader.new()
+	shader.code = CONTRAST_SHADER
+	var material = ShaderMaterial.new()
+	material.shader = shader
+	rect.material = material
+	_contrast_layer.add_child(rect)
+
+
+func _has_text(node):
+	return node is Label or node is Button or node is LineEdit or node is RichTextLabel
+
+
+# Guarda o tamanho original de cada texto e aplica a escala escolhida.
+# Peças do tabuleiro (sem som de clique) e textos marcados com
+# "fixed_text_size" (que ficam em espaços apertados) ficam como estão.
+func _scale_text(node):
+	if not is_instance_valid(node) or node.has_meta("no_click_sound") or node.has_meta("fixed_text_size"):
+		return
+	if not node.has_meta("base_font_size"):
+		node.set_meta("base_font_size", node.get_theme_font_size("font_size"))
+	var base = int(node.get_meta("base_font_size"))
+	node.add_theme_font_size_override("font_size", int(round(base * text_scale())))
+
+
+func _scale_tree(node):
+	if _has_text(node):
+		_scale_text(node)
+	for child in node.get_children():
+		_scale_tree(child)

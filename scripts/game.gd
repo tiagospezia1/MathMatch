@@ -26,6 +26,7 @@ const OptionsPanel = preload("res://scripts/options_panel.gd")
 const Story = preload("res://scripts/story.gd")
 const Professor = preload("res://scripts/professor.gd")
 const DialogueBox = preload("res://scripts/dialogue_box.gd")
+const UiStyle = preload("res://scripts/ui_style.gd")
 const EMPTY_TILE_COLOR = Color("#1E293B")
 
 const TILE_COLORS = [
@@ -1651,8 +1652,7 @@ func _build_pause_overlay():
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(420, 0)
-	panel.add_theme_stylebox_override("panel", _lesson_box(Color("#172033"), Color("#F5C542"), 2))
-	Assets.apply_panel(panel, "painel_janela")
+	panel.add_theme_stylebox_override("panel", UiStyle.paper(6))
 	center.add_child(panel)
 
 	var margin = MarginContainer.new()
@@ -1670,11 +1670,12 @@ func _build_pause_overlay():
 	pause_main_box.add_theme_constant_override("separation", 14)
 	holder.add_child(pause_main_box)
 
-	var title = _lesson_label(30, Color("#F5C542"))
+	var title = _lesson_label(30, UiStyle.INK)
 	title.text = "PAUSA"
 	pause_main_box.add_child(title)
 
 	pause_continue_button = _pause_button("CONTINUAR", _close_pause)
+	UiStyle.button(pause_continue_button, "primary", 17)
 	pause_main_box.add_child(pause_continue_button)
 	pause_main_box.add_child(_pause_button("REINICIAR FASE", _ask_pause_confirm.bind("restart")))
 	pause_main_box.add_child(_pause_button("COMO JOGAR", _on_pause_help))
@@ -1687,7 +1688,7 @@ func _build_pause_overlay():
 	pause_confirm_box.visible = false
 	holder.add_child(pause_confirm_box)
 
-	pause_confirm_label = _lesson_label(18, Color("#F8FAFC"))
+	pause_confirm_label = _lesson_label(18, UiStyle.INK)
 	pause_confirm_box.add_child(pause_confirm_label)
 
 	var row = HBoxContainer.new()
@@ -1712,9 +1713,8 @@ func _pause_button(text_value, callback):
 	button.text = text_value
 	button.custom_minimum_size = Vector2(300, 48)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	button.add_theme_font_size_override("font_size", 17)
 	button.pressed.connect(callback)
-	Assets.apply_button(button)
+	UiStyle.button(button, "secondary", 17)
 	return button
 
 

@@ -396,6 +396,31 @@ static func defeat_lines():
 	]
 
 
+# "Como jogar" do menu principal, explicado pelo professor.
+static func how_to_play():
+	var first = _p("explicando", "Toque numa peça e depois numa vizinha para trocá-las. Três ou mais iguais em linha ou coluna se desfazem.")
+	first["board"] = {"kind": "text", "lines": ["troque peças vizinhas", "!3 iguais em linha = combinação"]}
+	return [
+		first,
+		_p("explicando", "Em cada fase aparece uma conta. Resolva de cabeça e junte 3 peças com a resposta!"),
+		_p("feliz", "Complete os desafios antes de acabarem as jogadas. Quanto mais jogadas sobrarem, mais carimbos de ouro."),
+		_p("pensativo", "E se travar numa conta, é só apertar ? AJUDA. Eu vou até a lousa explicar.")
+	]
+
+
+# O Barão provoca quando clicam nele no menu principal.
+static func baron_taunt(pages):
+	if pages >= 18:
+		return [_b("envergonhado", "Tá bom, tá bom... vocês venceram. Mas eu ainda vou aprender geometria antes de vocês!")]
+	var taunts = [
+		"Ha! Vocês nunca vão achar todas as páginas!",
+		"Embaralha, embaralha, quem não pensa se atrapalha!",
+		"Quem precisa entender, se pode decorar?",
+		"Ainda faltam %d páginas... e eu escondi muito bem!" % (18 - pages)
+	]
+	return [_b("rindo", taunts[randi() % taunts.size()])]
+
+
 # Depois dos créditos (só para quem terminou o jogo): o gancho para uma continuação.
 static func mystery_page():
 	return [

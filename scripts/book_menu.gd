@@ -7,6 +7,7 @@ const Story = preload("res://scripts/story.gd")
 const Professor = preload("res://scripts/professor.gd")
 const DialogueBox = preload("res://scripts/dialogue_box.gd")
 const Lousa = preload("res://scripts/lousa.gd")
+const UiStyle = preload("res://scripts/ui_style.gd")
 
 const BG = Color("#0B1120")
 const ACCENT = Color("#F5C542")
@@ -391,8 +392,7 @@ func _button(text_value, min_size, font_size = 15):
 	var button = Button.new()
 	button.text = text_value
 	button.custom_minimum_size = min_size
-	button.add_theme_font_size_override("font_size", font_size)
-	Assets.apply_button(button)
+	UiStyle.button(button, "secondary", font_size)
 	return button
 
 

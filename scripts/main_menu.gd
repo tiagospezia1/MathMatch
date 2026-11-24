@@ -1,91 +1,64 @@
 extends Control
 
-const BG = Color("#111827")
-const PANEL = Color("#1F2937")
-const ACCENT = Color("#F5C542")
-const TEXT = Color("#F9FAFB")
-const MUTED = Color("#CBD5E1")
+# Tela inicial: o Professor Aurélio recebe o jogador numa lousa, o menu é a
+# capa do Grande Livro dos Números e o Barão Embaralho espia no canto.
 
 const OptionsPanel = preload("res://scripts/options_panel.gd")
+const DialogueBox = preload("res://scripts/dialogue_box.gd")
+const UiStyle = preload("res://scripts/ui_style.gd")
+const Story = preload("res://scripts/story.gd")
 
-var info_label
+const BG = Color("#0B1120")
+const FLOATING_PIECES = 12
+
 var reset_dialog
 var options_panel
+var dialogue
+var floaters = []
+var baron
 
 
 func _ready():
+	randomize()
 	_build_interface()
 	Audio.play_music("menu")
 
 
 func _build_interface():
 	Assets.make_background(self, "fundo_menu", BG)
-
-	var center = CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-
-	var panel = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(470, 610)
-	panel.add_theme_stylebox_override("panel", _make_panel_style())
-	Assets.apply_panel(panel, "painel_menu")
-	center.add_child(panel)
+	_build_floaters()
 
 	var margin = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 40)
-	margin.add_theme_constant_override("margin_right", 40)
-	margin.add_theme_constant_override("margin_top", 34)
-	margin.add_theme_constant_override("margin_bottom", 34)
-	panel.add_child(margin)
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for side in ["margin_left", "margin_right"]:
+		margin.add_theme_constant_override(side, 30)
+	for side in ["margin_top", "margin_bottom"]:
+		margin.add_theme_constant_override(side, 24)
+	add_child(margin)
 
-	var content = VBoxContainer.new()
-	content.alignment = BoxContainer.ALIGNMENT_CENTER
-	content.add_theme_constant_override("separation", 16)
-	margin.add_child(content)
+	var main = VBoxContainer.new()
+	main.alignment = BoxContainer.ALIGNMENT_CENTER
+	main.add_theme_constant_override("separation", 18)
+	margin.add_child(main)
 
-	var title = Assets.make_logo("MathMatch", 48, ACCENT)
-	content.add_child(title)
+	var logo = Assets.make_logo("MathMatch", 78, UiStyle.GOLD)
+	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	if logo is Label:
+		logo.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
+		logo.add_theme_constant_override("shadow_offset_y", 4)
+	main.add_child(logo)
+	var subtitle = UiStyle.label("As Páginas Roubadas", 28, UiStyle.PAPER)
+	main.add_child(subtitle)
 
-	var subtitle = Label.new()
-	subtitle.text = "Combine peças. Resolva desafios.\nAvance pela matemática."
-	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.add_theme_font_size_override("font_size", 19)
-	subtitle.add_theme_color_override("font_color", MUTED)
-	content.add_child(subtitle)
+	var columns = HBoxContainer.new()
+	columns.alignment = BoxContainer.ALIGNMENT_CENTER
+	columns.add_theme_constant_override("separation", 26)
+	main.add_child(columns)
 
-	var progress = GameState.get_level_progress()
-	var profile = Label.new()
-	profile.text = "NÍVEL %d  •  %s\n%d XP  •  %d/%d PÁGINAS RECUPERADAS" % [progress["level"], GameState.get_level_title(progress["level"]).to_upper(), GameState.total_xp, GameState.get_pages_recovered(), GameState.get_stage_count()]
-	profile.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	profile.add_theme_font_size_override("font_size", 14)
-	profile.add_theme_color_override("font_color", ACCENT)
-	content.add_child(profile)
+	columns.add_child(_professor_card())
+	columns.add_child(_menu_book())
 
-	var spacer = Control.new()
-	spacer.custom_minimum_size = Vector2(1, 10)
-	content.add_child(spacer)
-
-	var play = _make_menu_button("JOGAR")
-	play.pressed.connect(_on_play_pressed)
-	content.add_child(play)
-
-	var tutorial = _make_menu_button("TUTORIAL")
-	tutorial.pressed.connect(_on_tutorial_pressed)
-	content.add_child(tutorial)
-
-	var how_to = _make_menu_button("COMO JOGAR")
-	how_to.pressed.connect(_on_how_to_pressed)
-	content.add_child(how_to)
-
-	var options = _make_menu_button("OPÇÕES")
-	options.pressed.connect(_on_options_pressed)
-	content.add_child(options)
-
-	var reset = _make_menu_button("RESETAR PROGRESSO")
-	reset.pressed.connect(_on_reset_pressed)
-	reset.add_theme_color_override("font_color", Color("#FCA5A5"))
-	reset.add_theme_color_override("font_hover_color", Color("#FCA5A5"))
-	content.add_child(reset)
+	_build_baron()
 
 	reset_dialog = ConfirmationDialog.new()
 	reset_dialog.title = "Resetar progresso"
@@ -95,89 +68,200 @@ func _build_interface():
 	reset_dialog.confirmed.connect(_on_reset_confirmed)
 	add_child(reset_dialog)
 
-	# O modo desenvolvedor só aparece rodando pelo editor (ou em build de debug).
-	# No jogo exportado em modo release ele some automaticamente.
-	if OS.is_debug_build():
-		var developer = _make_menu_button("MODO DESENVOLVEDOR")
-		developer.pressed.connect(_on_developer_pressed)
-		developer.add_theme_color_override("font_color", ACCENT)
-		developer.add_theme_color_override("font_hover_color", ACCENT)
-		content.add_child(developer)
-
-	# CRÉDITOS e SAIR dividem a última linha, para o menu não crescer.
-	var last_row = HBoxContainer.new()
-	last_row.add_theme_constant_override("separation", 10)
-	content.add_child(last_row)
-
-	var credits = _make_menu_button("CRÉDITOS")
-	credits.custom_minimum_size = Vector2(155, 54)
-	credits.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	credits.pressed.connect(_on_credits_pressed)
-	last_row.add_child(credits)
-
-	var quit = _make_menu_button("SAIR")
-	quit.custom_minimum_size = Vector2(155, 54)
-	quit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	quit.pressed.connect(_on_quit_pressed)
-	last_row.add_child(quit)
-
-	info_label = Label.new()
-	info_label.text = ""
-	info_label.visible = false
-	info_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	info_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	info_label.add_theme_font_size_override("font_size", 15)
-	info_label.add_theme_color_override("font_color", MUTED)
-	content.add_child(info_label)
-
-
 	options_panel = OptionsPanel.new()
 	add_child(options_panel)
 
-
-func _make_menu_button(label_text):
-	var button = Button.new()
-	button.text = label_text
-	button.custom_minimum_size = Vector2(320, 54)
-	button.add_theme_font_size_override("font_size", 18)
-	button.add_theme_color_override("font_color", TEXT)
-	button.add_theme_color_override("font_hover_color", TEXT)
-	button.add_theme_stylebox_override("normal", _button_style(Color("#374151")))
-	button.add_theme_stylebox_override("hover", _button_style(Color("#4B5563")))
-	button.add_theme_stylebox_override("pressed", _button_style(Color("#263244")))
-	button.add_theme_stylebox_override("focus", _button_style(Color("#4B5563")))
-	Assets.apply_button(button)
-	return button
+	dialogue = DialogueBox.new()
+	add_child(dialogue)
 
 
-func _button_style(color):
-	var style = StyleBoxFlat.new()
-	style.bg_color = color
-	style.corner_radius_top_left = 12
-	style.corner_radius_top_right = 12
-	style.corner_radius_bottom_left = 12
-	style.corner_radius_bottom_right = 12
-	style.content_margin_left = 16
-	style.content_margin_right = 16
-	style.content_margin_top = 10
-	style.content_margin_bottom = 10
-	return style
+# ---------------------------------------------------------------------
+# Lousa com o professor
+# ---------------------------------------------------------------------
+
+func _professor_card():
+	var card = PanelContainer.new()
+	card.custom_minimum_size = Vector2(360, 0)
+	card.add_theme_stylebox_override("panel", UiStyle.chalkboard(20))
+
+	var box = VBoxContainer.new()
+	box.add_theme_constant_override("separation", 12)
+	card.add_child(box)
+
+	var frame = PanelContainer.new()
+	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	frame.add_theme_stylebox_override("panel", UiStyle.box(Color("#F5F2EA"), Color.TRANSPARENT, 0, 16, 0))
+	box.add_child(frame)
+	var portrait = TextureRect.new()
+	portrait.texture = Assets.texture("personagens/" + ("professor_orgulhoso" if GameState.get_pages_recovered() >= GameState.get_stage_count() else "professor_feliz"))
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.custom_minimum_size = Vector2(190, 190)
+	frame.add_child(portrait)
+
+	var bubble = PanelContainer.new()
+	bubble.add_theme_stylebox_override("panel", UiStyle.box(UiStyle.PAPER, UiStyle.LEATHER_LIGHT, 2, 14, 12))
+	box.add_child(bubble)
+	bubble.add_child(UiStyle.label(_greeting(), 17, UiStyle.INK))
+
+	var level = GameState.get_player_level()
+	box.add_child(UiStyle.label("NÍVEL %d  •  %s" % [level, GameState.get_level_title(level).to_upper()], 15, UiStyle.GOLD))
+
+	var pages = ProgressBar.new()
+	pages.custom_minimum_size = Vector2(1, 12)
+	pages.show_percentage = false
+	pages.max_value = GameState.get_stage_count()
+	pages.value = GameState.get_pages_recovered()
+	pages.add_theme_stylebox_override("background", UiStyle.box(Color(0, 0, 0, 0.35), Color.TRANSPARENT, 0, 6, 0))
+	pages.add_theme_stylebox_override("fill", UiStyle.box(UiStyle.GOLD, Color.TRANSPARENT, 0, 6, 0))
+	box.add_child(pages)
+	box.add_child(UiStyle.label("%d de %d páginas recuperadas" % [GameState.get_pages_recovered(), GameState.get_stage_count()], 14, UiStyle.MUTED))
+	return card
 
 
-func _make_panel_style():
-	var style = StyleBoxFlat.new()
-	style.bg_color = PANEL
-	style.corner_radius_top_left = 22
-	style.corner_radius_top_right = 22
-	style.corner_radius_bottom_left = 22
-	style.corner_radius_bottom_right = 22
-	style.border_width_left = 1
-	style.border_width_right = 1
-	style.border_width_top = 1
-	style.border_width_bottom = 1
-	style.border_color = Color("#334155")
-	return style
+func _greeting():
+	var pages = GameState.get_pages_recovered()
+	var total = GameState.get_stage_count()
+	var player = str(GameState.player_name).strip_edges()
+	if not GameState.tutorial_done:
+		return "Olá! Eu sou o Professor Aurélio. Um vilão roubou as páginas do meu livro. Você me ajuda a recuperá-las?"
+	if pages >= total:
+		return "Mestre dos Números! O livro está completo. Obrigado, %s!" % (player if player != "" else "meu aprendiz")
+	if pages == 0:
+		return "Que bom ver você%s! A primeira página está na Vila do Pomar." % (", " + player if player != "" else "")
+	return "Bem-vindo de volta%s! Já recuperamos %d páginas. Faltam %d." % [", " + player if player != "" else "", pages, total - pages]
 
+
+# ---------------------------------------------------------------------
+# Menu: a capa do livro
+# ---------------------------------------------------------------------
+
+func _menu_book():
+	var book = PanelContainer.new()
+	book.custom_minimum_size = Vector2(360, 0)
+	book.add_theme_stylebox_override("panel", UiStyle.leather(24))
+
+	var box = VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 12)
+	book.add_child(box)
+
+	box.add_child(UiStyle.label("~  O GRANDE LIVRO DOS NÚMEROS  ~", 13, UiStyle.GOLD))
+
+	var play_text = "COMEÇAR A AVENTURA" if not GameState.tutorial_done else "CONTINUAR A JORNADA"
+	var play = UiStyle.make_button(play_text, "primary", Vector2(0, 64), 21)
+	play.pressed.connect(_on_play_pressed)
+	box.add_child(play)
+
+	if GameState.tutorial_done:
+		var book_button = UiStyle.make_button("O LIVRO", "secondary", Vector2(0, 50))
+		book_button.pressed.connect(_on_book_pressed)
+		box.add_child(book_button)
+
+	for entry in [["TUTORIAL", _on_tutorial_pressed], ["OPÇÕES", _on_options_pressed], ["CRÉDITOS", _on_credits_pressed]]:
+		var button = UiStyle.make_button(entry[0], "secondary", Vector2(0, 50))
+		button.pressed.connect(entry[1])
+		box.add_child(button)
+
+	var links = HBoxContainer.new()
+	links.alignment = BoxContainer.ALIGNMENT_CENTER
+	links.add_theme_constant_override("separation", 6)
+	box.add_child(links)
+	var how_to = UiStyle.make_button("Como jogar", "link", Vector2(0, 36), 16)
+	how_to.pressed.connect(_on_how_to_pressed)
+	links.add_child(how_to)
+	var quit = UiStyle.make_button("Sair", "link", Vector2(0, 36), 16)
+	quit.pressed.connect(_on_quit_pressed)
+	links.add_child(quit)
+
+	var reset = UiStyle.make_button("Resetar progresso", "danger", Vector2(0, 32), 14)
+	reset.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	reset.pressed.connect(_on_reset_pressed)
+	box.add_child(reset)
+
+	# O modo desenvolvedor só aparece rodando pelo editor (ou em build de debug).
+	# No jogo exportado em modo release ele some automaticamente.
+	if OS.is_debug_build():
+		var developer = UiStyle.make_button("Modo desenvolvedor", "link", Vector2(0, 30), 13)
+		developer.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		developer.add_theme_color_override("font_color", UiStyle.GOLD)
+		developer.pressed.connect(_on_developer_pressed)
+		box.add_child(developer)
+	return book
+
+
+# ---------------------------------------------------------------------
+# Enfeites: peças flutuando e o Barão espiando
+# ---------------------------------------------------------------------
+
+func _build_floaters():
+	var layer = Control.new()
+	layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(layer)
+	for i in range(FLOATING_PIECES):
+		var tex = Assets.texture("pecas/peca_%02d" % (i % 12 + 1))
+		if tex == null:
+			continue
+		var piece = TextureRect.new()
+		piece.texture = tex
+		piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		piece.size = Vector2.ONE * randf_range(36, 60)
+		piece.pivot_offset = piece.size / 2.0
+		piece.position = Vector2(randf_range(0, 860), randf_range(0, 900))
+		piece.rotation = randf_range(-0.4, 0.4)
+		piece.modulate = Color(1, 1, 1, randf_range(0.12, 0.22))
+		piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		piece.set_meta("speed", randf_range(12, 26))
+		piece.set_meta("spin", randf_range(-0.25, 0.25))
+		layer.add_child(piece)
+		floaters.append(piece)
+
+
+func _process(delta):
+	var height = get_viewport_rect().size.y
+	for piece in floaters:
+		piece.position.y -= float(piece.get_meta("speed")) * delta
+		piece.rotation += float(piece.get_meta("spin")) * delta
+		if piece.position.y < -80:
+			piece.position = Vector2(randf_range(0, get_viewport_rect().size.x - 40), height + 20)
+
+
+func _build_baron():
+	var tex = Assets.texture("personagens/barao_rindo")
+	if tex == null:
+		return
+	baron = TextureRect.new()
+	baron.texture = tex
+	baron.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	baron.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	baron.size = Vector2(150, 150)
+	baron.anchor_left = 1.0
+	baron.anchor_top = 1.0
+	baron.anchor_right = 1.0
+	baron.anchor_bottom = 1.0
+	baron.offset_left = -140
+	baron.offset_top = -110
+	baron.offset_right = 10
+	baron.offset_bottom = 40
+	baron.rotation = -0.18
+	baron.tooltip_text = "Barão Embaralho"
+	baron.gui_input.connect(_on_baron_input)
+	add_child(baron)
+	var bob = create_tween().set_loops()
+	bob.tween_property(baron, "offset_top", -122.0, 1.6).set_trans(Tween.TRANS_SINE)
+	bob.tween_property(baron, "offset_top", -110.0, 1.6).set_trans(Tween.TRANS_SINE)
+
+
+func _on_baron_input(event):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not dialogue.is_open():
+			dialogue.play(Story.baron_taunt(GameState.get_pages_recovered()))
+
+
+# ---------------------------------------------------------------------
+# Ações
+# ---------------------------------------------------------------------
 
 func _on_play_pressed():
 	# Na primeira vez, o jogador passa pelo tutorial (Fase 0) antes do mapa.
@@ -187,14 +271,18 @@ func _on_play_pressed():
 	get_tree().change_scene_to_file("res://scenes/ProgressionMenu.tscn")
 
 
+func _on_book_pressed():
+	get_tree().change_scene_to_file("res://scenes/BookMenu.tscn")
+
+
 func _on_tutorial_pressed():
 	GameState.start_tutorial()
 	get_tree().change_scene_to_file("res://scenes/Game.tscn")
 
 
 func _on_how_to_pressed():
-	info_label.visible = not info_label.visible
-	info_label.text = "Selecione uma peça e depois uma peça vizinha para trocar.\nForme linhas ou colunas com 3 ou mais peças iguais.\nNas fases matemáticas, resolva o desafio e combine a peça com a resposta."
+	if not dialogue.is_open():
+		dialogue.play(Story.how_to_play())
 
 
 func _on_options_pressed():
@@ -207,7 +295,7 @@ func _on_reset_pressed():
 
 func _on_reset_confirmed():
 	GameState.reset_progress()
-	# Recarrega o menu para atualizar a linha de nível/XP.
+	# Recarrega o menu para atualizar o progresso e a fala do professor.
 	get_tree().reload_current_scene()
 
 

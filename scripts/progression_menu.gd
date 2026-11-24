@@ -1,6 +1,7 @@
 extends Control
 
 const Story = preload("res://scripts/story.gd")
+const UiStyle = preload("res://scripts/ui_style.gd")
 
 const BG = Color("#0B1120")
 const PANEL = Color("#172033")
@@ -73,6 +74,7 @@ func _build_interface():
 
 	var continue_button = _make_rect_button("CONTINUAR →")
 	continue_button.custom_minimum_size = Vector2(145, 44)
+	UiStyle.button(continue_button, "primary", 15)
 	continue_button.pressed.connect(_on_continue_pressed)
 	header.add_child(continue_button)
 
@@ -250,6 +252,8 @@ func _create_world_section(group_index):
 	band.corner_radius_bottom_right = 14
 	world_label.add_theme_stylebox_override("normal", band)
 	world_label.z_index = 3
+	# A faixa do título tem tamanho fixo; o texto não acompanha a opção de tamanho.
+	world_label.set_meta("fixed_text_size", true)
 	map_canvas.add_child(world_label)
 
 
@@ -528,14 +532,7 @@ func _marker_style():
 func _make_rect_button(text_value):
 	var button = Button.new()
 	button.text = text_value
-	button.add_theme_font_size_override("font_size", 15)
-	button.add_theme_color_override("font_color", TEXT)
-	button.add_theme_color_override("font_hover_color", TEXT)
-	button.add_theme_stylebox_override("normal", _button_style(Color("#28364E")))
-	button.add_theme_stylebox_override("hover", _button_style(Color("#354764")))
-	button.add_theme_stylebox_override("pressed", _button_style(Color("#202C40")))
-	button.add_theme_stylebox_override("focus", _button_style(Color("#354764")))
-	Assets.apply_button(button)
+	UiStyle.button(button, "secondary", 15)
 	return button
 
 

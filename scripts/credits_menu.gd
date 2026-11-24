@@ -6,6 +6,7 @@ extends Control
 
 const Story = preload("res://scripts/story.gd")
 const DialogueBox = preload("res://scripts/dialogue_box.gd")
+const UiStyle = preload("res://scripts/ui_style.gd")
 
 const BG = Color("#0B1120")
 const ACCENT = Color("#F5C542")
@@ -97,9 +98,8 @@ func _build():
 	back.text = "← MENU"
 	back.position = Vector2(20, 18)
 	back.custom_minimum_size = Vector2(120, 42)
-	back.add_theme_font_size_override("font_size", 15)
 	back.pressed.connect(_on_back_pressed)
-	Assets.apply_button(back)
+	UiStyle.button(back, "secondary", 15)
 	add_child(back)
 
 	speed_hint = _line("Segure o clique para acelerar", 13, MUTED)
@@ -142,9 +142,8 @@ func _build():
 	menu_button.text = "VOLTAR AO MENU"
 	menu_button.custom_minimum_size = Vector2(240, 48)
 	menu_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	menu_button.add_theme_font_size_override("font_size", 17)
 	menu_button.pressed.connect(_on_back_pressed)
-	Assets.apply_button(menu_button)
+	UiStyle.button(menu_button, "primary", 17)
 	end_box.add_child(menu_button)
 
 	dialogue = DialogueBox.new()
