@@ -103,34 +103,34 @@ As fases são liberadas em sequência. Cada uma devolve **uma página** do livro
 
 | Mundo | Fase | Nome | Dificuldade | Desafios | Jogadas | XP | Emboscada |
 |---|---|---|---|---|---|---|---|
-| 1 • Vila do Pomar | 01 | Primeiras Somas | Fácil | 3 | 24 | 120 | |
-| | 02 | Soma em Ritmo | Médio | 4 | 24 | 140 | |
-| | 03 | Soma Desafiadora | Difícil | 5 | 23 | 170 | Ventania |
-| 2 • Porto das Cargas | 04 | Começando a Subtrair | Fácil | 4 | 24 | 190 | |
-| | 05 | Diferenças Maiores | Médio | 5 | 23 | 220 | |
-| | 06 | Subtração Avançada | Difícil | 6 | 22 | 250 | Correntes |
-| 3 • Floresta das Colmeias | 07 | Tabuada Inicial | Fácil | 4 | 22 | 270 | |
-| | 08 | Multiplicando Mais | Médio | 5 | 21 | 300 | |
-| | 09 | Desafio da Tabuada | Difícil | 6 | 20 → 17 | 330 | Enxame |
-| 4 • Aldeia do Banquete | 10 | Divisão Exata | Fácil | 4 | 21 | 350 | |
-| | 11 | Quocientes | Médio | 5 | 20 | 380 | |
-| | 12 | Divisão Avançada | Difícil | 6 | 19 | 410 | Neblina |
-| 5 • Torre do Relógio | 13 | Metades e Terços | Fácil | 4 | 20 | 430 | |
-| | 14 | Partes do Todo | Médio | 5 | 19 | 460 | |
-| | 15 | Frações Avançadas | Difícil | 6 | 18 | 500 | Ponteiro maluco |
-| 6 • Grande Mercado | 16 | Porcentagens Básicas | Fácil | 4 | 19 | 520 | |
-| | 17 | Calculando Percentuais | Médio | 5 | 18 | 560 | |
-| | 18 | Mestre das Porcentagens | Difícil | 6 | 17 | 650 | Final |
+| 1 • Vila do Pomar | 01 | Primeiras Somas | Fácil | 3 | 10 | 120 | |
+| | 02 | Soma em Ritmo | Médio | 4 | 11 | 140 | |
+| | 03 | Soma Desafiadora | Difícil | 5 | 12 | 170 | Ventania |
+| 2 • Porto das Cargas | 04 | Começando a Subtrair | Fácil | 4 | 12 | 190 | |
+| | 05 | Diferenças Maiores | Médio | 5 | 13 | 220 | |
+| | 06 | Subtração Avançada | Difícil | 6 | 14 | 250 | Correntes |
+| 3 • Floresta das Colmeias | 07 | Tabuada Inicial | Fácil | 4 | 12 | 270 | |
+| | 08 | Multiplicando Mais | Médio | 5 | 13 | 300 | |
+| | 09 | Desafio da Tabuada | Difícil | 6 | 17 → 14 | 330 | Enxame |
+| 4 • Aldeia do Banquete | 10 | Divisão Exata | Fácil | 4 | 12 | 350 | |
+| | 11 | Quocientes | Médio | 5 | 13 | 380 | |
+| | 12 | Divisão Avançada | Difícil | 6 | 14 | 410 | Neblina |
+| 5 • Torre do Relógio | 13 | Metades e Terços | Fácil | 4 | 12 | 430 | |
+| | 14 | Partes do Todo | Médio | 5 | 13 | 460 | |
+| | 15 | Frações Avançadas | Difícil | 6 | 14 | 500 | Ponteiro maluco |
+| 6 • Grande Mercado | 16 | Porcentagens Básicas | Fácil | 4 | 12 | 520 | |
+| | 17 | Calculando Percentuais | Médio | 5 | 13 | 560 | |
+| | 18 | Mestre das Porcentagens | Difícil | 6 | 15 | 650 | Final |
 
 ### As emboscadas do Barão
 
 | Emboscada | O que acontece |
 |---|---|
-| **Ventania** | Depois da 5ª jogada, o Barão embaralha todas as peças. A conta continua a mesma. |
+| **Ventania** | Na metade dos desafios (ou na 5ª jogada, o que vier antes), o Barão embaralha todas as peças. A conta continua a mesma. |
 | **Correntes** | 6 peças começam acorrentadas e não podem ser trocadas. Uma combinação nelas ou ao lado solta a corrente. |
 | **Enxame** | O enxame do Barão come 3 jogadas: o limite cai de 20 para 17. |
 | **Neblina** | 6 peças começam cobertas, sem número nem cor. Uma combinação ao lado revela a peça. |
-| **Ponteiro maluco** | Depois da 5ª jogada, o Barão troca a conta por outra. |
+| **Ponteiro maluco** | Na metade dos desafios (ou na 5ª jogada, o que vier antes), o Barão troca a conta por outra. |
 | **Final** | 3 correntes, 4 neblinas e uma ventania. |
 
 O tabuleiro continua sempre jogável: a busca de jogadas e as dicas ignoram as peças presas.
@@ -164,7 +164,9 @@ Na primeira fase de cada operação (a primeira vez não pode ser pulada):
 | Botão **? AJUDA** | mostra como pensar e pergunta: "Resolva comigo", "Rever a aula" ou "Voltar ao jogo" |
 | Combinou um número que é um **erro típico** | explica o que aconteceu (por exemplo, combinar 10 em `7 − 3`: "Você juntou! Na subtração a gente TIRA") |
 
-Nas fases fáceis, as peças com a resposta já ficam destacadas desde o começo.
+As peças com a resposta **não** vêm destacadas: o jogador resolve a conta primeiro. O destaque só aparece depois de alguns erros.
+
+O limite de jogadas é de 2 a 3 vezes o número de desafios: dá para errar um pouco, mas quem joga com atenção ganha mais estrelas.
 
 ### O tutorial (Fase 0)
 

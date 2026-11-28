@@ -181,6 +181,12 @@ func _build():
 	name_edit.max_length = 16
 	name_edit.custom_minimum_size = Vector2(260, 44)
 	name_edit.add_theme_font_size_override("font_size", 20)
+	# Campo do nome no estilo das páginas do livro.
+	name_edit.add_theme_stylebox_override("normal", UiStyle.box(Color("#FFF8E6"), UiStyle.LEATHER_LIGHT, 2, 10, 10))
+	name_edit.add_theme_stylebox_override("focus", UiStyle.box(Color("#FFF8E6"), UiStyle.GOLD_DARK, 3, 10, 10))
+	name_edit.add_theme_color_override("font_color", UiStyle.INK)
+	name_edit.add_theme_color_override("font_placeholder_color", UiStyle.INK_SOFT)
+	name_edit.add_theme_color_override("caret_color", UiStyle.INK)
 	name_edit.text_changed.connect(_on_name_changed)
 	name_edit.text_submitted.connect(_on_name_submitted)
 	name_row.add_child(name_edit)
@@ -256,6 +262,10 @@ func _show_line(line):
 
 	asking_name = bool(line.get("ask_name", false))
 	name_row.visible = false
+	# Sem retrato (narração), a caixa fica mais baixa: não sobra espaço vazio.
+	dialog_panel.offset_top = -330 if portrait_frame.visible else -240
+	# Na hora de digitar o nome, PULAR some: quem clica em sequência não pula o nome sem ver.
+	skip_button.visible = can_skip and not asking_name
 
 	quiz = line.get("quiz", {})
 	quiz_wrong = 0
@@ -274,11 +284,22 @@ func _show_line(line):
 
 
 func _type(value):
-	text_label.text = value.replace("[NOME]", _player_name())
+	text_label.text = _keep_math_together(value.replace("[NOME]", _player_name()))
 	shown_chars = 0.0
 	text_label.visible_characters = 0
 	typing = true
 	set_process(true)
+
+
+# Troca os espaços em volta de + − × ÷ = por espaços que não quebram linha:
+# assim "7 − 3?" nunca fica dividido em duas linhas.
+func _keep_math_together(value):
+	var regex = RegEx.new()
+	regex.compile("(\\S) ([+−×÷=]) (?=\\S)")
+	var result = value
+	for i in range(3):
+		result = regex.sub(result, "$1\u00a0$2\u00a0", true)
+	return result
 
 
 func _process(delta):
@@ -301,12 +322,7 @@ func _end_typing():
 		name_edit.grab_focus()
 	elif choices_row.get_child_count() > 0:
 		choices_row.visible = true
-		if waiting_choice:
-			for button in choices_row.get_children():
-				if not button.disabled:
-					button.grab_focus()
-					break
-		else:
+		if not waiting_choice:
 			continue_button.grab_focus()
 	else:
 		continue_button.grab_focus()
@@ -368,6 +384,8 @@ func _add_choice(label_text, callback):
 	button.set_meta("no_click_sound", true)
 	button.pressed.connect(callback)
 	UiStyle.button(button, "secondary", 22 if label_text.length() <= 3 else 15)
+	# Nenhuma opção começa destacada, para não parecer que já está escolhida.
+	button.focus_mode = Control.FOCUS_NONE
 	choices_row.add_child(button)
 
 

@@ -141,7 +141,7 @@ static func prologue():
 	return [
 		_n("Numa cidade pequena, numa escola antiga, um velho professor guardava o livro mais importante da sua vida."),
 		_n("Mas, numa noite de ventania, alguém entrou pela janela..."),
-		_b("rindo", "Ha! Sem livro, sem conta! Sem conta, sem resposta! E sem resposta... todos vão precisar de MIM!"),
+		_b("rindo", "Ha! Sem livro, sem conta! Sem conta, sem resposta! E quem quiser uma resposta vai ter que pedir para MIM!"),
 		_n("De manhã, o Grande Livro dos Números estava vazio. Só restava a capa."),
 		_p("preocupado", "Dezoito páginas... Uma vida inteira de lições, espalhadas pelo mundo."),
 		{"who": "professor", "mood": "feliz", "text": "Ah, você chegou! Qual é mesmo o seu nome?", "ask_name": true},
@@ -176,7 +176,7 @@ static func tutorial_reaction(step, ok):
 		return [_p("preocupado", "Hum, não foi bem assim. Sem problema: vamos tentar de novo!")]
 	match int(step):
 		1:
-			return [_p("orgulhoso", "Isso! As três peças somem, as de cima caem e chegam peças novas.")]
+			return [_p("orgulhoso", "Isso! As peças iguais somem, as de cima caem e chegam peças novas.")]
 		2:
 			return [_p("feliz", "Viu? Não formaram três iguais, então voltaram para o lugar. Sem problema: não gastou nenhuma jogada.")]
 		3:
@@ -257,7 +257,7 @@ static func ambush_intro(stage_id):
 			return [
 				_b("desdenhoso", "Então o velho achou um ajudante? Vamos ver se aguenta uma bagunça!"),
 				_b("rindo", "Embaralha, embaralha, quem não pensa se atrapalha!"),
-				_p("pensativo", "Cuidado, [NOME]. No meio da fase ele vai soprar uma ventania e misturar as peças.")
+				_p("preocupado", "Cuidado, [NOME]. No meio da fase ele vai soprar uma ventania e misturar as peças.")
 			]
 		6:
 			return [
@@ -318,7 +318,7 @@ static func stage_victory(stage_id):
 				_b("bravo", "Grrr! Foi sorte! Na próxima vila vocês não passam!"),
 				_p("orgulhoso", "A terceira página! Com ela, o capítulo da adição está completo."),
 				_o("Moradora", "3 maçãs mais 2 maçãs... são 5! Lembrei!"),
-				_p("feliz", "Viu, [NOME]? Uma página devolvida e a vila inteira volta a contar.")
+				_p("feliz", "Viu, [NOME]? Com as páginas de volta, a vila inteira volta a contar.")
 			]
 		4:
 			return [_p("feliz", "Achamos uma página enrolada numa corda do cais!")]
@@ -326,7 +326,7 @@ static func stage_victory(stage_id):
 			return [_p("feliz", "Esta estava boiando numa garrafa. Ainda bem que a tinta é boa.")]
 		6:
 			return [
-				_b("bravo", "Tirem as mãos das minhas páginas! Quer dizer... das páginas que eu peguei emprestado!"),
+				_b("bravo", "Tirem as mãos das minhas páginas! Quer dizer... das páginas que eu peguei emprestadas!"),
 				_p("orgulhoso", "Mais um capítulo de volta. O porto pode zarpar."),
 				_o("Marinheiro", "8 tirando 5... sobram 3! Zarpar!")
 			]
@@ -377,16 +377,39 @@ static func stage_victory(stage_id):
 # Estrelas = carimbos de ouro que o professor põe na página.
 static func victory_lines(stars, new_title = ""):
 	var lines = []
+	# Várias falas para cada caso, para o professor não repetir sempre a mesma.
 	match int(stars):
 		3:
-			lines.append(_p("orgulhoso", "Impecável! Três carimbos de ouro nesta página."))
+			lines.append(_p("orgulhoso", _pick([
+				"Impecável! Três carimbos de ouro nesta página.",
+				"Três carimbos de ouro! Nem eu faria tão rápido.",
+				"Que beleza, [NOME]! Página de volta e com três carimbos.",
+				"Contas certas e quase nenhuma jogada perdida. Três carimbos!"
+			])))
 		2:
-			lines.append(_p("feliz", "Muito bem! Com um pouco mais de calma, vem o terceiro carimbo."))
+			lines.append(_p("feliz", _pick([
+				"Muito bem! Com um pouco mais de calma, vem o terceiro carimbo.",
+				"Dois carimbos! Da próxima vez, pense antes de trocar e o terceiro vem.",
+				"Página recuperada com dois carimbos. Está quase lá!"
+			])))
 		_:
-			lines.append(_p("feliz", "Página recuperada! Dá para tentar de novo e ganhar mais carimbos."))
+			lines.append(_p("feliz", _pick([
+				"Página recuperada! Dá para tentar de novo e ganhar mais carimbos.",
+				"Conseguimos! Se quiser, volte depois para ganhar mais carimbos.",
+				"A página é nossa! Com mais calma nas contas, vêm mais carimbos."
+			])))
 	if new_title != "":
-		lines.append(_p("orgulhoso", "Você está aprendendo rápido, [NOME]. Agora o seu título é %s!" % new_title))
+		lines.append(_p("orgulhoso", _pick([
+			"Você está aprendendo rápido, [NOME]. Agora o seu título é %s!",
+			"Olhe só! [NOME] agora é %s. Estou orgulhoso.",
+			"Novo título, [NOME]: %s! O Barão que se cuide.",
+			"De hoje em diante, você é %s. Merecido!"
+		]) % new_title))
 	return lines
+
+
+static func _pick(options):
+	return options[randi() % options.size()]
 
 
 static func defeat_lines():

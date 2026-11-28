@@ -245,9 +245,9 @@ func _create_world_section(group_index):
 	world_label.position = Vector2(80, region_top + 4)
 	world_label.size = Vector2(620, 38)
 	var world_pages = GameState.get_pages_recovered(first_stage_id, first_stage_id + 2)
-	world_label.text = "%s  •  %s %s  •  PÁGINAS %d/3" % [
+	# Sem o símbolo da operação: o "−" da subtração parecia um traço sobrando.
+	world_label.text = "%s  •  %s  •  PÁGINAS %d/3" % [
 		Story.WORLD_NAMES[group_index].to_upper(),
-		_operation_symbol(first_stage["operation"]),
 		GameState.get_mode_title(first_stage["operation"]),
 		world_pages
 	]
@@ -471,9 +471,15 @@ func _create_player_marker():
 	var pos = stage_positions[current_id]
 
 	var marker = Label.new()
-	marker.position = Vector2(pos.x - 55, pos.y - 87)
 	marker.size = Vector2(110, 34)
-	marker.text = "▼  VOCÊ  ▼"
+	# Na primeira fase de cada lugar, a faixa com o nome fica logo acima:
+	# o selo vai para baixo da fase para não cobrir o texto.
+	if (current_id - 1) % 3 == 0:
+		marker.position = Vector2(pos.x - 55, pos.y + 50)
+		marker.text = "▲  VOCÊ  ▲"
+	else:
+		marker.position = Vector2(pos.x - 55, pos.y - 87)
+		marker.text = "▼  VOCÊ  ▼"
 	marker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	marker.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	marker.add_theme_font_size_override("font_size", 14)
@@ -535,24 +541,6 @@ func _scroll_to_current_stage():
 		target_y = 0
 
 	scroll.scroll_vertical = target_y
-
-
-func _operation_symbol(operation):
-	match operation:
-		"addition":
-			return "+"
-		"subtraction":
-			return "−"
-		"multiplication":
-			return "×"
-		"division":
-			return "÷"
-		"fraction":
-			return "½"
-		"percentage":
-			return "%"
-		_:
-			return "•"
 
 
 func _stage_style(fill_color, border_color, border_width):

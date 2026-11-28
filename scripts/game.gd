@@ -4,7 +4,6 @@ const ROWS = 8
 const COLS = 8
 const LOW_MOVES_WARNING = 3
 # Item 6: destaca as peças da resposta até esta dificuldade (1 = só fases fáceis).
-const HINT_MAX_DIFFICULTY = 1
 const HINT_BORDER_COLOR = Color("#FDE047")
 
 # Ajuda por erros: quantos erros seguidos (no mesmo desafio) liberam cada nível de dica.
@@ -364,6 +363,9 @@ func _generate_challenge():
 	match mode:
 		"addition":
 			data = _make_addition_challenge()
+			# A primeira conta da fase 01 é a da moradora do Pomar: 3 maçãs + 2.
+			if context == "campaign" and int(stage_data.get("id", 0)) == 1 and solved_challenges == 0:
+				data = {"text": "3 + 2 = ?", "answer": 5}
 		"subtraction":
 			data = _make_subtraction_challenge()
 		"multiplication":
@@ -986,8 +988,9 @@ func _refresh_board():
 func _should_show_hint():
 	if context == "classic" or target_answer < 1:
 		return false
-	# Depois de muitos erros (nível 2+), destaca a resposta em qualquer dificuldade.
-	return difficulty <= HINT_MAX_DIFFICULTY or hint_level >= 2
+	# As peças da resposta só ficam destacadas depois de alguns erros (nível 2+):
+	# o jogador precisa resolver a conta antes de procurar as peças.
+	return hint_level >= 2
 
 
 # Fundo da peça: imagem assets/imagens/pecas/peca_XX.png se existir,
@@ -1156,7 +1159,7 @@ func _build_result_overlay():
 	result_overlay.add_child(center)
 
 	var panel = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(470, 330)
+	panel.custom_minimum_size = Vector2(540, 330)
 	panel.add_theme_stylebox_override("panel", UiStyle.paper(6))
 	center.add_child(panel)
 
@@ -1798,8 +1801,14 @@ func _on_pause_help():
 		status_label.text = "Troque peças vizinhas para formar linhas de 3 ou mais iguais."
 		_close_pause()
 		return
+	# COMO JOGAR explica as regras; a aula da conta continua no botão AJUDA.
 	_close_pause()
-	_open_lesson(false)
+	if _dialogue_open():
+		return
+	lesson_open = true
+	dialogue.play(Story.how_to_play())
+	await dialogue.finished
+	lesson_open = false
 
 
 func _on_pause_options():
@@ -2287,7 +2296,12 @@ func _set_tile_mark(index, kind):
 
 
 func _maybe_trigger_ambush_event():
-	if stage_finished or ambush_event_done or moves < AMBUSH_EVENT_MOVE:
+	if stage_finished or ambush_event_done:
+		return
+	# A emboscada do meio da fase acontece na metade dos desafios ou na 5ª jogada,
+	# o que vier primeiro (antes só contava a jogada, e quem jogava bem nunca via a ventania).
+	var halfway = int(ceil(required_challenges / 2.0))
+	if moves < AMBUSH_EVENT_MOVE and solved_challenges < halfway:
 		return
 	if ambush == "ventania" or ambush == "final":
 		ambush_event_done = true

@@ -97,7 +97,7 @@ Os nomes das fases são os que já existem em `GameState.STAGES`.
 >
 > **Narração:** Mas, numa noite de ventania, alguém entrou pela janela...
 >
-> **Barão Embaralho:** Ha! Sem livro, sem conta! Sem conta, sem resposta! E sem resposta... todos vão precisar de MIM!
+> **Barão Embaralho:** Ha! Sem livro, sem conta! Sem conta, sem resposta! E quem quiser uma resposta vai ter que pedir para MIM!
 >
 > **Narração:** De manhã, o Grande Livro dos Números estava vazio. Só restava a capa.
 >
@@ -228,7 +228,7 @@ Cada mundo segue o mesmo formato:
 - **Professor:** "Correntes não seguram quem pensa. Faça combinações perto delas."
 - **Ao vencer:**
 
-> **Barão Embaralho:** Tirem as mãos das minhas páginas! Quer dizer... das páginas que eu peguei emprestado!
+> **Barão Embaralho:** Tirem as mãos das minhas páginas! Quer dizer... das páginas que eu peguei emprestadas!
 >
 > **Professor Aurélio:** Mais um capítulo de volta. O porto pode zarpar.
 
@@ -553,19 +553,19 @@ Implementadas em `scripts/game.gd` (seção "EMBOSCADAS DO BARÃO"). O tipo de c
 
 | Fase | Emboscada | Como funciona no jogo |
 |---|---|---|
-| 03 | Ventania | Depois da 5ª jogada, todas as peças são embaralhadas (o tabuleiro treme) e o jogo garante de novo uma jogada para a resposta |
+| 03 | Ventania | Na metade dos desafios (ou na 5ª jogada), todas as peças são embaralhadas (o tabuleiro treme) e o jogo garante de novo uma jogada para a resposta |
 | 06 | Correntes | 6 peças começam presas e não podem ser selecionadas; uma combinação nela ou ao lado solta a corrente |
 | 09 | Enxame | O limite de jogadas cai 3 (de 20 para 17) |
 | 12 | Neblina | 6 peças começam escondidas (sem número nem cor); uma combinação nela ou ao lado revela a peça |
-| 15 | Ponteiro maluco | Depois da 5ª jogada, a conta é trocada por outra |
-| 18 | Final | 3 correntes, 4 neblinas e uma ventania depois da 5ª jogada |
+| 15 | Ponteiro maluco | Na metade dos desafios (ou na 5ª jogada), a conta é trocada por outra |
+| 18 | Final | 3 correntes, 4 neblinas e uma ventania na metade da fase |
 
 - As correntes e a neblina acompanham a peça quando ela cai.
 - A busca de jogadas e a dica ignoram peças presas, então o tabuleiro continua sempre jogável.
 - O destaque da resposta não revela peças na neblina.
 - Na primeira vez, o Barão e o professor comentam a ventania e o ponteiro numa fala curta; depois, só aparece um aviso.
 - Imagens: `assets/imagens/pecas/corrente.png` e `neblina.png` (sem elas, o jogo desenha uma borda e um bloco cinza).
-- Os números (6 correntes, 6 neblinas, −3 jogadas, evento na 5ª jogada) ficam em constantes no começo do `game.gd`. Vale rebalancear depois de testar com jogadores.
+- Os números (6 correntes, 6 neblinas, −3 jogadas, evento na metade dos desafios ou na 5ª jogada) ficam em constantes no começo do `game.gd`. Vale rebalancear depois de testar com jogadores.
 
 ### Arte necessária
 

@@ -59,12 +59,7 @@ func _build_interface():
 
 	_build_baron()
 
-	reset_dialog = ConfirmationDialog.new()
-	reset_dialog.title = "Resetar progresso"
-	reset_dialog.dialog_text = "Isso apaga XP, nível, fases concluídas, recordes, estrelas, o tutorial e a história (incluindo o seu nome).\nEssa ação não pode ser desfeita. Continuar?"
-	reset_dialog.ok_button_text = "Apagar tudo"
-	reset_dialog.cancel_button_text = "Cancelar"
-	reset_dialog.confirmed.connect(_on_reset_confirmed)
+	reset_dialog = _build_reset_dialog()
 	add_child(reset_dialog)
 
 	options_panel = OptionsPanel.new()
@@ -173,10 +168,12 @@ func _menu_book():
 	quit.pressed.connect(_on_quit_pressed)
 	links.add_child(quit)
 
-	var reset = UiStyle.make_button("Resetar progresso", "danger", Vector2(0, 32), 14)
-	reset.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	reset.pressed.connect(_on_reset_pressed)
-	box.add_child(reset)
+	# Só faz sentido resetar quando já existe algum progresso salvo.
+	if _has_progress():
+		var reset = UiStyle.make_button("Resetar progresso", "danger", Vector2(0, 32), 14)
+		reset.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		reset.pressed.connect(_on_reset_pressed)
+		box.add_child(reset)
 
 	# O modo desenvolvedor só aparece rodando pelo editor (ou em build de debug).
 	# No jogo exportado em modo release ele some automaticamente.
@@ -240,17 +237,18 @@ func _build_baron():
 	baron.anchor_top = 1.0
 	baron.anchor_right = 1.0
 	baron.anchor_bottom = 1.0
-	baron.offset_left = -140
-	baron.offset_top = -110
-	baron.offset_right = 10
-	baron.offset_bottom = 40
-	baron.rotation = -0.18
+	# O Barão espia no canto, inteiro na tela (antes ficava parte para fora).
+	baron.offset_left = -170
+	baron.offset_top = -160
+	baron.offset_right = -20
+	baron.offset_bottom = -10
+	baron.rotation = -0.08
 	baron.tooltip_text = "Barão Embaralho"
 	baron.gui_input.connect(_on_baron_input)
 	add_child(baron)
 	var bob = create_tween().set_loops()
-	bob.tween_property(baron, "offset_top", -122.0, 1.6).set_trans(Tween.TRANS_SINE)
-	bob.tween_property(baron, "offset_top", -110.0, 1.6).set_trans(Tween.TRANS_SINE)
+	bob.tween_property(baron, "offset_top", -170.0, 1.6).set_trans(Tween.TRANS_SINE)
+	bob.tween_property(baron, "offset_top", -160.0, 1.6).set_trans(Tween.TRANS_SINE)
 
 
 func _on_baron_input(event):
@@ -289,8 +287,57 @@ func _on_options_pressed():
 	options_panel.open()
 
 
+func _has_progress():
+	return GameState.tutorial_done or GameState.total_xp > 0 or GameState.unlocked_stage > 1 or not GameState.seen_story.is_empty()
+
+
+# Confirmação de "Resetar progresso" no mesmo visual de papel do resto do jogo.
+func _build_reset_dialog():
+	var overlay = Control.new()
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.visible = false
+
+	var shade = ColorRect.new()
+	shade.color = Color(0.02, 0.03, 0.06, 0.8)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(shade)
+
+	var center = CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(500, 0)
+	panel.add_theme_stylebox_override("panel", UiStyle.paper(30))
+	center.add_child(panel)
+
+	var box = VBoxContainer.new()
+	box.add_theme_constant_override("separation", 16)
+	panel.add_child(box)
+
+	box.add_child(UiStyle.label("RESETAR PROGRESSO", 26, UiStyle.LEATHER))
+	box.add_child(UiStyle.label("Isso apaga XP, nível, fases concluídas, recordes, estrelas, o tutorial e a história (incluindo o seu nome).\nEssa ação não pode ser desfeita. Continuar?", 17, UiStyle.INK))
+
+	var row = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 14)
+	box.add_child(row)
+
+	var cancel = UiStyle.make_button("CANCELAR", "primary", Vector2(170, 48), 16)
+	cancel.pressed.connect(func(): overlay.visible = false)
+	row.add_child(cancel)
+
+	var confirm = UiStyle.make_button("APAGAR TUDO", "secondary", Vector2(170, 48), 16)
+	confirm.add_theme_color_override("font_color", UiStyle.DANGER)
+	confirm.add_theme_color_override("font_hover_color", UiStyle.DANGER)
+	confirm.pressed.connect(_on_reset_confirmed)
+	row.add_child(confirm)
+	return overlay
+
+
 func _on_reset_pressed():
-	reset_dialog.popup_centered()
+	reset_dialog.visible = true
 
 
 func _on_reset_confirmed():

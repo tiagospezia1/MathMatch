@@ -108,6 +108,20 @@ Este documento lista o que está implementado no jogo e o que ainda falta. Os re
 
 ---
 
+## Correções do teste de 27/11/2026
+
+Um teste jogando como iniciante (prólogo, tutorial e fases 01 a 06) gerou um relatório com 21 pontos. Corrigido:
+
+- **Dificuldade:** o limite de jogadas agora é de 2 a 3 vezes o número de desafios (por exemplo, 10 na fase 01 e 15 na fase 18), e as peças da resposta não vêm mais destacadas nas fases fáceis (o destaque só aparece depois de erros).
+- **Emboscadas do meio da fase** (ventania e ponteiro maluco): acontecem na metade dos desafios ou na 5ª jogada, o que vier antes.
+- **Nome no prólogo:** o botão PULAR some enquanto o jogo pede o nome.
+- **Pausa > COMO JOGAR** mostra as regras (a aula continua no botão AJUDA).
+- **Contas** como "7 − 3" não quebram mais de linha; sinais + − × ÷ = maiores na fonte.
+- **Mapa:** o selo VOCÊ não cobre mais a faixa do lugar, e a faixa não tem mais o traço antes de SUBTRAÇÃO.
+- **História:** a primeira conta da fase 01 é a da moradora (3 + 2); textos do Barão e do professor revisados; falas de vitória e de novo título variam.
+- **Visual:** nenhuma opção das perguntas começa destacada; janela de "Resetar progresso" no estilo do jogo (e o botão só aparece com progresso salvo); caixa de narração mais baixa; campo do nome no estilo do livro; Barão inteiro no canto do menu; margem maior embaixo da partida.
+- As aulas da primeira vez continuam sem PULAR, de propósito: o professor precisa ensinar o conteúdo antes da fase.
+
 ## O que ainda falta
 
 ### Testes e ajustes

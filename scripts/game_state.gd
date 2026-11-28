@@ -3,24 +3,24 @@ extends Node
 const SAVE_PATH = "user://mathmatch_progress.json"
 
 const STAGES = [
-	{"id": 1, "title": "Primeiras Somas", "operation": "addition", "difficulty": 1, "required": 3, "moves": 24, "tile_types": 6, "xp": 120},
-	{"id": 2, "title": "Soma em Ritmo", "operation": "addition", "difficulty": 2, "required": 4, "moves": 24, "tile_types": 8, "xp": 140},
-	{"id": 3, "title": "Soma Desafiadora", "operation": "addition", "difficulty": 3, "required": 5, "moves": 23, "tile_types": 10, "xp": 170, "ambush": "ventania"},
-	{"id": 4, "title": "Começando a Subtrair", "operation": "subtraction", "difficulty": 1, "required": 4, "moves": 24, "tile_types": 6, "xp": 190},
-	{"id": 5, "title": "Diferenças Maiores", "operation": "subtraction", "difficulty": 2, "required": 5, "moves": 23, "tile_types": 8, "xp": 220},
-	{"id": 6, "title": "Subtração Avançada", "operation": "subtraction", "difficulty": 3, "required": 6, "moves": 22, "tile_types": 10, "xp": 250, "ambush": "correntes"},
-	{"id": 7, "title": "Tabuada Inicial", "operation": "multiplication", "difficulty": 1, "required": 4, "moves": 22, "tile_types": 6, "xp": 270},
-	{"id": 8, "title": "Multiplicando Mais", "operation": "multiplication", "difficulty": 2, "required": 5, "moves": 21, "tile_types": 9, "xp": 300},
-	{"id": 9, "title": "Desafio da Tabuada", "operation": "multiplication", "difficulty": 3, "required": 6, "moves": 20, "tile_types": 12, "xp": 330, "ambush": "enxame"},
-	{"id": 10, "title": "Divisão Exata", "operation": "division", "difficulty": 1, "required": 4, "moves": 21, "tile_types": 6, "xp": 350},
-	{"id": 11, "title": "Quocientes", "operation": "division", "difficulty": 2, "required": 5, "moves": 20, "tile_types": 9, "xp": 380},
-	{"id": 12, "title": "Divisão Avançada", "operation": "division", "difficulty": 3, "required": 6, "moves": 19, "tile_types": 12, "xp": 410, "ambush": "neblina"},
-	{"id": 13, "title": "Metades e Terços", "operation": "fraction", "difficulty": 1, "required": 4, "moves": 20, "tile_types": 6, "xp": 430},
-	{"id": 14, "title": "Partes do Todo", "operation": "fraction", "difficulty": 2, "required": 5, "moves": 19, "tile_types": 9, "xp": 460},
-	{"id": 15, "title": "Frações Avançadas", "operation": "fraction", "difficulty": 3, "required": 6, "moves": 18, "tile_types": 12, "xp": 500, "ambush": "ponteiro"},
-	{"id": 16, "title": "Porcentagens Básicas", "operation": "percentage", "difficulty": 1, "required": 4, "moves": 19, "tile_types": 6, "xp": 520},
-	{"id": 17, "title": "Calculando Percentuais", "operation": "percentage", "difficulty": 2, "required": 5, "moves": 18, "tile_types": 9, "xp": 560},
-	{"id": 18, "title": "Mestre das Porcentagens", "operation": "percentage", "difficulty": 3, "required": 6, "moves": 17, "tile_types": 12, "xp": 650, "ambush": "final"}
+	{"id": 1, "title": "Primeiras Somas", "operation": "addition", "difficulty": 1, "required": 3, "moves": 10, "tile_types": 6, "xp": 120},
+	{"id": 2, "title": "Soma em Ritmo", "operation": "addition", "difficulty": 2, "required": 4, "moves": 11, "tile_types": 8, "xp": 140},
+	{"id": 3, "title": "Soma Desafiadora", "operation": "addition", "difficulty": 3, "required": 5, "moves": 12, "tile_types": 10, "xp": 170, "ambush": "ventania"},
+	{"id": 4, "title": "Começando a Subtrair", "operation": "subtraction", "difficulty": 1, "required": 4, "moves": 12, "tile_types": 6, "xp": 190},
+	{"id": 5, "title": "Diferenças Maiores", "operation": "subtraction", "difficulty": 2, "required": 5, "moves": 13, "tile_types": 8, "xp": 220},
+	{"id": 6, "title": "Subtração Avançada", "operation": "subtraction", "difficulty": 3, "required": 6, "moves": 14, "tile_types": 10, "xp": 250, "ambush": "correntes"},
+	{"id": 7, "title": "Tabuada Inicial", "operation": "multiplication", "difficulty": 1, "required": 4, "moves": 12, "tile_types": 6, "xp": 270},
+	{"id": 8, "title": "Multiplicando Mais", "operation": "multiplication", "difficulty": 2, "required": 5, "moves": 13, "tile_types": 9, "xp": 300},
+	{"id": 9, "title": "Desafio da Tabuada", "operation": "multiplication", "difficulty": 3, "required": 6, "moves": 17, "tile_types": 12, "xp": 330, "ambush": "enxame"},
+	{"id": 10, "title": "Divisão Exata", "operation": "division", "difficulty": 1, "required": 4, "moves": 12, "tile_types": 6, "xp": 350},
+	{"id": 11, "title": "Quocientes", "operation": "division", "difficulty": 2, "required": 5, "moves": 13, "tile_types": 9, "xp": 380},
+	{"id": 12, "title": "Divisão Avançada", "operation": "division", "difficulty": 3, "required": 6, "moves": 14, "tile_types": 12, "xp": 410, "ambush": "neblina"},
+	{"id": 13, "title": "Metades e Terços", "operation": "fraction", "difficulty": 1, "required": 4, "moves": 12, "tile_types": 6, "xp": 430},
+	{"id": 14, "title": "Partes do Todo", "operation": "fraction", "difficulty": 2, "required": 5, "moves": 13, "tile_types": 9, "xp": 460},
+	{"id": 15, "title": "Frações Avançadas", "operation": "fraction", "difficulty": 3, "required": 6, "moves": 14, "tile_types": 12, "xp": 500, "ambush": "ponteiro"},
+	{"id": 16, "title": "Porcentagens Básicas", "operation": "percentage", "difficulty": 1, "required": 4, "moves": 12, "tile_types": 6, "xp": 520},
+	{"id": 17, "title": "Calculando Percentuais", "operation": "percentage", "difficulty": 2, "required": 5, "moves": 13, "tile_types": 9, "xp": 560},
+	{"id": 18, "title": "Mestre das Porcentagens", "operation": "percentage", "difficulty": 3, "required": 6, "moves": 15, "tile_types": 12, "xp": 650, "ambush": "final"}
 ]
 
 var game_context = "classic"
