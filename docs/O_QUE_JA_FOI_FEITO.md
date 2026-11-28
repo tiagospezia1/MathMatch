@@ -122,6 +122,20 @@ Um teste jogando como iniciante (prólogo, tutorial e fases 01 a 06) gerou um re
 - **Visual:** nenhuma opção das perguntas começa destacada; janela de "Resetar progresso" no estilo do jogo (e o botão só aparece com progresso salvo); caixa de narração mais baixa; campo do nome no estilo do livro; Barão inteiro no canto do menu; margem maior embaixo da partida.
 - As aulas da primeira vez continuam sem PULAR, de propósito: o professor precisa ensinar o conteúdo antes da fase.
 
+## Correções do teste de 28/11/2026
+
+O segundo teste jogou as 18 fases e os créditos. Corrigido:
+
+- **Dificuldade:** 4 desafios em 9 jogadas nas fases fáceis, 5 em 9 nas médias e 6 em 10 nas difíceis (fase 01: 3 em 8).
+- **Contas:** sem "× 1" nas fáceis, divisão sempre dentro da tabuada (nada de 99 ÷ 9), "50% de 2" saiu, e a mesma conta não se repete entre as últimas 4 da fase.
+- **História:** a primeira conta de cada lugar é a do morador (3 + 2, 8 − 5, 3 × 2, 12 ÷ 3 e 1/2 de 12).
+- **Tabuleiro:** sempre há uma troca visível para a resposta, também depois de jogadas erradas e com neblina.
+- **Aulas:** "30% de 20 = 3 × 2 = 6", a pergunta de divisão não mostra mais a resposta, a mesma fruta nas duas parcelas, texto das frações batendo com a lousa.
+- **Textos:** contas e últimas palavras não ficam mais sozinhas numa linha (em falas, dicas, livro e créditos); falas de vitória sem repetir; "Novo título" só quando o título muda; página 14 do livro renomeada; falas do marinheiro, do relojoeiro e do Barão revisadas.
+- **Tela:** fundos das fases em 16:9 (nada cortado em tela cheia), mais margem em cima na partida, tabuleiro um pouco menor para o cabeçalho não sair da tela, etiqueta VOCÊ menor e embaixo da fase atual, caixa de fala mais baixa, créditos sem a pausa vazia no fim, tamanhos de texto maiores.
+- **Tutorial pelo menu:** quem já fez o tutorial não vê o prólogo de novo.
+- Não reproduzido: a volta sozinha ao menu no primeiro clique e a saída da tela cheia ao abrir o tutorial.
+
 ## O que ainda falta
 
 ### Testes e ajustes

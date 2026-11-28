@@ -238,17 +238,18 @@ func _build_baron():
 	baron.anchor_right = 1.0
 	baron.anchor_bottom = 1.0
 	# O Barão espia no canto, inteiro na tela (antes ficava parte para fora).
-	baron.offset_left = -170
-	baron.offset_top = -160
-	baron.offset_right = -20
-	baron.offset_bottom = -10
+	baron.offset_left = -190
+	baron.offset_top = -180
+	baron.offset_right = -40
+	baron.offset_bottom = -30
+	baron.pivot_offset = Vector2(75, 75)
 	baron.rotation = -0.08
 	baron.tooltip_text = "Barão Embaralho"
 	baron.gui_input.connect(_on_baron_input)
 	add_child(baron)
 	var bob = create_tween().set_loops()
-	bob.tween_property(baron, "offset_top", -170.0, 1.6).set_trans(Tween.TRANS_SINE)
-	bob.tween_property(baron, "offset_top", -160.0, 1.6).set_trans(Tween.TRANS_SINE)
+	bob.tween_property(baron, "offset_top", -190.0, 1.6).set_trans(Tween.TRANS_SINE)
+	bob.tween_property(baron, "offset_top", -180.0, 1.6).set_trans(Tween.TRANS_SINE)
 
 
 func _on_baron_input(event):

@@ -116,7 +116,7 @@ func _build():
 	panel.anchor_bottom = 1.0
 	panel.offset_left = 24
 	panel.offset_right = -24
-	panel.offset_top = -330
+	panel.offset_top = -296
 	panel.offset_bottom = -24
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# Uma página do Grande Livro: papel com borda de couro.
@@ -140,7 +140,7 @@ func _build():
 	margin.add_child(row)
 
 	portrait_frame = PanelContainer.new()
-	portrait_frame.custom_minimum_size = Vector2(200, 200)
+	portrait_frame.custom_minimum_size = Vector2(170, 170)
 	portrait_frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	portrait_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	portrait_frame.add_theme_stylebox_override("panel", _portrait_style())
@@ -149,7 +149,7 @@ func _build():
 	portrait = TextureRect.new()
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.custom_minimum_size = Vector2(200, 200)
+	portrait.custom_minimum_size = Vector2(170, 170)
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	portrait_frame.add_child(portrait)
 
@@ -263,7 +263,7 @@ func _show_line(line):
 	asking_name = bool(line.get("ask_name", false))
 	name_row.visible = false
 	# Sem retrato (narração), a caixa fica mais baixa: não sobra espaço vazio.
-	dialog_panel.offset_top = -330 if portrait_frame.visible else -240
+	dialog_panel.offset_top = -296 if portrait_frame.visible else -240
 	# Na hora de digitar o nome, PULAR some: quem clica em sequência não pula o nome sem ver.
 	skip_button.visible = can_skip and not asking_name
 
@@ -284,22 +284,11 @@ func _show_line(line):
 
 
 func _type(value):
-	text_label.text = _keep_math_together(value.replace("[NOME]", _player_name()))
+	text_label.text = UiStyle.tidy(value.replace("[NOME]", _player_name()))
 	shown_chars = 0.0
 	text_label.visible_characters = 0
 	typing = true
 	set_process(true)
-
-
-# Troca os espaços em volta de + − × ÷ = por espaços que não quebram linha:
-# assim "7 − 3?" nunca fica dividido em duas linhas.
-func _keep_math_together(value):
-	var regex = RegEx.new()
-	regex.compile("(\\S) ([+−×÷=]) (?=\\S)")
-	var result = value
-	for i in range(3):
-		result = regex.sub(result, "$1\u00a0$2\u00a0", true)
-	return result
 
 
 func _process(delta):

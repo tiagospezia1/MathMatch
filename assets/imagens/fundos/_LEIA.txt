@@ -3,7 +3,7 @@ FUNDOS DE TELA (PNG ou JPG, sugerido 900x900 ou maior, quadrado)
 fundo_menu.png       menu principal e menu dev
 fundo_mapa.png       mapa da jornada
 fundo_partida.png    partida (modo clássico e modo dev)
-lugar_1.png ... lugar_6.png   partida em cada lugar da campanha; lugar_1 também no tutorial
+lugar_1.png ... lugar_6.png   partida em cada lugar da campanha (16:9); lugar_1 também no tutorial
                               (gerados por tools/mapa/gerar_fundos.js)
 
 A imagem é ampliada para cobrir a tela inteira, mantendo a proporção.

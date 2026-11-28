@@ -158,7 +158,8 @@ func _build():
 func _roll():
 	var screen = get_viewport_rect().size
 	content.position = Vector2((screen.x - content.size.x) / 2.0, screen.y)
-	var end_y = -content.size.y
+	# Para quando o "Obrigado por jogar!" chega perto do topo, sem tela vazia no fim.
+	var end_y = screen.y * 0.28 - content.size.y
 	var duration = (screen.y - end_y) / SCROLL_SPEED
 	roll_tween = create_tween()
 	roll_tween.tween_property(content, "position:y", end_y, duration)
@@ -167,6 +168,8 @@ func _roll():
 
 func _on_roll_finished():
 	speed_hint.visible = false
+	var hide = create_tween()
+	hide.tween_property(content, "modulate:a", 0.0, 0.6)
 	end_box.visible = true
 	# Só quem terminou a jornada vê a página misteriosa.
 	if GameState.has_seen_story("pagina_18"):
@@ -220,7 +223,7 @@ func _section(title, lines):
 
 func _line(text_value, font_size, color):
 	var label = Label.new()
-	label.text = text_value
+	label.text = UiStyle.tidy(text_value)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", font_size)

@@ -103,24 +103,24 @@ As fases são liberadas em sequência. Cada uma devolve **uma página** do livro
 
 | Mundo | Fase | Nome | Dificuldade | Desafios | Jogadas | XP | Emboscada |
 |---|---|---|---|---|---|---|---|
-| 1 • Vila do Pomar | 01 | Primeiras Somas | Fácil | 3 | 10 | 120 | |
-| | 02 | Soma em Ritmo | Médio | 4 | 11 | 140 | |
-| | 03 | Soma Desafiadora | Difícil | 5 | 12 | 170 | Ventania |
-| 2 • Porto das Cargas | 04 | Começando a Subtrair | Fácil | 4 | 12 | 190 | |
-| | 05 | Diferenças Maiores | Médio | 5 | 13 | 220 | |
-| | 06 | Subtração Avançada | Difícil | 6 | 14 | 250 | Correntes |
-| 3 • Floresta das Colmeias | 07 | Tabuada Inicial | Fácil | 4 | 12 | 270 | |
-| | 08 | Multiplicando Mais | Médio | 5 | 13 | 300 | |
-| | 09 | Desafio da Tabuada | Difícil | 6 | 17 → 14 | 330 | Enxame |
-| 4 • Aldeia do Banquete | 10 | Divisão Exata | Fácil | 4 | 12 | 350 | |
-| | 11 | Quocientes | Médio | 5 | 13 | 380 | |
-| | 12 | Divisão Avançada | Difícil | 6 | 14 | 410 | Neblina |
-| 5 • Torre do Relógio | 13 | Metades e Terços | Fácil | 4 | 12 | 430 | |
-| | 14 | Partes do Todo | Médio | 5 | 13 | 460 | |
-| | 15 | Frações Avançadas | Difícil | 6 | 14 | 500 | Ponteiro maluco |
-| 6 • Grande Mercado | 16 | Porcentagens Básicas | Fácil | 4 | 12 | 520 | |
-| | 17 | Calculando Percentuais | Médio | 5 | 13 | 560 | |
-| | 18 | Mestre das Porcentagens | Difícil | 6 | 15 | 650 | Final |
+| 1 • Vila do Pomar | 01 | Primeiras Somas | Fácil | 3 | 8 | 120 | |
+| | 02 | Soma em Ritmo | Médio | 5 | 9 | 140 | |
+| | 03 | Soma Desafiadora | Difícil | 6 | 10 | 170 | Ventania |
+| 2 • Porto das Cargas | 04 | Começando a Subtrair | Fácil | 4 | 9 | 190 | |
+| | 05 | Diferenças Maiores | Médio | 5 | 9 | 220 | |
+| | 06 | Subtração Avançada | Difícil | 6 | 10 | 250 | Correntes |
+| 3 • Floresta das Colmeias | 07 | Tabuada Inicial | Fácil | 4 | 9 | 270 | |
+| | 08 | Multiplicando Mais | Médio | 5 | 9 | 300 | |
+| | 09 | Desafio da Tabuada | Difícil | 6 | 13 → 10 | 330 | Enxame |
+| 4 • Aldeia do Banquete | 10 | Divisão Exata | Fácil | 4 | 9 | 350 | |
+| | 11 | Quocientes | Médio | 5 | 9 | 380 | |
+| | 12 | Divisão Avançada | Difícil | 6 | 10 | 410 | Neblina |
+| 5 • Torre do Relógio | 13 | Metades e Terços | Fácil | 4 | 9 | 430 | |
+| | 14 | Partes do Todo | Médio | 5 | 9 | 460 | |
+| | 15 | Frações Avançadas | Difícil | 6 | 10 | 500 | Ponteiro maluco |
+| 6 • Grande Mercado | 16 | Porcentagens Básicas | Fácil | 4 | 9 | 520 | |
+| | 17 | Calculando Percentuais | Médio | 5 | 9 | 560 | |
+| | 18 | Mestre das Porcentagens | Difícil | 6 | 10 | 650 | Final |
 
 ### As emboscadas do Barão
 
@@ -166,7 +166,7 @@ Na primeira fase de cada operação (a primeira vez não pode ser pulada):
 
 As peças com a resposta **não** vêm destacadas: o jogador resolve a conta primeiro. O destaque só aparece depois de alguns erros.
 
-O limite de jogadas é de 2 a 3 vezes o número de desafios: dá para errar um pouco, mas quem joga com atenção ganha mais estrelas.
+O limite de jogadas deixa pouca folga: dá para errar um pouco, mas nas fases difíceis (6 desafios em 10 jogadas) é preciso pensar antes de trocar. Sempre existe pelo menos uma troca visível que forma a resposta (peças cobertas pela neblina não contam), e o jogo evita repetir uma das últimas 4 contas da fase.
 
 ### O tutorial (Fase 0)
 

@@ -110,10 +110,32 @@ static func make_button(text_value, kind = "secondary", min_size = Vector2(0, 48
 
 static func label(text_value, font_size, color, centered = true):
 	var node = Label.new()
-	node.text = text_value
+	node.text = tidy(text_value)
 	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if centered:
 		node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	node.add_theme_font_size_override("font_size", font_size)
 	node.add_theme_color_override("font_color", color)
 	return node
+
+
+# Ajeita um texto antes de mostrar num rótulo com quebra de linha:
+#  - "7 − 3", "9 × 10 = 90" e "50% de 20" não se dividem entre duas linhas;
+#  - a última palavra de cada parágrafo não fica sozinha na última linha.
+# Usa o espaço que não quebra (U+00A0), que o Godot respeita.
+static func tidy(value):
+	var text = str(value)
+	var math = RegEx.new()
+	math.compile("(\\S) ([+−×÷=]) (?=\\S)")
+	text = math.sub(text, "$1\u00a0$2\u00a0", true)
+	var percent = RegEx.new()
+	percent.compile("(\\d+%) (de|são|é) (?=\\S)")
+	text = percent.sub(text, "$1\u00a0$2\u00a0", true)
+	var lines = text.split("\n")
+	for i in range(lines.size()):
+		var line = lines[i]
+		var last = line.rfind(" ")
+		# Só junta quando a última palavra é curta e a linha é longa (texto que quebra).
+		if last > 20 and line.length() - last <= 14:
+			lines[i] = line.substr(0, last) + "\u00a0" + line.substr(last + 1)
+	return "\n".join(lines)

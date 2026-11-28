@@ -64,6 +64,16 @@ var difficulty = 1
 var current_tile_types = 6
 var target_answer = -1
 var solved_challenges = 0
+var recent_challenges = []
+
+# Primeira conta da primeira fase de cada lugar: a mesma do problema contado na história.
+const STORY_FIRST_CHALLENGE = {
+	1: {"text": "3 + 2 = ?", "answer": 5},
+	4: {"text": "8 − 5 = ?", "answer": 3},
+	7: {"text": "3 × 2 = ?", "answer": 6},
+	10: {"text": "12 ÷ 3 = ?", "answer": 4},
+	13: {"text": "1/2 de 12 = ?", "answer": 6}
+}
 var required_challenges = 0
 var move_limit = 0
 var stage_data = {}
@@ -254,7 +264,7 @@ func _create_buttons():
 	for r in range(ROWS):
 		for c in range(COLS):
 			var button = Button.new()
-			button.custom_minimum_size = Vector2(64, 64)
+			button.custom_minimum_size = Vector2(60, 60)
 			button.focus_mode = Control.FOCUS_NONE
 			button.add_theme_font_size_override("font_size", 21)
 			button.set_meta("no_click_sound", true)
@@ -287,6 +297,7 @@ func _new_game():
 	score = 0
 	moves = 0
 	solved_challenges = 0
+	recent_challenges.clear()
 	selected = Vector2i(-1, -1)
 	result_overlay.visible = false
 	locked.clear()
@@ -307,15 +318,15 @@ func _new_game():
 	_update_hud()
 
 	if context == "campaign":
-		status_label.text = "Complete %d desafios antes de atingir o limite de %d jogadas." % [required_challenges, move_limit]
+		status_label.text = UiStyle.tidy("Complete %d desafios antes de atingir o limite de %d jogadas." % [required_challenges, move_limit])
 	elif context == "developer":
-		status_label.text = "Resolva o desafio ou use CONCLUIR E AVANÇAR para testar a progressão rapidamente."
+		status_label.text = UiStyle.tidy("Resolva o desafio ou use CONCLUIR E AVANÇAR para testar a progressão rapidamente.")
 	else:
-		status_label.text = "Faça uma combinação de 3 ou mais peças iguais."
+		status_label.text = UiStyle.tidy("Faça uma combinação de 3 ou mais peças iguais.")
 
 	var note = _ambush_note()
 	if note != "":
-		status_label.text = note
+		status_label.text = UiStyle.tidy(note)
 
 
 func _generate_board():
@@ -358,26 +369,21 @@ func _generate_board():
 
 
 func _generate_challenge():
-	var data = {}
+	var data = _make_challenge_for_mode()
+	# A primeira conta de cada lugar é a do morador que aparece na história.
+	var story_first = false
+	if context == "campaign" and solved_challenges == 0 and STORY_FIRST_CHALLENGE.has(int(stage_data.get("id", 0))):
+		data = STORY_FIRST_CHALLENGE[int(stage_data["id"])]
+		story_first = true
 
-	match mode:
-		"addition":
-			data = _make_addition_challenge()
-			# A primeira conta da fase 01 é a da moradora do Pomar: 3 maçãs + 2.
-			if context == "campaign" and int(stage_data.get("id", 0)) == 1 and solved_challenges == 0:
-				data = {"text": "3 + 2 = ?", "answer": 5}
-		"subtraction":
-			data = _make_subtraction_challenge()
-		"multiplication":
-			data = _make_multiplication_challenge()
-		"division":
-			data = _make_division_challenge()
-		"fraction":
-			data = _make_fraction_challenge()
-		"percentage":
-			data = _make_percentage_challenge()
-		_:
-			data = {"text": "1 + 1 = ?", "answer": 2}
+	# Evita repetir uma das últimas contas da fase.
+	for attempt in range(12):
+		if story_first or not recent_challenges.has(data["text"]):
+			break
+		data = _make_challenge_for_mode()
+	recent_challenges.append(data["text"])
+	if recent_challenges.size() > 4:
+		recent_challenges.pop_front()
 
 	target_answer = int(data["answer"])
 	current_challenge_text = data["text"]
@@ -385,6 +391,23 @@ func _generate_challenge():
 	_refresh_instruction()
 
 	dev_answer_label.text = "DEV • resposta esperada: %d" % target_answer
+
+
+func _make_challenge_for_mode():
+	match mode:
+		"addition":
+			return _make_addition_challenge()
+		"subtraction":
+			return _make_subtraction_challenge()
+		"multiplication":
+			return _make_multiplication_challenge()
+		"division":
+			return _make_division_challenge()
+		"fraction":
+			return _make_fraction_challenge()
+		"percentage":
+			return _make_percentage_challenge()
+	return {"text": "1 + 1 = ?", "answer": 2}
 
 
 func _make_addition_challenge():
@@ -437,30 +460,27 @@ func _make_subtraction_challenge():
 func _make_multiplication_challenge():
 	var options = []
 
-	if difficulty == 1:
-		options = [
-			{"text": "1 × 2 = ?", "answer": 2},
-			{"text": "1 × 3 = ?", "answer": 3},
-			{"text": "2 × 2 = ?", "answer": 4},
-			{"text": "1 × 5 = ?", "answer": 5},
-			{"text": "2 × 3 = ?", "answer": 6}
-		]
-	elif difficulty == 2:
+	if difficulty <= 2:
+		# Sem "× 1": multiplicar por 1 não ensina grupos.
 		options = [
 			{"text": "2 × 2 = ?", "answer": 4},
 			{"text": "2 × 3 = ?", "answer": 6},
+			{"text": "3 × 2 = ?", "answer": 6},
 			{"text": "2 × 4 = ?", "answer": 8},
-			{"text": "3 × 3 = ?", "answer": 9},
-			{"text": "4 × 2 = ?", "answer": 8}
+			{"text": "4 × 2 = ?", "answer": 8},
+			{"text": "3 × 3 = ?", "answer": 9}
 		]
 	else:
 		options = [
 			{"text": "2 × 4 = ?", "answer": 8},
+			{"text": "4 × 2 = ?", "answer": 8},
 			{"text": "3 × 3 = ?", "answer": 9},
 			{"text": "2 × 5 = ?", "answer": 10},
-			{"text": "2 × 6 = ?", "answer": 12},
+			{"text": "5 × 2 = ?", "answer": 10},
 			{"text": "3 × 4 = ?", "answer": 12},
-			{"text": "4 × 3 = ?", "answer": 12}
+			{"text": "4 × 3 = ?", "answer": 12},
+			{"text": "2 × 6 = ?", "answer": 12},
+			{"text": "6 × 2 = ?", "answer": 12}
 		]
 
 	return _pick_valid_option(options)
@@ -471,15 +491,16 @@ func _make_division_challenge():
 	var answer = 1
 	var divisor = 2
 
+	# A conta é sempre a tabuada ao contrário: divisor e resposta até 10.
 	if difficulty == 1:
-		answer = _rand_between(1, min(max_answer, 6))
-		divisor = _rand_between(2, 4)
+		answer = _rand_between(2, min(max_answer, 5))
+		divisor = _rand_between(2, 3)
 	elif difficulty == 2:
-		answer = _rand_between(2, min(max_answer, 9))
-		divisor = _rand_between(3, 7)
+		answer = _rand_between(2, min(max_answer, 7))
+		divisor = _rand_between(2, 5)
 	else:
-		answer = _rand_between(3, min(max_answer, 12))
-		divisor = _rand_between(5, 12)
+		answer = _rand_between(3, min(max_answer, 10))
+		divisor = _rand_between(4, 9)
 
 	var dividend = answer * divisor
 	return {"text": "%d ÷ %d = ?" % [dividend, divisor], "answer": answer}
@@ -524,8 +545,8 @@ func _make_percentage_challenge():
 
 	if difficulty == 1:
 		options = [
-			{"text": "50% de 2 = ?", "answer": 1},
 			{"text": "50% de 4 = ?", "answer": 2},
+			{"text": "50% de 6 = ?", "answer": 3},
 			{"text": "100% de 3 = ?", "answer": 3},
 			{"text": "50% de 8 = ?", "answer": 4},
 			{"text": "50% de 10 = ?", "answer": 5},
@@ -583,31 +604,31 @@ func _on_tile_pressed(r, c):
 	# No tutorial, só as peças destacadas podem ser tocadas.
 	if context == "tutorial" and not tut_expected.has(current):
 		if not tut_waiting:
-			status_label.text = "Toque em uma das peças com borda verde."
+			status_label.text = UiStyle.tidy("Toque em uma das peças com borda verde.")
 			Audio.play("troca_invalida")
 		return
 
 	if locked.has(current):
-		status_label.text = "Essa peça está presa por uma corrente. Faça uma combinação ao lado dela para soltá-la."
+		status_label.text = UiStyle.tidy("Essa peça está presa por uma corrente. Faça uma combinação ao lado dela para soltá-la.")
 		Audio.play("troca_invalida")
 		return
 	Audio.play("selecionar")
 
 	if selected.x == -1:
 		selected = current
-		status_label.text = "Escolha uma peça vizinha para trocar."
+		status_label.text = UiStyle.tidy("Escolha uma peça vizinha para trocar.")
 		_refresh_board()
 		return
 
 	if current == selected:
 		selected = Vector2i(-1, -1)
-		status_label.text = "Seleção cancelada."
+		status_label.text = UiStyle.tidy("Seleção cancelada.")
 		_refresh_board()
 		return
 
 	if not _are_adjacent(selected, current):
 		selected = current
-		status_label.text = "Agora escolha uma peça vizinha."
+		status_label.text = UiStyle.tidy("Agora escolha uma peça vizinha.")
 		_refresh_board()
 		return
 
@@ -630,7 +651,7 @@ func _try_swap(a, b):
 		_swap_tiles(a, b)
 		selected = Vector2i(-1, -1)
 		_refresh_board()
-		status_label.text = "Essa troca não forma uma combinação."
+		status_label.text = UiStyle.tidy("Essa troca não forma uma combinação.")
 		Audio.play("troca_invalida")
 		busy = false
 		_register_mistake()
@@ -730,9 +751,9 @@ func _resolve_matches():
 			Audio.play("combo", min(1.0 + 0.08 * (combo - 1), 1.5))
 
 		if solved_this_move:
-			status_label.text = "Resposta correta! Bônus matemático +%d • combo x%d" % [100 * difficulty, combo]
+			status_label.text = UiStyle.tidy("Resposta correta! Bônus matemático +%d • combo x%d" % [100 * difficulty, combo])
 		else:
-			status_label.text = "Combinação x%d! +%d pontos" % [combo, points]
+			status_label.text = UiStyle.tidy("Combinação x%d! +%d pontos" % [combo, points])
 
 		_update_hud()
 
@@ -755,7 +776,7 @@ func _resolve_matches():
 	var rebuilt = _make_board_playable(false)
 	if rebuilt:
 		_refresh_board()
-		status_label.text = "Algumas peças foram reorganizadas para o jogo continuar."
+		status_label.text = UiStyle.tidy("Algumas peças foram reorganizadas para o jogo continuar.")
 
 	_update_hud()
 
@@ -773,26 +794,31 @@ func _resolve_matches():
 			_generate_challenge()
 			_make_board_playable(true)
 			_refresh_board()
-			status_label.text = "Desafio concluído! Próximo desafio gerado."
+			status_label.text = UiStyle.tidy("Desafio concluído! Próximo desafio gerado.")
 		else:
-			status_label.text = "A combinação valeu pontos, mas não era a resposta do desafio."
+			status_label.text = UiStyle.tidy("A combinação valeu pontos, mas não era a resposta do desafio.")
 			_register_mistake()
 			_show_misconception(matched_values)
+		# Sempre existe uma troca visível que forma a resposta: se as jogadas
+		# acabaram com ela, o jogo cria outra mexendo em poucas casas.
+		if _find_target_move().size() == 0:
+			_make_board_playable(true)
+			_refresh_board()
 	elif context == "developer":
 		if solved_this_move:
 			_reset_hints()
 			_generate_challenge()
 			_make_board_playable(true)
 			_refresh_board()
-			status_label.text = "Desafio concluído! Um novo desafio foi gerado."
+			status_label.text = UiStyle.tidy("Desafio concluído! Um novo desafio foi gerado.")
 		else:
-			status_label.text = "A combinação valeu pontos, mas não era a resposta do desafio."
+			status_label.text = UiStyle.tidy("A combinação valeu pontos, mas não era a resposta do desafio.")
 			_register_mistake()
 			_show_misconception(matched_values)
 	elif context == "tutorial":
 		_tutorial_after_move(solved_this_move, false)
 	else:
-		status_label.text = "Boa! Faça a próxima combinação."
+		status_label.text = UiStyle.tidy("Boa! Faça a próxima combinação.")
 
 	if context == "campaign" or context == "developer":
 		await _maybe_trigger_ambush_event()
@@ -1259,7 +1285,7 @@ func _show_campaign_victory():
 	if int(stage_data["id"]) == GameState.get_stage_count():
 		details += "\n\nVocê concluiu todas as fases do MathMatch!"
 
-	result_details.text = details
+	result_details.text = UiStyle.tidy(details)
 	retry_button.visible = false
 	var stage_id = int(stage_data["id"])
 	var last_stage = stage_id == GameState.get_stage_count()
@@ -1273,7 +1299,10 @@ func _show_campaign_victory():
 	# carimbos de ouro (estrelas) e o novo título, se o nível subiu.
 	var first = bool(result["first_completion"])
 	var lines = Story.stage_victory(stage_id) if first else []
-	var new_title = GameState.get_level_title(level_after) if level_after > level_before else ""
+	# Só anuncia título novo quando o título muda (depois do último, o nível sobe sem título novo).
+	var new_title = ""
+	if level_after > level_before and GameState.get_level_title(level_after) != GameState.get_level_title(level_before):
+		new_title = GameState.get_level_title(level_after)
 	var extra = Story.victory_lines(stars, new_title)
 	if last_stage and first:
 		# Depois do epílogo, só a fala do novo título (se houver).
@@ -1302,7 +1331,7 @@ func _show_campaign_failure():
 	Audio.play("derrota")
 	result_stars_holder.visible = false
 	result_title.text = "JOGADAS ESGOTADAS"
-	result_details.text = "Você resolveu %d de %d desafios.\nTente novamente para concluir a fase." % [solved_challenges, required_challenges]
+	result_details.text = UiStyle.tidy("Você resolveu %d de %d desafios.\nTente novamente para concluir a fase." % [solved_challenges, required_challenges])
 	next_button.visible = false
 	retry_button.visible = true
 	result_back_button.visible = true
@@ -1331,7 +1360,7 @@ func _on_dev_skip_stage_pressed():
 		dev_stage = GameState.get_stage_for_mode_difficulty(mode, difficulty)
 
 	if dev_stage.is_empty():
-		status_label.text = "DEV: não foi possível identificar a fase correspondente."
+		status_label.text = UiStyle.tidy("DEV: não foi possível identificar a fase correspondente.")
 		return
 
 	busy = true
@@ -1358,7 +1387,7 @@ func _on_dev_skip_stage_pressed():
 	else:
 		details += "\nO XP desta fase já havia sido creditado anteriormente."
 	details += "\n\nTodas as 18 fases já podem ser verificadas no mapa de progressão."
-	result_details.text = details
+	result_details.text = UiStyle.tidy(details)
 	next_button.visible = false
 	retry_button.visible = false
 	result_back_button.text = "VOLTAR AO DEV"
@@ -1420,7 +1449,7 @@ func _unhandled_input(event):
 	elif selected.x != -1 and not busy:
 		# Primeiro ESC só cancela a seleção, se houver uma.
 		selected = Vector2i(-1, -1)
-		status_label.text = "Seleção cancelada."
+		status_label.text = UiStyle.tidy("Seleção cancelada.")
 		_refresh_board()
 	else:
 		_open_pause()
@@ -1480,14 +1509,14 @@ func _register_mistake():
 			_make_board_playable(true)
 			hint_move = _find_target_move()
 		if hint_move.size() > 0:
-			status_label.text = "Troque as duas peças com borda verde!"
+			status_label.text = UiStyle.tidy("Troque as duas peças com borda verde!")
 		else:
-			status_label.text = "Ainda não dá para formar o %d. Faça outra combinação para mexer o tabuleiro." % target_answer
+			status_label.text = UiStyle.tidy("Ainda não dá para formar o %d. Faça outra combinação para mexer o tabuleiro." % target_answer)
 	elif level_changed:
 		if hint_level == 1:
-			status_label.text = "O professor explicou como pensar. A dica ficou embaixo da conta."
+			status_label.text = UiStyle.tidy("O professor explicou como pensar. A dica ficou embaixo da conta.")
 		else:
-			status_label.text = "O professor resolveu junto: as peças com a resposta ficaram destacadas."
+			status_label.text = UiStyle.tidy("O professor resolveu junto: as peças com a resposta ficaram destacadas.")
 
 	_refresh_instruction()
 	_refresh_board()
@@ -1502,15 +1531,15 @@ func _refresh_instruction():
 		return
 
 	if hint_text != "":
-		challenge_instruction.text = "DICA: " + hint_text
+		challenge_instruction.text = UiStyle.tidy("DICA: " + hint_text)
 		challenge_instruction.add_theme_color_override("font_color", HINT_BORDER_COLOR)
 		return
 
 	challenge_instruction.add_theme_color_override("font_color", INSTRUCTION_COLOR)
 	if context == "campaign":
-		challenge_instruction.text = "Combine 3 peças com a resposta • objetivo %d/%d" % [solved_challenges, required_challenges]
+		challenge_instruction.text = UiStyle.tidy("Combine 3 peças com a resposta • objetivo %d/%d" % [solved_challenges, required_challenges])
 	else:
-		challenge_instruction.text = "Resolva a conta e faça uma combinação com a resposta."
+		challenge_instruction.text = UiStyle.tidy("Resolva a conta e faça uma combinação com a resposta.")
 
 
 # Procura uma troca que forme combinação com a peça da resposta.
@@ -1526,10 +1555,18 @@ func _find_target_move():
 					continue
 				if locked.has(a) or locked.has(b):
 					continue
+				# Peças cobertas pela neblina não contam: o jogador não vê o número.
+				if fogged.has(a) or fogged.has(b):
+					continue
 
 				_swap(a, b)
 				var found = _find_matches()
 				var works = found.size() > 0 and _matches_target(found)
+				if works:
+					for pos in found:
+						if fogged.has(pos) and board[pos.y][pos.x] == target_answer - 1:
+							works = false
+							break
 				_swap(a, b)
 
 				if works:
@@ -1573,7 +1610,7 @@ func _open_lesson(first_time):
 	lesson_open = false
 	if context == "campaign":
 		GameState.mark_lesson_seen(mode)
-	status_label.text = "Agora no tabuleiro: resolva a conta e combine 3 peças com a resposta."
+	status_label.text = UiStyle.tidy("Agora no tabuleiro: resolva a conta e combine 3 peças com a resposta.")
 
 
 # AJUDA: o professor mostra como pensar na conta atual (sem dar a resposta)
@@ -1627,7 +1664,7 @@ func _show_misconception(values):
 	for value in values:
 		var note = Professor.misconception(mode, current_challenge_text, target_answer, int(value) + 1)
 		if note != "":
-			status_label.text = "Professor: " + note
+			status_label.text = UiStyle.tidy("Professor: " + note)
 			return
 
 
@@ -1798,7 +1835,7 @@ func _confirm_pause_action():
 
 func _on_pause_help():
 	if context == "classic":
-		status_label.text = "Troque peças vizinhas para formar linhas de 3 ou mais iguais."
+		status_label.text = UiStyle.tidy("Troque peças vizinhas para formar linhas de 3 ou mais iguais.")
 		_close_pause()
 		return
 	# COMO JOGAR explica as regras; a aula da conta continua no botão AJUDA.
@@ -1879,10 +1916,12 @@ func _force_move(value):
 	for i in range(protected.size()):
 		var pos = protected[i]
 		board[pos.y][pos.x] = value
-		# A jogada garantida não pode depender de uma peça acorrentada.
+		# A jogada garantida não pode depender de uma peça acorrentada ou escondida.
 		locked.erase(pos)
+		fogged.erase(pos)
 	board[swap_cell.y][swap_cell.x] = _different_value(value)
 	locked.erase(swap_cell)
+	fogged.erase(swap_cell)
 
 	return _clear_board_matches(protected)
 
@@ -1951,28 +1990,28 @@ func _tutorial_next_step():
 			_tutorial_set_text("Trocar peças", "Toque em uma das peças com borda verde e depois na outra. Elas trocam de lugar e formam 3 iguais em linha.")
 			target_answer = -1
 			tut_expected = _tutorial_place_pattern(1, 3, 2)
-			status_label.text = "Toque em uma das peças com borda verde."
+			status_label.text = UiStyle.tidy("Toque em uma das peças com borda verde.")
 		2:
 			_tutorial_set_text("Troca que não vale", "Agora troque estas duas peças. Elas não formam 3 iguais. Veja o que acontece.")
 			target_answer = -1
 			tut_expected = _tutorial_find_invalid_pair()
-			status_label.text = "Toque nas duas peças com borda verde."
+			status_label.text = UiStyle.tidy("Toque nas duas peças com borda verde.")
 		3:
 			target_answer = 3
 			current_challenge_text = "2 + 1 = ?"
 			_tutorial_set_text("2 + 1 = ?", "Agora tem uma conta! Resolva e combine 3 peças com o número da resposta.")
 			tut_expected = _tutorial_place_pattern(target_answer - 1, 4, 3)
-			status_label.text = "Quanto é 2 + 1? Combine as peças destacadas."
+			status_label.text = UiStyle.tidy("Quanto é 2 + 1? Combine as peças destacadas.")
 		4:
 			target_answer = 4
 			current_challenge_text = "2 + 2 = ?"
 			_tutorial_set_text("2 + 2 = ?", "E se combinar o número errado? Combine as peças destacadas e veja.")
 			tut_expected = _tutorial_place_pattern(0, 2, 4)
-			status_label.text = "Combine as peças com borda verde."
+			status_label.text = UiStyle.tidy("Combine as peças com borda verde.")
 		5:
 			_tutorial_set_text("2 + 2 = ?", "Agora combine as peças com a resposta certa da conta.")
 			tut_expected = _tutorial_place_pattern(target_answer - 1, 5, 1)
-			status_label.text = "Qual é a resposta de 2 + 2? Combine as peças destacadas."
+			status_label.text = UiStyle.tidy("Qual é a resposta de 2 + 2? Combine as peças destacadas.")
 		_:
 			_tutorial_finish()
 			return
@@ -1985,7 +2024,7 @@ func _tutorial_next_step():
 
 func _tutorial_set_text(title, text):
 	challenge_label.text = title
-	challenge_instruction.text = text
+	challenge_instruction.text = UiStyle.tidy(text)
 	challenge_instruction.add_theme_color_override("font_color", Color("#F8FAFC"))
 
 
@@ -2017,8 +2056,8 @@ func _tutorial_after_move(solved, invalid):
 		tut_step -= 1
 		message = "Vamos tentar de novo."
 
-	status_label.text = message
-	challenge_instruction.text = message
+	status_label.text = UiStyle.tidy(message)
+	challenge_instruction.text = UiStyle.tidy(message)
 	challenge_instruction.add_theme_color_override("font_color", Color("#86EFAC") if ok else HINT_BORDER_COLOR)
 	_refresh_board()
 
@@ -2108,7 +2147,7 @@ func _tutorial_finish():
 	Audio.play("vitoria")
 
 	result_title.text = "TUTORIAL CONCLUÍDO!"
-	result_details.text = "Em cada fase:\n• Resolva a conta e combine 3 peças com a resposta.\n• Complete os desafios antes de acabar as jogadas.\n• Quanto mais jogadas sobrarem, mais estrelas você ganha.\n• Errou algumas vezes? O jogo dá dicas para ajudar."
+	result_details.text = UiStyle.tidy("Em cada fase:\n• Resolva a conta e combine 3 peças com a resposta.\n• Complete os desafios antes de acabar as jogadas.\n• Quanto mais jogadas sobrarem, mais estrelas você ganha.\n• Errou algumas vezes? O jogo dá dicas para ajudar.")
 	result_stars_holder.visible = false
 	next_button.text = "COMEÇAR A JORNADA →"
 	next_button.visible = true
@@ -2156,7 +2195,9 @@ func _play_story(key, lines, then = Callable()):
 
 func _start_story_intro():
 	if context == "tutorial":
-		_play_story("prologo", Story.prologue())
+		# Quem já fez o tutorial e quer repetir pelo menu vai direto às regras, sem o prólogo.
+		if not GameState.tutorial_done:
+			_play_story("prologo", Story.prologue())
 		return
 	if context != "campaign":
 		return
@@ -2324,7 +2365,7 @@ func _ambush_wind():
 	_make_board_playable(true)
 	_after_ambush_event()
 	Audio.play("combo", 0.8)
-	status_label.text = "Ventania! O Barão embaralhou as peças. A conta continua a mesma."
+	status_label.text = UiStyle.tidy("Ventania! O Barão embaralhou as peças. A conta continua a mesma.")
 	if context == "campaign":
 		await _play_story("evento_%d" % int(stage_data["id"]), Story.wind_event())
 
@@ -2339,7 +2380,7 @@ func _ambush_clock():
 	_make_board_playable(true)
 	_after_ambush_event()
 	Audio.play("dica")
-	status_label.text = "O Barão trocou a conta! Resolva a nova: %s" % current_challenge_text
+	status_label.text = UiStyle.tidy("O Barão trocou a conta! Resolva a nova: %s" % current_challenge_text)
 	if context == "campaign":
 		await _play_story("evento_%d" % int(stage_data["id"]), Story.clock_event())
 

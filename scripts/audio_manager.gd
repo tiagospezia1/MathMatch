@@ -15,7 +15,7 @@ var fullscreen = false
 
 # Acessibilidade
 const TEXT_SIZES = ["Normal", "Grande", "Muito grande"]
-const TEXT_SCALES = [1.0, 1.15, 1.3]
+const TEXT_SCALES = [1.0, 1.2, 1.4]
 const CONTRAST_SHADER = """
 shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;

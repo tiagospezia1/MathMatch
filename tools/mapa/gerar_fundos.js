@@ -6,7 +6,9 @@ const { chromium } = require('/opt/node-tools/node_modules/playwright');
 const path = require('path');
 
 const W = 1488, H = 700; // tamanho da cena; ela fica embaixo de um céu quadrado de 1488x1488
-const SIZE = 1200; // tamanho do PNG final
+// PNG final em 16:9 (cobre telas largas sem cortar a cena; em telas quadradas corta só os lados).
+const OUT_W = 1920, OUT_H = 1080;
+const VB_H = Math.round(W * OUT_H / OUT_W); // altura do desenho na mesma proporção
 const out = process.argv[2];
 
 const D = require('./desenhos.js');
@@ -75,21 +77,21 @@ const skyTop = ['#1B2A4A', '#14203D', '#132A2A', '#2A1F3D', '#151A33', '#24183A'
 
 (async () => {
   const b = await chromium.launch();
-  const p = await b.newPage({ viewport: { width: SIZE, height: SIZE } });
+  const p = await b.newPage({ viewport: { width: OUT_W, height: OUT_H } });
   for (let i = 0; i < scenes.length; i++) {
-    D.setSize(W, W);
+    D.setSize(W, VB_H);
     const upperStars = stars(100 + i, 60);
     D.setSize(W, H);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${W} ${W}">
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${OUT_W}" height="${OUT_H}" viewBox="0 0 ${W} ${VB_H}">
       <defs><linearGradient id="veil" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#0B1120" stop-opacity="0.35"/>
           <stop offset="1" stop-color="#0B1120" stop-opacity="0.55"/></linearGradient></defs>
-      <rect width="${W}" height="${W}" fill="${skyTop[i]}"/>${upperStars}
-      <g transform="translate(0 ${W - H})">${scenes[i]()}</g>
-      <rect width="${W}" height="${W}" fill="url(#veil)"/>
+      <rect width="${W}" height="${VB_H}" fill="${skyTop[i]}"/>${upperStars}
+      <g transform="translate(0 ${VB_H - H})">${scenes[i]()}</g>
+      <rect width="${W}" height="${VB_H}" fill="url(#veil)"/>
     </svg>`;
     await p.setContent(`<html><body style="margin:0;background:#000">${svg}</body></html>`);
-    await p.screenshot({ path: path.join(out, `lugar_${i + 1}.png`), clip: { x: 0, y: 0, width: SIZE, height: SIZE } });
+    await p.screenshot({ path: path.join(out, `lugar_${i + 1}.png`), clip: { x: 0, y: 0, width: OUT_W, height: OUT_H } });
     console.log('lugar', i + 1);
   }
   await b.close();

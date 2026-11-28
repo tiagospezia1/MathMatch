@@ -75,7 +75,7 @@ static func lesson(operation, first_time = true):
 	var title = TITLES.get(operation, "")
 	var lines = []
 	if first_time:
-		lines.append(_p("explicando", "Antes de irmos ao tabuleiro, uma aula. Pegue o caderno, [NOME]: hoje é %s." % title.to_lower(), _text_board([title])))
+		lines.append(_p("explicando", "Antes de irmos ao tabuleiro, uma aula. Pegue o caderno, [NOME]: hoje vamos estudar %s." % title.to_lower(), _text_board([title])))
 	else:
 		lines.append(_p("feliz", "Vamos rever %s juntos. Não tem pressa." % title.to_lower(), _text_board([title])))
 
@@ -153,9 +153,9 @@ static func _lesson_multiplication():
 			_board("groups", {"groups": 3, "size": 2, "item": "pote_mel"}, ["3 colmeias com 2 potes"])),
 		_p("explicando", "Multiplicar é somar GRUPOS IGUAIS. 3 × 2 quer dizer: 3 grupos de 2. Então 2 + 2 + 2 = 6.",
 			_board("groups", {"groups": 3, "size": 2, "item": "pote_mel"}, ["2 + 2 + 2 = 6", "!3 × 2 = 6"])),
-		_p("pensativo", "Um truque: a ordem não importa. 3 colmeias com 2 potes dá o mesmo que 2 colmeias com 3 potes. Use o jeito mais fácil!",
+		_p("pensativo", "Um truque: a ordem não importa. 3 colmeias com 2 potes dá o mesmo que 2 colmeias com 3 potes. Use o jeito mais fácil.",
 			_board("groups", {"groups": 2, "size": 3, "item": "pote_mel"}, ["2 × 3  =  3 × 2  =  6"])),
-		_p("explicando", "Se esquecer a tabuada, conte de tantos em tantos. 4 cestas com 3 laranjas: conte de 3 em 3, quatro vezes: 3, 6, 9, 12.",
+		_p("explicando", "Se esquecer a tabuada, conte de tantos em tantos. 4 cestas com 3 laranjas: conte de 3 em 3, quatro vezes: 3, 6, 9 e 12.",
 			_board("groups", {"groups": 4, "size": 3, "item": "laranja"}, ["3, 6, 9, 12", "!4 × 3 = 12"])),
 		_p("preocupado", "Um erro muito comum é somar os dois números: 4 × 3 NÃO é 4 + 3. São 4 grupos de 3!",
 			_text_board(["4 + 3 = 7   ← soma", "!4 × 3 = 12  ← grupos"])),
@@ -185,7 +185,7 @@ static func _lesson_division():
 		_p("preocupado", "Cuidado para não confundir: dividir não é tirar. 12 ÷ 3 não é 12 − 3. É repartir em 3 partes iguais.",
 			_text_board(["12 − 3 = 9   ← tirar", "!12 ÷ 3 = 4   ← repartir"])),
 		_quiz("division", "Sua vez! 8 maçãs repartidas entre 2 amigos. Quanto é 8 ÷ 2?", "8 ÷ 2 = ?", [4, 6, 16], 4,
-			_board("share", {"total": 8, "groups": 2, "values": false, "item": "maca"}, ["8 ÷ 2 = ?"]),
+			_board("groups", {"groups": 1, "size": 8, "item": "maca"}, ["8 ÷ 2 = ?"]),
 			"Isso! Repartindo 8 em 2 partes, cada uma fica com 4. E confere: 2 × 4 = 8.",
 			_board("share", {"total": 8, "groups": 2, "item": "maca"}, ["!8 ÷ 2 = 4"])),
 		_quiz("division", "E 15 balas para 3 crianças? Quanto é 15 ÷ 3?", "15 ÷ 3 = ?", [3, 5, 12], 5,
@@ -203,7 +203,7 @@ static func _lesson_fraction():
 			_board("fraction", {"parts": 4, "take": 0}, ["3/4  →  4 pedaços iguais"])),
 		_p("explicando", "O número de CIMA diz quantos pedaços pegamos. 3/4 é pegar 3 dos 4 pedaços. Hum, que delícia!",
 			_board("fraction", {"parts": 4, "take": 3}, ["!3 de 4 pedaços"])),
-		_p("explicando", "Agora, 3/4 de 12. Se a barra tem 12 quadradinhos, dividimos em 4 pedaços iguais: 12 ÷ 4 = 3 quadradinhos em cada pedaço.",
+		_p("explicando", "Agora, 3/4 de 12. Repartimos as 12 em 4 pedaços iguais: 12 ÷ 4 = 3 em cada pedaço.",
 			_board("fraction", {"parts": 4, "take": 0, "total": 12, "values": true}, ["12 ÷ 4 = 3"])),
 		_p("explicando", "Depois pegamos 3 pedaços: 3 + 3 + 3 = 9. Então 3/4 de 12 é 9.",
 			_board("fraction", {"parts": 4, "take": 3, "total": 12, "values": true}, ["3 pedaços de 3", "!3/4 de 12 = 9"])),
@@ -233,7 +233,7 @@ static func _lesson_percentage():
 		_p("explicando", "25% é a metade da metade: um quarto da barra. 25% de 20 é 5.",
 			_board("percent", {"percent": 25, "total": 20, "parts": 4, "values": true}, ["!25% de 20 = 5"])),
 		_p("pensativo", "E 10% é dividir a barra em 10 pedaços e pegar um. Com o 10%, achamos 20%, 30%... é só multiplicar: 30% de 20 é 3 × 2 = 6.",
-			_board("percent", {"percent": 30, "total": 20, "parts": 10, "values": true}, ["10% de 20 = 2", "!30% = 3 × 2 = 6"])),
+			_board("percent", {"percent": 30, "total": 20, "parts": 10, "values": true}, ["10% de 20 = 2", "!30% de 20 = 3 × 2 = 6"])),
 		_p("preocupado", "Cuidado com o Barão: 50% de desconto é pagar a METADE. Desconto nunca aumenta o preço!",
 			_text_board(["Preço: 20", "50% de desconto: tira 10", "!Paga 10"])),
 		_quiz("percentage", "Sua vez! Quanto é 50% de 8?", "50% de 8 = ?", [2, 4, 50], 4,
@@ -297,7 +297,8 @@ const FRUITS = ["maca", "laranja", "morango"]
 static func _decorate(board, pick):
 	var kind = str(board.get("kind", ""))
 	if kind == "add" and not board.has("items"):
-		board["items"] = [FRUITS[pick % 3], FRUITS[(pick + 1) % 3], FRUITS[(pick + 2) % 3]]
+		# A mesma fruta em todas as parcelas: somar é juntar coisas iguais.
+		board["items"] = [FRUITS[pick % 3], FRUITS[pick % 3], FRUITS[pick % 3]]
 	elif ITEM_CHOICES.has(kind) and not board.has("item"):
 		var options = ITEM_CHOICES[kind]
 		board["item"] = options[pick % options.size()]

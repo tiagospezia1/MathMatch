@@ -307,7 +307,7 @@ func _open_page(stage_id):
 
 	page_chapter.text = "CAPÍTULO %d  •  %s  •  %s" % [Story.world_index(current_page) + 1, Story.chapter_name(current_page).to_upper(), Story.world_name(current_page)]
 	page_title.text = "Página %02d — %s" % [current_page, Story.page_name(current_page)]
-	page_text.text = content["text"]
+	page_text.text = UiStyle.tidy(content["text"])
 
 	for child in page_stamps.get_children():
 		child.queue_free()
@@ -378,7 +378,7 @@ func _unhandled_input(event):
 
 func _label(text_value, font_size, color, centered = false):
 	var label = Label.new()
-	label.text = text_value
+	label.text = UiStyle.tidy(text_value)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if centered:
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

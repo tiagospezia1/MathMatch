@@ -32,7 +32,7 @@ const PAGE_NAMES = [
 	"Tirar e ver o que sobra", "Pensar ao contrário", "Duas subtrações",
 	"Grupos de 2 e de 3", "A tabuada até o 4", "Contar de tantos em tantos",
 	"Repartir igualmente", "O contrário da multiplicação", "A tabuada ao contrário",
-	"Metade e terço", "Partes maiores que um", "Dividir e multiplicar",
+	"Metade e terço", "Pegar mais de um pedaço", "Dividir e multiplicar",
 	"50% é a metade", "25% é um quarto", "Montar a partir do 10%"
 ]
 
@@ -101,7 +101,7 @@ static func page_content(stage_id):
 				"board": {"kind": "percent", "percent": 25, "total": 20, "parts": 4, "values": true, "lines": ["!25% de 20 = 5"]}}
 		18:
 			return {"text": "10% é dividir por 10. A partir dele, montamos 20%, 30%, 40%...",
-				"board": {"kind": "percent", "percent": 30, "total": 20, "parts": 10, "values": true, "lines": ["10% de 20 = 2", "!30% = 3 × 2 = 6"]}}
+				"board": {"kind": "percent", "percent": 30, "total": 20, "parts": 10, "values": true, "lines": ["10% de 20 = 2", "!30% de 20 = 3 × 2 = 6"]}}
 	return {"text": "", "board": {"kind": "text", "lines": []}}
 
 
@@ -159,7 +159,7 @@ static func tutorial_step(step):
 			return [_p("pensativo", "Agora troque estas duas. Elas não vão formar três iguais... Vamos ver o que acontece.")]
 		3:
 			var line = _p("explicando", "Agora tem uma conta: 2 + 1. Quanto dá? Junte três peças com a resposta.")
-			line["board"] = {"kind": "add", "a": 2, "b": 1, "items": ["maca", "laranja"], "lines": ["2 + 1 = ?"]}
+			line["board"] = {"kind": "add", "a": 2, "b": 1, "items": ["maca", "maca"], "lines": ["2 + 1 = ?"]}
 			return [line]
 		4:
 			return [_p("pensativo", "E se juntarmos o número errado? Combine as peças com borda verde e veja o que acontece.")]
@@ -181,7 +181,7 @@ static func tutorial_reaction(step, ok):
 			return [_p("feliz", "Viu? Não formaram três iguais, então voltaram para o lugar. Sem problema: não gastou nenhuma jogada.")]
 		3:
 			var line = _p("orgulhoso", "Muito bem, [NOME]! 2 + 1 = 3. A resposta certa resolve o desafio e ainda dá pontos extras.")
-			line["board"] = {"kind": "add", "a": 2, "b": 1, "joined": true, "count": true, "items": ["maca", "laranja"], "lines": ["!2 + 1 = 3"]}
+			line["board"] = {"kind": "add", "a": 2, "b": 1, "joined": true, "count": true, "items": ["maca", "maca"], "lines": ["!2 + 1 = 3"]}
 			return [line]
 		4:
 			return [_p("explicando", "Você juntou o 1, mas 2 + 2 = 4. Valeu pontos, mas não resolveu o desafio: só a resposta certa resolve. E se errar várias vezes, eu venho ajudar.")]
@@ -215,7 +215,7 @@ static func world_intro(index):
 		1:
 			return [
 				_n("No porto, os barcos não saem. Ninguém sabe quantas caixas sobram depois de descarregar."),
-				_o("Marinheiro", "Tinha 8 caixas, tirei 5... e agora? O barco afunda ou não afunda?"),
+				_o("Marinheiro", "Tinha 8 caixas, tirei 5... e agora? Quantas ficaram no barco?"),
 				_p("explicando", "Subtrair é tirar. Começamos com tudo e tiramos uma parte. Vou te mostrar.")
 			]
 		2:
@@ -233,7 +233,7 @@ static func world_intro(index):
 		4:
 			return [
 				_n("O grande relógio da torre parou. Ninguém sabe o que é \"meia hora\" ou \"um quarto de hora\"."),
-				_o("Relojoeiro", "Sem frações, os ponteiros não sabem onde parar!"),
+				_o("Relojoeiro", "O relógio tem 12 horas. Metade delas são quantas? Sem frações, os ponteiros não sabem onde parar!"),
 				_p("explicando", "Uma fração é uma parte do todo. Metade, um terço, um quarto... Vou te mostrar.")
 			]
 		5:
@@ -352,7 +352,7 @@ static func stage_victory(stage_id):
 				_o("Cozinheira", "12 pães para 3 mesas... 4 em cada! O banquete está servido!")
 			]
 		13:
-			return [_p("feliz", "Uma página presa numa engrenagem. Cuidado com os dedos!")]
+			return [_p("pensativo", "Uma página presa numa engrenagem. Cuidado com os dedos!")]
 		14:
 			return [_p("feliz", "Mais uma, dentro do pêndulo. O Barão escala bem para alguém de cartola.")]
 		15:
@@ -384,7 +384,7 @@ static func victory_lines(stars, new_title = ""):
 				"Impecável! Três carimbos de ouro nesta página.",
 				"Três carimbos de ouro! Nem eu faria tão rápido.",
 				"Que beleza, [NOME]! Página de volta e com três carimbos.",
-				"Contas certas e quase nenhuma jogada perdida. Três carimbos!"
+				"Três carimbos! O professor aqui está orgulhoso."
 			])))
 		2:
 			lines.append(_p("feliz", _pick([
@@ -408,8 +408,23 @@ static func victory_lines(stars, new_title = ""):
 	return lines
 
 
+# Sorteia uma fala sem repetir as últimas já usadas daquela lista.
+static var _used = {}
+
 static func _pick(options):
-	return options[randi() % options.size()]
+	var key = options[0]
+	var used = _used.get(key, [])
+	var fresh = []
+	for option in options:
+		if not used.has(option):
+			fresh.append(option)
+	if fresh.is_empty():
+		used = []
+		fresh = options.duplicate()
+	var choice = fresh[randi() % fresh.size()]
+	used.append(choice)
+	_used[key] = used
+	return choice
 
 
 static func defeat_lines():
@@ -422,7 +437,7 @@ static func defeat_lines():
 # "Como jogar" do menu principal, explicado pelo professor.
 static func how_to_play():
 	var first = _p("explicando", "Toque numa peça e depois numa vizinha para trocá-las. Três ou mais iguais em linha ou coluna se desfazem.")
-	first["board"] = {"kind": "text", "lines": ["troque peças vizinhas", "!3 iguais em linha = combinação"]}
+	first["board"] = {"kind": "text", "lines": ["Troque peças vizinhas", "!3 iguais em linha = combinação"]}
 	return [
 		first,
 		_p("explicando", "Em cada fase aparece uma conta. Resolva de cabeça e junte 3 peças com a resposta!"),
@@ -461,7 +476,7 @@ static func epilogue():
 		_p("explicando", "Sabe o que você esqueceu naquele dia da prova? Que errar faz parte de aprender."),
 		_b("envergonhado", "...Ninguém nunca me disse isso."),
 		_p("feliz", "Eu disse. Você é que não ficou para ouvir."),
-		_n("O Barão tira a cartola e entrega a última página."),
+		_n("O Barão abaixa a cabeça e entrega a última página."),
 		_b("envergonhado", "Tome. Talvez... talvez eu possa voltar para a aula um dia."),
 		_p("feliz", "A turma sempre tem lugar para mais um."),
 		_n("O Grande Livro dos Números estava completo outra vez. E as seis cidades voltaram a contar, tirar, multiplicar, repartir, medir e calcular."),

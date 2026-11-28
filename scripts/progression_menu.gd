@@ -470,19 +470,19 @@ func _create_player_marker():
 
 	var pos = stage_positions[current_id]
 
+	# Jornada concluída: não há mais fase atual para marcar.
+	if GameState.is_stage_completed(GameState.get_stage_count()):
+		return
+	# Etiqueta pequena logo abaixo da moeda da fase atual: fica longe da faixa do
+	# lugar e dos textos das outras fases.
 	var marker = Label.new()
-	marker.size = Vector2(110, 34)
-	# Na primeira fase de cada lugar, a faixa com o nome fica logo acima:
-	# o selo vai para baixo da fase para não cobrir o texto.
-	if (current_id - 1) % 3 == 0:
-		marker.position = Vector2(pos.x - 55, pos.y + 50)
-		marker.text = "▲  VOCÊ  ▲"
-	else:
-		marker.position = Vector2(pos.x - 55, pos.y - 87)
-		marker.text = "▼  VOCÊ  ▼"
+	marker.size = Vector2(84, 26)
+	marker.position = Vector2(pos.x - 42, pos.y + 34)
+	marker.text = "▲ VOCÊ ▲"
 	marker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	marker.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	marker.add_theme_font_size_override("font_size", 14)
+	marker.add_theme_font_size_override("font_size", 12)
+	marker.set_meta("fixed_text_size", true)
 	marker.add_theme_color_override("font_color", Color("#111827"))
 	marker.add_theme_stylebox_override("normal", _marker_style())
 	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE

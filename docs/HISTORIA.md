@@ -346,7 +346,7 @@ Cada mundo segue o mesmo formato:
 #### Fase 14: Partes do Todo
 
 - **Ao vencer:** "Mais uma, dentro do pêndulo. O Barão escala bem para alguém de cartola."
-- **Página 14:** *Partes maiores que um.*
+- **Página 14:** *Pegar mais de um pedaço.*
 
 #### Fase 15: Frações Avançadas (emboscada)
 
@@ -417,7 +417,7 @@ Cada mundo segue o mesmo formato:
 >
 > **Professor Aurélio:** Eu disse. Você é que não ficou para ouvir.
 >
-> *(O Barão tira a cartola e entrega a última página.)*
+> *(O Barão abaixa a cabeça e entrega a última página.)*
 >
 > **Barão Embaralho:** Tome. Talvez... talvez eu possa voltar para a aula um dia.
 >
